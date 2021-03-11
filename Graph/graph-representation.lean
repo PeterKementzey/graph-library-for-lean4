@@ -11,13 +11,18 @@ structure Graph (α : Type) where
 
 namespace Graph
 
-variables {α : Type}
+variables {α : Type} [Inhabited (Vertex α)]
 
 def addVertex (g : Graph α) (x : α): Graph α := {
   g with vertices := g.vertices.push {userData := x}
 }
 
--- def addEdge
+def addEdge (g : Graph α) (source : α) (target : α) (weight : Int := 1) : Graph α := _
+
+def addEdgeById (g : Graph α) (source : Nat) (target : Nat) (weight : Int := 1) : Graph α := {
+  g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
+}
+-- TODO: It would probably be easier to have a separate userData and adjacencyLists arrays in Graph replacing the vertices array because this way it is complicated to access and modify stuff
 
 end Graph
 
