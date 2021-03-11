@@ -11,18 +11,23 @@ structure Graph (α : Type) where
 
 namespace Graph
 
-variables {α : Type} [Inhabited (Vertex α)]
+variables {α : Type} [BEq α] [Inhabited (Vertex α)] -- Question: is this a problem? Do I need to do something about it?
 
 def addVertex (g : Graph α) (x : α): Graph α := {
   g with vertices := g.vertices.push {userData := x}
 }
 
-def addEdge (g : Graph α) (source : α) (target : α) (weight : Int := 1) : Graph α := _
+def findVertexId (g : Graph α) (userData : α) : Nat := match g.vertices.findIdx? (fun v => v.userData == userData) with -- Question: Is there a findIdx! that I could use? It did not work for some reason
+  | some x => x
+  | none => panic! "Vertex not found" -- Question: I saw this somewhere but I am not sure what it does
 
 def addEdgeById (g : Graph α) (source : Nat) (target : Nat) (weight : Int := 1) : Graph α := {
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
 -- TODO: It would probably be easier to have a separate userData and adjacencyLists arrays in Graph replacing the vertices array because this way it is complicated to access and modify stuff
+
+def addEdge (g : Graph α) (source : α) (target : α) := g.addEdgeById (g.findVertexId source) (g.findVertexId target)
+-- #check Graph.addEdge -- I think this is not saying what it should say
 
 end Graph
 
