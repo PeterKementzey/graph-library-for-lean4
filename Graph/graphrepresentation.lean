@@ -29,6 +29,8 @@ def addEdgeById (g : Graph α) (source : Nat) (target : Nat) (weight : Int := 1)
 def addEdge (g : Graph α) (source : α) (target : α) := g.addEdgeById (g.findVertexId source) (g.findVertexId target)
 -- #check Graph.addEdge -- I think this is not saying what it should say
 
+instance : ToString (Graph α) where toString g := "graph"
+
 end Graph
 
 
