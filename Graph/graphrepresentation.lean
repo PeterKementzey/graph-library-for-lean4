@@ -21,6 +21,7 @@ def findVertexId (g : Graph α) (userData : α) : Nat := match g.vertices.findId
   | some x => x
   | none => panic! "Vertex not found" -- Question: I saw this somewhere but I am not sure what it does
 
+-- TODO: Uniqueness check
 def addEdgeById (g : Graph α) (source : Nat) (target : Nat) (weight : Int := 1) : Graph α := {
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
