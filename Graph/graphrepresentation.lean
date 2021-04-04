@@ -15,20 +15,17 @@ namespace Graph
 
 variable {α : Type} [BEq α] [Inhabited α]
 
-def addVertex (g : Graph α) (x : α): Graph α := {
-  g with vertices := g.vertices.push { userData := x }
-}
-
--- TODO make option
-def findVertexId (g : Graph α) (userData : α) : Nat := match g.vertices.findIdx? (fun v => v.userData == userData) with -- Question: Is there a findIdx! that I could use? It did not work for some reason
-  | some x => x
-  | none => panic! "Vertex not found" -- Question: I saw this somewhere but I am not sure what it does
+def addVertex (g : Graph α) (x : α): (Graph α) × Nat := 
+  let res := { g with vertices := g.vertices.push { userData := x } }
+  let id : Nat := res.vertices.size - 1
+  (res, id)
 
 def addEdgeById (g : Graph α) (source : Nat) (target : Nat) (weight : Int := 1) : Graph α := {
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
 
-instance : ToString (Vertex α) where toString v := "vertex"
+instance : ToString (Edge) where toString e := "target: " ++ toString e.target ++ ", weight: " ++ toString e.weight
+instance : ToString (Vertex α) where toString v := toString v.adjacencyList ++ "\n"
 instance : ToString (Graph α) where toString g := toString g.vertices
 
 end Graph
@@ -36,6 +33,7 @@ end Graph
 
 
 
+-- def findVertexId (g : Graph α) (userData : α) : Option Nat := g.vertices.findIdx? (fun v => v.userData == userData)
 
 
 
