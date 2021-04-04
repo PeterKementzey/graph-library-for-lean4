@@ -6,31 +6,30 @@ structure Vertex (α : Type) where
   userData : α
   adjacencyList : Array Edge := #[]
 
+instance [Inhabited α] : Inhabited (Vertex α) := ⟨ { userData := arbitrary } ⟩ 
+
 structure Graph (α : Type) where
   vertices : Array (Vertex α) := #[]
 
 namespace Graph
 
-variables {α : Type} [BEq α] [Inhabited (Vertex α)] -- Question: is this a problem? Do I need to do something about it?
+variable {α : Type} [BEq α] [Inhabited α]
 
 def addVertex (g : Graph α) (x : α): Graph α := {
-  g with vertices := g.vertices.push {userData := x}
+  g with vertices := g.vertices.push { userData := x }
 }
 
+-- TODO make option
 def findVertexId (g : Graph α) (userData : α) : Nat := match g.vertices.findIdx? (fun v => v.userData == userData) with -- Question: Is there a findIdx! that I could use? It did not work for some reason
   | some x => x
   | none => panic! "Vertex not found" -- Question: I saw this somewhere but I am not sure what it does
 
--- TODO: Uniqueness check
 def addEdgeById (g : Graph α) (source : Nat) (target : Nat) (weight : Int := 1) : Graph α := {
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
--- TODO: It would probably be easier to have a separate userData and adjacencyLists arrays in Graph replacing the vertices array because this way it is complicated to access and modify stuff
 
-def addEdge (g : Graph α) (source : α) (target : α) := g.addEdgeById (g.findVertexId source) (g.findVertexId target)
--- #check Graph.addEdge -- I think this is not saying what it should say
-
-instance : ToString (Graph α) where toString g := "graph"
+instance : ToString (Vertex α) where toString v := "vertex"
+instance : ToString (Graph α) where toString g := toString g.vertices
 
 end Graph
 
