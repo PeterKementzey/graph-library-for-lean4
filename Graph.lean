@@ -60,7 +60,23 @@ def testing :=
   let g4 := g3.addEdgeById id0 id0 5
   g4
 
+def exampleGraph3 : Graph Nat := do
+  let mut gx : Graph Nat := ⟨#[]⟩
+  gx := (gx.addVertex 0).1
+  gx := (gx.addVertex 1).1
+  gx := (gx.addVertex 2).1
+  gx := (gx.addVertex 3).1
+  gx := (gx.addVertex 4).1
+  gx := gx.addEdgeById 0 1 2
+  gx := gx.addEdgeById 0 1 2
+  gx := gx.addEdgeById 0 2 5
+  gx := gx.addEdgeById 1 2 1
+  gx := gx.addEdgeById 1 1 1
+  gx := gx.addEdgeById 3 4 5
+  gx := gx.addEdgeById 4 3 9
+  gx
+
 def emptygraph: Graph Char := ⟨#[]⟩
 
 def main : IO Unit :=
-  IO.println (exampleGraph2.dijkstraUnsafe 0)
+  IO.println (exampleGraph3.dijkstraUnsafe 0)
