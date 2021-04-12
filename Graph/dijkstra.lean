@@ -40,24 +40,23 @@ def dijkstraAux (g : Graph α) (current : Nat) (unvisited : Std.HashSet Nat) (di
           | none => tentativeDistance
         distances := distances.set! edge.target (some newDistance, current)
     let nextCurrent : Nat := findMinimum unvisited distances
-    
-    dijkstraAux g nextCurrent (unvisited.erase nextCurrent) distances n
+    match distances[nextCurrent].1 with
+     | none => distances
+     | some x => dijkstraAux g nextCurrent (unvisited.erase nextCurrent) distances n
 
 
 def dijkstraUnsafe (g : Graph α) (source : Nat) : Array ((Option Nat) × Nat) :=
   let distanceAndPredecessorInitial : Array ((Option Nat) × Nat) := mkArray g.vertices.size (none, source) -- (weight, parent) pairs initialized to (infinitiy, placeholder)
   if h : source < distanceAndPredecessorInitial.size
     then
-      -- let index : Fin (distanceAndPredecessorInitial.size) := source -- Question: how to create Fin type?    (then don't need to use set!, just set)
       let distanceAndPredecessor := distanceAndPredecessorInitial.set ⟨source, h⟩ (some 0, source)
       let unvisitedSet : Std.HashSet Nat := do
         let mut temp : Std.HashSet Nat := Std.HashSet.empty
         for i in [0:g.vertices.size] do temp := temp.insert i
         temp
-      _
-  -- dijkstraAux g source destination source (unvisitedSet.erase source) distanceAndPredecessor
+      dijkstraAux g source (unvisitedSet.erase source) distanceAndPredecessor (unvisitedSet.size-1)
     else 
-      panic!
+      return Array.empty
 
 
 -- def dijkstraSafe TODO
