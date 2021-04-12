@@ -32,13 +32,12 @@ def dijkstraAux (g : Graph α) (current : Nat) (unvisited : Std.HashSet Nat) (di
     let mut distances : Array ((Option Nat) × Nat) := distanceAndPredecessor
     for edge in g.vertices[current].adjacencyList do
       if unvisited.contains edge.target then
-        let tentativeDistance : Nat := match distanceAndPredecessor[current].1 with
+        let tentativeDistance : Nat := match distances[current].1 with
           | some x => x + edge.weight.toNat
           | none => panic! "Current node has no distance assigned, this should not be possible"
-        let newDistance : Nat := match distanceAndPredecessor[edge.target].1 with
-          | some x => if tentativeDistance < x then tentativeDistance else x
-          | none => tentativeDistance
-        distances := distances.set! edge.target (some newDistance, current)
+        distances := match distances[edge.target].1 with
+          | some x => if tentativeDistance < x then distances.set! edge.target (some tentativeDistance, current) else distances
+          | none => distances.set! edge.target (some tentativeDistance, current)
     let nextCurrent : Nat := findMinimum unvisited distances
     match distances[nextCurrent].1 with
      | none => distances
