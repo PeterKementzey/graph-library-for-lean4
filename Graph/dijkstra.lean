@@ -55,7 +55,7 @@ def dijkstraUnsafe (g : Graph α) (source : Nat) : Array ((Option Nat) × Nat) :
         temp
       dijkstraAux g source (unvisitedSet.erase source) distanceAndPredecessor (unvisitedSet.size-1)
     else 
-      return Array.empty
+      panic! "source out of bounds"
 
 
 -- def dijkstraSafe TODO

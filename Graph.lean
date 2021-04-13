@@ -1,5 +1,6 @@
 import Graph.graphrepresentation
 import Graph.dijkstra
+-- Question: Can I include all in one line?
 
 def exampleGraph : Graph Char :=
   let v0 : Vertex Char := { userData := 'a', adjacencyList := #[ {target := 1} ] }
