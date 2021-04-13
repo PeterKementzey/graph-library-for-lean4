@@ -1,5 +1,6 @@
 import Graph.graphrepresentation
 import Graph.dijkstra
+import Graph.searchalgorithm
 -- Question: Can I include all in one line?
 
 def exampleGraph : Graph Char :=
@@ -80,4 +81,4 @@ def exampleGraph3 : Graph Nat := do
 def emptygraph: Graph Char := ⟨#[]⟩
 
 def main : IO Unit :=
-  IO.println (exampleGraph3.dijkstraUnsafe 0)
+  IO.println (exampleGraph3.breadthFirstSearch 3 3)
