@@ -10,23 +10,24 @@ inductive Path (α : Type _) : Bool → Type _ where
  | edge : Nat -> Path α true -> Path α false
  | empty : Path α false
 
-def findMinimum (set : Std.HashSet Nat) (distances : Array ((Option Nat) × Nat)) : Nat := 
-  let min : Nat -> Nat -> Nat := fun leftId rightId => 
-    let leftDistance := distances[leftId].1
-    let rightDistance := distances[rightId].1
-    match rightDistance with
-      | none => leftId
-      | some r => match leftDistance with
-        | none => rightId
-        | some l => if l < r then leftId else rightId
+private def findMinimum (set : Std.HashSet Nat) (distances : Array ((Option Nat) × Nat)) : Nat := 
+  let min : Option Nat -> Nat -> Option Nat := fun leftIdOption rightId => match leftIdOption with 
+    | none => some rightId
+    | some leftId => 
+      let leftDistance := distances[leftId].1
+      let rightDistance := distances[rightId].1
+      match rightDistance with
+        | none => some leftId
+        | some r => match leftDistance with
+          | none => some rightId
+          | some l => if l < r then some leftId else some rightId
 
-  -- Question : can I remove this somehow and get any member of the set without transforming to array?
-  let arr := set.toArray
-  let initial := arr[0]
-  set.fold min initial
+  match set.fold min none with
+    | none => panic! "this should not be possible"
+    | some temp => temp
 
 -- Note for thesis :Fuel pattern - give enough fuel to always treminate
-def dijkstraAux (g : Graph α) (current : Nat) (unvisited : Std.HashSet Nat) (distanceAndPredecessor : Array ((Option Nat) × Nat)) : Nat -> Array ((Option Nat) × Nat)
+private def dijkstraAux (g : Graph α) (current : Nat) (unvisited : Std.HashSet Nat) (distanceAndPredecessor : Array ((Option Nat) × Nat)) : Nat -> Array ((Option Nat) × Nat)
   | 0 => return distanceAndPredecessor
   | (n + 1) => do
     let mut distances : Array ((Option Nat) × Nat) := distanceAndPredecessor
@@ -43,7 +44,7 @@ def dijkstraAux (g : Graph α) (current : Nat) (unvisited : Std.HashSet Nat) (di
      | none => distances
      | some x => dijkstraAux g nextCurrent (unvisited.erase nextCurrent) distances n
 
-
+-- TODO create wrapper for array opt nat nat with funtcions to return specific paths from the tree or the whole tree
 def dijkstraUnsafe (g : Graph α) (source : Nat) : Array ((Option Nat) × Nat) :=
   let distanceAndPredecessorInitial : Array ((Option Nat) × Nat) := mkArray g.vertices.size (none, source) -- (weight, parent) pairs initialized to (infinitiy, placeholder)
   if h : source < distanceAndPredecessorInitial.size
@@ -61,7 +62,9 @@ def dijkstraUnsafe (g : Graph α) (source : Nat) : Array ((Option Nat) × Nat) :
 -- def dijkstraSafe TODO
 
 
--- TODO: dijkstra with destination specified - question: should I "short circuit" it or is it fine if it depends on the shortest path tree implementation above?
+-- TODO: dijkstra with destination specified
+-- add option to auxiliary function to short circuit and only set it from this versin => one implementation, but also good performance
+
 -- def dijkstraAux (g : Graph α) (current : Nat) (destination : Nat) (unvisited : Std.HashSet Nat) (distanceAndPredecessor : Array ((Option Nat) × Nat)) : Nat -> Option (Path α true)
 -- def dijkstraUnsafe (g : Graph α) (source : Nat) (destination : Nat) : Option (Path α true) :=
 

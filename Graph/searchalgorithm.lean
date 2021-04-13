@@ -5,7 +5,8 @@ namespace Graph
 
 variable {α : Type} [BEq α] [Inhabited α]
 
-def BFSAux (g : Graph α) (target : Nat) (visited : Array Bool) (q : Std.Queue Nat) : Nat -> Bool
+-- TODO make it generic stack - queue (tip: bundle them into a structure which is either stack or queue)
+private def BFSAux (g : Graph α) (target : Nat) (visited : Array Bool) (q : Std.Queue Nat) : Nat -> Bool
   | 0 => false
   | n + 1 => do
     let mut queue : Std.Queue Nat := q
@@ -22,7 +23,6 @@ def BFSAux (g : Graph α) (target : Nat) (visited : Array Bool) (q : Std.Queue N
             queue := queue.enqueue edge.target
         BFSAux g target visitedMutable queue n
     
-
 
 def breadthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool := 
   if source == target then true
