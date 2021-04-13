@@ -1,7 +1,4 @@
-import Graph.graphrepresentation
-import Graph.dijkstra
-import Graph.searchalgorithm
--- Question: Can I include all in one line?
+import Graph.graphall
 
 def exampleGraph : Graph Char :=
   let v0 : Vertex Char := { userData := 'a', adjacencyList := #[ {target := 1} ] }
