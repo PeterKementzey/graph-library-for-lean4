@@ -10,6 +10,9 @@ private structure DijkstraVertex where
   distance : Option Nat := none
   edgeWeightToPredecessor : Nat := 0
 
+instance : ToString DijkstraVertex where toString dv := "Predecessor: " ++ (toString dv.predecessor) ++ ", current distance: " ++ (toString dv.distance) ++ "\n"
+
+
 instance : Inhabited DijkstraVertex := ⟨ { predecessor := arbitrary } ⟩ 
 
 private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array DijkstraVertex) : Nat := 
