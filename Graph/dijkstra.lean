@@ -5,11 +5,6 @@ namespace Graph
 
 variable {α : Type} [BEq α] [Inhabited α]
 
-inductive Path (α : Type _) : Bool → Type _ where
- | vertex : Vertex α -> Path α false -> Path α true
- | edge : Nat -> Path α true -> Path α false
- | empty : Path α false
-
 
 private def findMinimum (set : Std.HashSet Nat) (distances : Array ((Option Nat) × Nat)) : Nat := 
   let min : Option Nat -> Nat -> Option Nat := fun leftIdOption rightId => match leftIdOption with 
@@ -75,5 +70,52 @@ def dijkstraUnsafe (g : Graph α) (source : Nat) : Array ((Option Nat) × Nat) :
 def dijkstraUnsafeWithDestination (g : Graph α) (source : Nat) (target : Nat) : Array ((Option Nat) × Nat) := dijkstraAuxBase g source (some target)
 
 -- def dijkstraSafe TODO
+
+
+
+structure DijkstraResult (α : Type) where
+  tree : Array ((Option Nat) × Nat)
+
+namespace DijkstraResult
+
+inductive Path (α : Type _) : Bool → Type _ where
+ | vertex : Vertex α -> Path α false -> Path α true
+ | edge : Nat -> Path α true -> Path α false
+ | empty : Path α false
+ | endOfPath : Path α true
+
+def successorsOfVertex (t : DijkstraResult α) (id : Nat) : Array Nat := do
+  let mut ret : Array Nat := Array.empty
+  for i in [0:t.tree.size] do
+    let vertex := t.tree[i]
+    ret := match vertex.1 with
+     | some distance => if vertex.2 == id then ret.push i else ret
+     | none => ret
+  ret
+
+def predecessorOfVertex (t : DijkstraResult α) (id : Nat) : Option Nat :=
+  match t.tree[id].1 with
+    | some distance => some t.tree[id].2
+    | none => none
+
+-- def pathToVertexAux (t : DijkstraResult α) (id : Nat) ()
+
+-- def pathToVertex (t : DijkstraResult α) (id : Nat) : Option (Path α true) :=
+--   let currentVertex := t.tree[id]
+--   match currentVertex.1 with
+--     | some distance =>
+--       let restOfPath : Option (Path α true) := pathToVertex t currentVertex.2
+--       match restOfPath with
+--         | some path =>
+--           let temp : Path α false := edge distance 
+--         | none => none
+--     | none => none
+
+
+
+
+-- def shortestDistanceToVertex
+
+end DijkstraResult
 
 end Graph
