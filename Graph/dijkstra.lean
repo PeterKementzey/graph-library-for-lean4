@@ -5,13 +5,19 @@ namespace Graph
 
 variable {α : Type} [BEq α] [Inhabited α]
 
+private structure DijkstraVertex where
+  predecessor : Nat
+  distance : Option Nat := none
+  edgeWeightToPredecessor : Nat := 0
 
-private def findMinimum (set : Std.HashSet Nat) (distances : Array ((Option Nat) × Nat)) : Nat := 
+instance : Inhabited DijkstraVertex := ⟨ { predecessor := arbitrary } ⟩ 
+
+private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array DijkstraVertex) : Nat := 
   let min : Option Nat -> Nat -> Option Nat := fun leftIdOption rightId => match leftIdOption with 
     | none => some rightId
     | some leftId => 
-      let leftDistance := distances[leftId].1
-      let rightDistance := distances[rightId].1
+      let leftDistance := dijkstraVertices[leftId].distance
+      let rightDistance := dijkstraVertices[rightId].distance
       match rightDistance with
         | none => some leftId
         | some r => match leftDistance with
@@ -24,57 +30,58 @@ private def findMinimum (set : Std.HashSet Nat) (distances : Array ((Option Nat)
 
 
 -- Note for thesis :Fuel pattern - give enough fuel to always treminate
-private def dijkstraAux (g : Graph α) (current : Nat) (target : Option Nat) (unvisited : Std.HashSet Nat) (distanceAndPredecessor : Array ((Option Nat) × Nat)) : Nat -> Array ((Option Nat) × Nat)
-  | 0 => return distanceAndPredecessor
+private def dijkstraAux (g : Graph α) (current : Nat) (target : Option Nat) (unvisited : Std.HashSet Nat) (dijkstraVerticesTemp : Array DijkstraVertex) : Nat -> Array DijkstraVertex
+  | 0 => return dijkstraVerticesTemp
   | (n + 1) => do
-    let mut distances : Array ((Option Nat) × Nat) := distanceAndPredecessor
+    let mut dijkstraVertices : Array DijkstraVertex := dijkstraVerticesTemp
     for edge in g.vertices[current].adjacencyList do
       if unvisited.contains edge.target then
-        let tentativeDistance : Nat := match distances[current].1 with
+        let tentativeDistance : Nat := match dijkstraVertices[current].distance with
           | some x => x + edge.weight.toNat
           | none => panic! "Current node has no distance assigned, this should not be possible"
-        distances := match distances[edge.target].1 with
-          | some x => if tentativeDistance < x then distances.set! edge.target (some tentativeDistance, current) else distances
-          | none => distances.set! edge.target (some tentativeDistance, current)
-    let nextCurrent : Nat := findMinimum unvisited distances
+        let newDijkstraVertex : DijkstraVertex := {predecessor := current, distance := tentativeDistance, edgeWeightToPredecessor := edge.weight.toNat}
+        dijkstraVertices := match dijkstraVertices[edge.target].distance with
+          | some x => if tentativeDistance < x then dijkstraVertices.set! edge.target newDijkstraVertex else dijkstraVertices
+          | none => dijkstraVertices.set! edge.target newDijkstraVertex
+    let nextCurrent : Nat := findMinimum unvisited dijkstraVertices
     let isTargetFound : Bool := match target with 
       | none => false
       | some t => t == nextCurrent
-    if isTargetFound then distances else
-      match distances[nextCurrent].1 with
-        | none => distances
-        | some x => dijkstraAux g nextCurrent target (unvisited.erase nextCurrent) distances n
+    if isTargetFound then dijkstraVertices else
+      match dijkstraVertices[nextCurrent].distance with
+        | none => dijkstraVertices
+        | some x => dijkstraAux g nextCurrent target (unvisited.erase nextCurrent) dijkstraVertices n
 
 
-private def dijkstraAuxBase (g : Graph α) (source : Nat) (target : Option Nat) : Array ((Option Nat) × Nat) :=
-  let distanceAndPredecessorInitial : Array ((Option Nat) × Nat) := mkArray g.vertices.size (none, source) -- (weight, parent) pairs initialized to (infinitiy, placeholder)
-  if h : source < distanceAndPredecessorInitial.size then
-    let distanceAndPredecessor := distanceAndPredecessorInitial.set ⟨source, h⟩ (some 0, source)
+private def dijkstraAuxBase (g : Graph α) (source : Nat) (target : Option Nat) : Array (DijkstraVertex) :=
+  let dijkstraVerticesInitial : Array (DijkstraVertex) := mkArray g.vertices.size {predecessor := source} -- predecessor is only a placeholder here, it has no significance and will be replaced or not used
+  if h : source < dijkstraVerticesInitial.size then
+    let dijkstraVertices := dijkstraVerticesInitial.set ⟨source, h⟩ {predecessor := source, distance := some 0}
     let isTargetFound : Bool := match target with
       | some t => t == source
       | none => false
-    if isTargetFound then distanceAndPredecessor
+    if isTargetFound then dijkstraVertices
     else
       let unvisitedSet : Std.HashSet Nat := do
         let mut temp : Std.HashSet Nat := Std.HashSet.empty
         for i in [0:g.vertices.size] do temp := temp.insert i
         temp
-      dijkstraAux g source target (unvisitedSet.erase source) distanceAndPredecessor (unvisitedSet.size-1)
+      dijkstraAux g source target (unvisitedSet.erase source) dijkstraVertices (unvisitedSet.size-1)
   else 
       panic! "source out of bounds"
 
 
--- TODO create wrapper for array opt nat nat with funtcions to return specific paths from the tree or the whole tree
-def dijkstraUnsafe (g : Graph α) (source : Nat) : Array ((Option Nat) × Nat) := dijkstraAuxBase g source none
+-- TODO create wrapper for array opt nat nat with funtcions to return specific paths from the dijkstraVertices or the whole dijkstraVertices
+def dijkstraUnsafe (g : Graph α) (source : Nat) : Array DijkstraVertex := dijkstraAuxBase g source none
 
-def dijkstraUnsafeWithDestination (g : Graph α) (source : Nat) (target : Nat) : Array ((Option Nat) × Nat) := dijkstraAuxBase g source (some target)
+def dijkstraUnsafeWithDestination (g : Graph α) (source : Nat) (target : Nat) : Array DijkstraVertex := dijkstraAuxBase g source (some target)
 
 -- def dijkstraSafe TODO
 
 
 
 structure DijkstraResult (α : Type) where
-  tree : Array ((Option Nat) × Nat)
+  dijkstraVertices : Array DijkstraVertex
 
 namespace DijkstraResult
 
@@ -86,22 +93,22 @@ inductive Path (α : Type _) : Bool → Type _ where
 
 def successorsOfVertex (t : DijkstraResult α) (id : Nat) : Array Nat := do
   let mut ret : Array Nat := Array.empty
-  for i in [0:t.tree.size] do
-    let vertex := t.tree[i]
-    ret := match vertex.1 with
-     | some distance => if vertex.2 == id then ret.push i else ret
+  for i in [0:t.dijkstraVertices.size] do
+    let vertex := t.dijkstraVertices[i]
+    ret := match vertex.distance with
+     | some distance => if vertex.predecessor == id then ret.push i else ret
      | none => ret
   ret
 
 def predecessorOfVertex (t : DijkstraResult α) (id : Nat) : Option Nat :=
-  match t.tree[id].1 with
-    | some distance => some t.tree[id].2
+  match t.dijkstraVertices[id].distance with
+    | some distance => some t.dijkstraVertices[id].predecessor
     | none => none
 
 -- def pathToVertexAux (t : DijkstraResult α) (id : Nat) ()
 
 -- def pathToVertex (t : DijkstraResult α) (id : Nat) : Option (Path α true) :=
---   let currentVertex := t.tree[id]
+--   let currentVertex := t.dijkstraVertices[id]
 --   match currentVertex.1 with
 --     | some distance =>
 --       let restOfPath : Option (Path α true) := pathToVertex t currentVertex.2
