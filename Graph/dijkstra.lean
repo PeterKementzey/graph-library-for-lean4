@@ -96,7 +96,7 @@ inductive Path (α : Type _) : Bool → Type _ where
 
 instance : ToString (Path α false) where
   toString (p : Path α false) := match p with
-    | Path.edge weight restOfPath => "edge weight: " ++ (toString weight) ++ ", " ++ (toString restOfPath)
+    | Path.edge weight restOfPath => "edge weight: " ++ (toString weight) ++ ", " ++ (toString restOfPath) -- depends on toString Path α true, which in turn depends on Path α false
     | _ => "oh no"
 
 instance : ToString (Path α true) where
