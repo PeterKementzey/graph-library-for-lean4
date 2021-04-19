@@ -67,7 +67,6 @@ def exampleGraph3 : Graph Nat := do
   gx := (gx.addVertex 3).1
   gx := (gx.addVertex 4).1
   gx := gx.addEdgeById 0 1 2
-  gx := gx.addEdgeById 0 1 2
   gx := gx.addEdgeById 0 2 5
   gx := gx.addEdgeById 1 2 1
   gx := gx.addEdgeById 1 1 1
@@ -78,4 +77,4 @@ def exampleGraph3 : Graph Nat := do
 def emptygraph: Graph Char := ⟨#[]⟩
 
 def main : IO Unit :=
-  IO.println (exampleGraph3.breadthFirstSearch 3 3)
+  IO.println (exampleGraph3.dijkstraUnsafe 4)
