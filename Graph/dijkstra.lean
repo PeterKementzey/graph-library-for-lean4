@@ -49,28 +49,25 @@ private def dijkstraAux (g : Graph α) (current : Nat) (target : Option Nat) (un
         | some x => dijkstraAux g nextCurrent target (unvisited.erase nextCurrent) distances n
 
 -- TODO create wrapper for array opt nat nat with funtcions to return specific paths from the tree or the whole tree
-def dijkstraUnsafe (g : Graph α) (source : Nat) : Array ((Option Nat) × Nat) :=
+def dijkstraUnsafe (g : Graph α) (source : Nat) (target : Option Nat := none) : Array ((Option Nat) × Nat) :=
   let distanceAndPredecessorInitial : Array ((Option Nat) × Nat) := mkArray g.vertices.size (none, source) -- (weight, parent) pairs initialized to (infinitiy, placeholder)
-  if h : source < distanceAndPredecessorInitial.size
-    then
-      let distanceAndPredecessor := distanceAndPredecessorInitial.set ⟨source, h⟩ (some 0, source)
+  if h : source < distanceAndPredecessorInitial.size then
+    let distanceAndPredecessor := distanceAndPredecessorInitial.set ⟨source, h⟩ (some 0, source)
+    let isTargetFound : Bool := match target with
+      | some t => t == source
+      | none => false
+    if isTargetFound then distanceAndPredecessor
+    else
       let unvisitedSet : Std.HashSet Nat := do
         let mut temp : Std.HashSet Nat := Std.HashSet.empty
         for i in [0:g.vertices.size] do temp := temp.insert i
         temp
-      dijkstraAux g source none (unvisitedSet.erase source) distanceAndPredecessor (unvisitedSet.size-1)
-    else 
+      dijkstraAux g source target (unvisitedSet.erase source) distanceAndPredecessor (unvisitedSet.size-1)
+  else 
       panic! "source out of bounds"
 
 
 -- def dijkstraSafe TODO
-
-
--- TODO: dijkstra with destination specified
--- add option to auxiliary function to short circuit and only set it from this versin => one implementation, but also good performance
-
--- def dijkstraAux (g : Graph α) (current : Nat) (destination : Nat) (unvisited : Std.HashSet Nat) (distanceAndPredecessor : Array ((Option Nat) × Nat)) : Nat -> Option (Path α true)
--- def dijkstraUnsafe (g : Graph α) (source : Nat) (destination : Nat) : Option (Path α true) :=
 
 
 end Graph
