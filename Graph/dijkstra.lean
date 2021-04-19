@@ -27,7 +27,7 @@ private def findMinimum (set : Std.HashSet Nat) (distances : Array ((Option Nat)
     | some temp => temp
 
 -- Note for thesis :Fuel pattern - give enough fuel to always treminate
-private def dijkstraAux (g : Graph α) (current : Nat) (unvisited : Std.HashSet Nat) (distanceAndPredecessor : Array ((Option Nat) × Nat)) : Nat -> Array ((Option Nat) × Nat)
+private def dijkstraAux (g : Graph α) (current : Nat) (target : Option Nat) (unvisited : Std.HashSet Nat) (distanceAndPredecessor : Array ((Option Nat) × Nat)) : Nat -> Array ((Option Nat) × Nat)
   | 0 => return distanceAndPredecessor
   | (n + 1) => do
     let mut distances : Array ((Option Nat) × Nat) := distanceAndPredecessor
@@ -40,9 +40,13 @@ private def dijkstraAux (g : Graph α) (current : Nat) (unvisited : Std.HashSet 
           | some x => if tentativeDistance < x then distances.set! edge.target (some tentativeDistance, current) else distances
           | none => distances.set! edge.target (some tentativeDistance, current)
     let nextCurrent : Nat := findMinimum unvisited distances
-    match distances[nextCurrent].1 with
-     | none => distances
-     | some x => dijkstraAux g nextCurrent (unvisited.erase nextCurrent) distances n
+    let isTargetFound : Bool := match target with 
+      | none => false
+      | some t => t == nextCurrent
+    if isTargetFound then distances else
+      match distances[nextCurrent].1 with
+        | none => distances
+        | some x => dijkstraAux g nextCurrent target (unvisited.erase nextCurrent) distances n
 
 -- TODO create wrapper for array opt nat nat with funtcions to return specific paths from the tree or the whole tree
 def dijkstraUnsafe (g : Graph α) (source : Nat) : Array ((Option Nat) × Nat) :=
@@ -54,7 +58,7 @@ def dijkstraUnsafe (g : Graph α) (source : Nat) : Array ((Option Nat) × Nat) :
         let mut temp : Std.HashSet Nat := Std.HashSet.empty
         for i in [0:g.vertices.size] do temp := temp.insert i
         temp
-      dijkstraAux g source (unvisitedSet.erase source) distanceAndPredecessor (unvisitedSet.size-1)
+      dijkstraAux g source none (unvisitedSet.erase source) distanceAndPredecessor (unvisitedSet.size-1)
     else 
       panic! "source out of bounds"
 
