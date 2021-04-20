@@ -13,12 +13,12 @@ private structure DijkstraVertex where
 instance : ToString DijkstraVertex where toString dv := "Predecessor: " ++ (toString dv.predecessor) ++ ", current distance: " ++ (toString dv.distance) ++ "\n"
 
 
-instance : Inhabited DijkstraVertex := ⟨ { predecessor := arbitrary } ⟩ 
+instance : Inhabited DijkstraVertex := ⟨ { predecessor := arbitrary } ⟩
 
-private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array DijkstraVertex) : Nat := 
-  let min : Option Nat -> Nat -> Option Nat := fun leftIdOption rightId => match leftIdOption with 
+private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array DijkstraVertex) : Nat :=
+  let min : Option Nat -> Nat -> Option Nat := fun leftIdOption rightId => match leftIdOption with
     | none => some rightId
-    | some leftId => 
+    | some leftId =>
       let leftDistance := dijkstraVertices[leftId].distance
       let rightDistance := dijkstraVertices[rightId].distance
       match rightDistance with
@@ -47,7 +47,7 @@ private def dijkstraAux (g : Graph α) (current : Nat) (target : Option Nat) (un
           | some x => if tentativeDistance < x then dijkstraVertices.set! edge.target newDijkstraVertex else dijkstraVertices
           | none => dijkstraVertices.set! edge.target newDijkstraVertex
     let nextCurrent : Nat := findMinimum unvisited dijkstraVertices
-    let isTargetFound : Bool := match target with 
+    let isTargetFound : Bool := match target with
       | none => false
       | some t => t == nextCurrent
     if isTargetFound then dijkstraVertices else
@@ -70,7 +70,7 @@ private def dijkstraAuxBase (g : Graph α) (source : Nat) (target : Option Nat) 
         for i in [0:g.vertices.size] do temp := temp.insert i
         temp
       dijkstraAux g source target (unvisitedSet.erase source) dijkstraVertices (unvisitedSet.size-1)
-  else 
+  else
       panic! "source out of bounds"
 
 
@@ -89,23 +89,23 @@ structure ShortestPathTree (α : Type) where
 namespace ShortestPathTree
 
 inductive Path (α : Type _) : Bool → Type _ where
- | vertex : Nat -> Path α false -> Path α true
- | edge : Nat -> Path α true -> Path α false
- | empty : Path α true
- | endOfPath : Path α false
+  | vertex : Nat -> Path α false -> Path α true
+  | edge : Nat -> Path α true -> Path α false
+  | empty : ∀ {b}, Path α b
 
-instance : ToString (Path α false) where
-  toString (p : Path α false) := match p with
-    | Path.edge weight restOfPath => "edge weight: " ++ (toString weight) ++ ", " ++ (toString restOfPath) -- depends on toString Path α true, which in turn depends on Path α false
-    | _ => "oh no"
+namespace Path
 
-instance : ToString (Path α true) where
-  toString (p : Path α true) := match p with
-    | Path.vertex id restOfPath => "vertex id: " ++ (toString id) ++ ", " ++ (toString restOfPath)
-    | _ => "oops"
+def toString {α} : ∀ {b}, Path α b → String
+  | true, vertex id p =>
+    "vertex id: " ++ ToString.toString id ++ ", " ++ toString p
+  | false, edge weight p =>
+    "edge weight: " ++ ToString.toString weight ++ ", " ++ toString p
+  | _, empty => "∎"
 
+instance : ToString (Path α b) where
+  toString p := toString p
 
-
+end Path
 
 def shortestDistanceToVertex (t : ShortestPathTree α) (id : Nat) : Option Nat := t.dijkstraVertices[id].distance
 
@@ -133,10 +133,10 @@ private def pathToVertexAux (t : ShortestPathTree α) (id : Nat) (pathSoFar : Pa
         let pathWithCurrentVertexAdded : Path α true := Path.vertex id pathSoFar
         let pathWithCurrentEdgeAdded : Path α false := Path.edge currentVertex.edgeWeightToPredecessor pathWithCurrentVertexAdded
         pathToVertexAux t currentVertex.predecessor pathWithCurrentEdgeAdded n
-      
+
 def pathToVertex (t : ShortestPathTree α) (id : Nat) : Option (Path α true) := match t.dijkstraVertices[id].distance with
   | none => none
-  | some distance => pathToVertexAux t id Path.endOfPath t.dijkstraVertices.size
+  | some distance => pathToVertexAux t id Path.empty t.dijkstraVertices.size
 
 
 end ShortestPathTree
