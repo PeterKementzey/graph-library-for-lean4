@@ -35,8 +35,7 @@ def toString : ∀ {b}, Path b → String
     "edge weight: " ++ ToString.toString weight ++ ", " ++ toString p
   | _, empty => "∎"
 
-instance : ToString (Path b) where
-  toString p := toString p
+instance : ToString (Path b) where toString p := toString p
 instance : Inhabited (Path b) where default := empty
 
 end Path
@@ -44,13 +43,12 @@ end Path
 def shortestDistanceToVertex (t : ShortestPathTree) (id : Nat) : Option Nat := t.dijkstraVertices[id].distance
 
 -- Note: make note in documentation that this is not efficient
--- FIXME: start node is the successor of itself
 def successorsOfVertex (t : ShortestPathTree) (id : Nat) : Array Nat := do
   let mut ret : Array Nat := Array.empty
   for i in [0:t.dijkstraVertices.size] do
     let vertex := t.dijkstraVertices[i]
     ret := match vertex.distance with
-     | some distance => if vertex.predecessor == id then ret.push i else ret
+     | some distance => if vertex.predecessor == id && id != i then ret.push i else ret
      | none => ret
   ret
 
