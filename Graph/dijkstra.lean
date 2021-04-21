@@ -37,6 +37,7 @@ def toString : ∀ {b}, Path b → String
 
 instance : ToString (Path b) where
   toString p := toString p
+instance : Inhabited (Path b) where default := empty
 
 end Path
 
@@ -63,9 +64,10 @@ private def pathToVertexAux (t : ShortestPathTree) (id : Nat) (pathSoFar : Path 
   | n+1 =>
     let currentVertex := t.dijkstraVertices[id]
     match currentVertex.distance with
-      | none => Path.empty -- panic! "Current vertex in shortest path tree is not reachable, this should not be possible"
+      | none => panic! "Current vertex in shortest path tree is not reachable, this should not be possible"
       | some distance =>
         let pathWithCurrentVertexAdded : Path true := Path.vertex id pathSoFar
+        if currentVertex.predecessor == id then return pathWithCurrentVertexAdded else
         let pathWithCurrentEdgeAdded : Path false := Path.edge currentVertex.edgeWeightToPredecessor pathWithCurrentVertexAdded
         pathToVertexAux t currentVertex.predecessor pathWithCurrentEdgeAdded n
 
