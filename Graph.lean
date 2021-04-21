@@ -9,7 +9,7 @@ def exampleGraph : Graph Char :=
 
 def exampleGraph2 : Graph Char := 
   let v0 : Vertex Char := {
-    userData := 'S',
+    userData := '0',
     adjacencyList := #[
       {target := 1, weight := 4},
       {target := 2, weight := 9},
@@ -17,7 +17,7 @@ def exampleGraph2 : Graph Char :=
     ]
   }
   let v1 : Vertex Char := {
-    userData := 'A',
+    userData := '1',
     adjacencyList := #[
       {target := 0, weight := 4},
       {target := 2, weight := 4},
@@ -25,7 +25,7 @@ def exampleGraph2 : Graph Char :=
     ]
   }
   let v2 : Vertex Char := {
-    userData := 'B',
+    userData := '2',
     adjacencyList := #[
       {target := 0, weight := 9},
       {target := 1, weight := 4},
@@ -34,7 +34,7 @@ def exampleGraph2 : Graph Char :=
     ]
   }
   let v3 : Vertex Char := {
-    userData := 'C',
+    userData := '3',
     adjacencyList := #[
       {target := 0, weight := 6},
       {target := 2, weight := 3},
@@ -42,7 +42,7 @@ def exampleGraph2 : Graph Char :=
     ]
   }
   let v4 : Vertex Char := {
-    userData := 'T',
+    userData := '4',
     adjacencyList := #[
       {target := 1, weight := 9},
       {target := 2, weight := 1},
