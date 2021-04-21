@@ -77,4 +77,4 @@ def exampleGraph3 : Graph Nat := do
 def emptygraph: Graph Char := ⟨#[]⟩
 
 def main : IO Unit :=
-  IO.println (exampleGraph3.dijkstraUnsafe 4)
+  IO.println (exampleGraph3.dijkstraUnsafe 0)
