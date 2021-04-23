@@ -74,7 +74,42 @@ def exampleGraph3 : Graph Nat := do
   gx := gx.addEdgeById 4 3 9
   gx
 
+def exampleGraph4 : Graph Nat := do
+  let mut gx : Graph Nat := ⟨#[]⟩
+  gx := (gx.addVertex 0).1
+  gx := (gx.addVertex 1).1
+  gx := (gx.addVertex 2).1
+  gx := (gx.addVertex 3).1
+  gx := (gx.addVertex 4).1
+  gx := (gx.addVertex 5).1
+  gx := (gx.addVertex 6).1
+  gx := (gx.addVertex 7).1
+  gx := (gx.addVertex 8).1
+  gx := (gx.addVertex 9).1
+  gx := (gx.addVertex 10).1
+  gx := (gx.addVertex 11).1
+  gx := (gx.addVertex 12).1
+  gx := (gx.addVertex 13).1
+  gx := (gx.addVertex 14).1
+  gx := gx.addEdgeById 0 1
+  gx := gx.addEdgeById 0 2
+  gx := gx.addEdgeById 1 3
+  gx := gx.addEdgeById 1 4
+  gx := gx.addEdgeById 3 7
+  gx := gx.addEdgeById 3 8
+  gx := gx.addEdgeById 4 9
+  gx := gx.addEdgeById 4 10
+  gx := gx.addEdgeById 2 5
+  gx := gx.addEdgeById 2 6
+  gx := gx.addEdgeById 5 11
+  gx := gx.addEdgeById 5 12
+  gx := gx.addEdgeById 6 13
+  gx := gx.addEdgeById 6 14
+  gx
+
+
+
 def emptygraph: Graph Char := ⟨#[]⟩
 
 def main : IO Unit :=
-  IO.println (Graph.containerTesting1 ++ Graph.containerTesting2)
+  IO.println (exampleGraph4.breadthFirstSearch 0 7)
