@@ -2,6 +2,17 @@ import Graph.graphrepresentation
 import Std.Data.Queue
 import Std.Data.Stack
 
+namespace Std
+namespace Stack
+
+def pop? {α : Type} [Inhabited α] (s : Std.Stack α) : Option (α × (Std.Stack α)) := match s.peek? with
+  | some element => (element, s.pop)
+  | none => none
+
+end Stack
+end Std
+
+
 namespace Graph
 
 variable {α : Type} [BEq α] [Inhabited α]
@@ -12,8 +23,7 @@ structure Container (β : Type u) (containerType : Type u -> Type u) where -- TO
   χ := containerType β
   container : χ
   addFun : β -> χ -> χ
-  removeFun : χ -> χ
-  getFun : χ -> β
+  removeFun : χ -> Option (β × χ)
 
 namespace Container
 
@@ -21,40 +31,15 @@ def add (cont : Container b c) (x : b) : Container b c := {
   cont with container := cont.addFun x cont.container
 }
 
-def remove (cont : Container b c) : Container b c := {
-  cont with container := cont.removeFun cont.container
-}
-
-def get (cont : Container b c) : b :=
-  cont.getFun cont.container
-
-end Container
-
-
--- TODO: change Container implementation to get and remove being Options, then also change the Queue functions below
-
-namespace Std
-namespace Queue
-
-def peek! (q : Std.Queue α) : α := match q.dequeue? with
-  | some x => x.1
-  | none => panic! "queue is empty"
-
-def dequeue! (q : Std.Queue α) : Std.Queue α := match q.dequeue? with
-  | some x => x.2
-  | none => Std.Queue.empty
-
-end Queue
-
-namespace Stack
-
-def pop? {α : Type} [Inhabited α] (s : Std.Stack α) : Option (α × (Std.Stack α)) := match s.peek? with
-  | some element => (element, s.pop)
+def remove? (cont : Container b c) : Option (b × (Container b c)) := match cont.removeFun cont.container with
+  | some (element, containerWithoutElement) => 
+    let newCont := { cont with container := containerWithoutElement }
+    some (element, newCont)
   | none => none
 
-end Stack
+def emptyStack [Inhabited α] : Container α Std.Stack := { container := Std.Stack.empty, addFun := Std.Stack.push, removeFun := Std.Stack.pop? }
 
-end Std
+end Container
 
 -- Note: See test functions for Container at the end of this file
 
@@ -87,8 +72,7 @@ def breadthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool :=
 
 -- Stack
 def containerTesting1 : Array Nat := do
-  let mut arr : Array Nat := #[]
-  let mut container : Container Nat Std.Stack := { container := Std.Stack.empty, addFun := Std.Stack.push, removeFun := Std.Stack.pop, getFun := Std.Stack.peek! }
+  let mut container := Container.emptyStack
   container := container.add 1
   container := container.add 2
   container := container.add 3
@@ -97,22 +81,43 @@ def containerTesting1 : Array Nat := do
   container := container.add 6
   container := container.add 7
   container := container.add 8
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
+
+  let mut arr : Array Nat := #[]
+  let mut e : Nat := arbitrary
+
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyStack)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyStack)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyStack)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyStack)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyStack)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyStack)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyStack)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyStack)
+  arr := arr.push e
+
   arr
 
 def containerTesting2 : Nat := do
