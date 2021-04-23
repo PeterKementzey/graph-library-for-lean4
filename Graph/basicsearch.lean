@@ -14,9 +14,7 @@ end Std
 
 
 namespace Graph
-
 variable {α : Type} [BEq α] [Inhabited α]
-
 universe u
 
 structure Container (β : Type u) (containerType : Type u -> Type u) where -- TODO make private
@@ -39,8 +37,9 @@ def remove? (cont : Container b c) : Option (b × (Container b c)) := match cont
 
 def emptyStack [Inhabited α] : Container α Std.Stack := { container := Std.Stack.empty, addFun := Std.Stack.push, removeFun := Std.Stack.pop? }
 
-end Container
+def emptyQueue {α : Type} : Container α Std.Queue := { container := Std.Queue.empty, addFun := Std.Queue.enqueue, removeFun := Std.Queue.dequeue? }
 
+end Container
 -- Note: See test functions for Container at the end of this file
 
 
@@ -70,6 +69,9 @@ def breadthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool :=
     let q : Std.Queue Nat := Std.Queue.empty
     BFSAux g target (visited.set! source true) (q.enqueue source) g.vertices.size
 
+
+
+-- Tests:
 -- Stack
 def containerTesting1 : Array Nat := do
   let mut container := Container.emptyStack
@@ -120,23 +122,9 @@ def containerTesting1 : Array Nat := do
 
   arr
 
-def containerTesting2 : Nat := do
-  let mut container : Container Nat Std.Stack := { container := Std.Stack.empty, addFun := Std.Stack.push, removeFun := Std.Stack.pop, getFun := Std.Stack.peek! }
-  container := container.add 3
-  container := container.add 4
-  container := container.add 5
-  container := container.add 6
-  container := container.add 7
-  container := container.add 8
-  container := container.remove
-  container := container.remove
-  container.get
-
-
 -- Queue
-def containerTesting3 : Array Nat := do
-  let mut arr : Array Nat := #[]
-  let mut container : Container Nat Std.Queue := { container := Std.Queue.empty, addFun := Std.Queue.enqueue, removeFun := Std.Queue.dequeue!, getFun := Std.Queue.peek! }
+def containerTesting2 : Array Nat := do
+  let mut container := Container.emptyQueue
   container := container.add 1
   container := container.add 2
   container := container.add 3
@@ -145,35 +133,43 @@ def containerTesting3 : Array Nat := do
   container := container.add 6
   container := container.add 7
   container := container.add 8
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr := arr.push container.get
-  container := container.remove
-  arr
 
-def containerTesting4 : Nat := do
-  let mut container : Container Nat Std.Queue := { container := Std.Queue.empty, addFun := Std.Queue.enqueue, removeFun := Std.Queue.dequeue!, getFun := Std.Queue.peek! }
-  container := container.add 3
-  container := container.add 4
-  container := container.add 5
-  container := container.add 6
-  container := container.add 7
-  container := container.add 8
-  container := container.remove
-  -- container := container.remove
-  container.get
-  
+  let mut arr : Array Nat := #[]
+  let mut e : Nat := arbitrary
+
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyQueue)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyQueue)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyQueue)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyQueue)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyQueue)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyQueue)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyQueue)
+  arr := arr.push e
+  (e, container) := match container.remove? with
+    | some x => x
+    | none => (42, Container.emptyQueue)
+  arr := arr.push e
+
+  arr
 
 end Graph

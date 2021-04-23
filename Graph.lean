@@ -77,4 +77,4 @@ def exampleGraph3 : Graph Nat := do
 def emptygraph: Graph Char := ⟨#[]⟩
 
 def main : IO Unit :=
-  IO.println (Graph.containerTesting3)
+  IO.println (Graph.containerTesting1 ++ Graph.containerTesting2)
