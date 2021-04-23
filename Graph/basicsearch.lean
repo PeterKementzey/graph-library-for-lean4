@@ -29,6 +29,11 @@ def add (cont : Container b c) (x : b) : Container b c := {
   cont with container := cont.addFun x cont.container
 }
 
+def addAll (cont : Container b c) (arr : Array b) : Container b c := do
+  let mut res := cont
+  for e in arr do res := res.add e
+  res
+
 def remove? (cont : Container b c) : Option (b × (Container b c)) := match cont.removeFun cont.container with
   | some (element, containerWithoutElement) => 
     let newCont := { cont with container := containerWithoutElement }
@@ -43,31 +48,41 @@ end Container
 -- Note: See test functions for Container at the end of this file
 
 
--- TODO make it generic stack - queue (tip: bundle them into a structure which is either stack or queue)
-private def BFSAux (g : Graph α) (target : Nat) (visited : Array Bool) (q : Std.Queue Nat) : Nat -> Bool
+-- private def BFSAuxx (g : Graph α) (target : Nat) (visited : Array Bool) (cont : Container Nat β) : Nat -> Bool
+--   | 0 => false
+--   | n + 1 => do
+--     let mut container : Container Nat β := cont
+--     let mut visitedMutable := visited
+--     match container.remove? with
+--       | none => false
+--       | some (current, container) =>
+--         for edge in g.vertices[current].adjacencyList do
+--           if !visitedMutable[edge.target] then
+--             if edge.target == target then return true else
+--             visitedMutable := visitedMutable.set! edge.target true
+--             container := container.add edge.target
+--         BFSAuxx g target visitedMutable container n
+
+private def BFSAux (g : Graph α) (target : Nat) (visited : Array Bool) (container : Container Nat β) : Nat -> Bool
   | 0 => false
-  | n + 1 => do
-    let mut queue : Std.Queue Nat := q
-    let mut visitedMutable := visited
-    match queue.dequeue? with
-      | none => return false
-      | some x =>
-        let current := x.1
-        queue := x.2
-        for edge in g.vertices[current].adjacencyList do
-          if !visited[edge.target] then
-            if edge.target == target then return true
-            visitedMutable := visitedMutable.set! edge.target true
-            queue := queue.enqueue edge.target
-        BFSAux g target visitedMutable queue n
-    
+  | n+1 => match container.remove? with
+    | none => false
+    | some (current, cont) => do
+      let mut visitedMut := visited
+      let unvisitedNeighborIds := (g.vertices[current].adjacencyList.map (λ e => e.target)).filter (λ e => !visitedMut[e])
+      if unvisitedNeighborIds.contains target then true
+      else
+        for neighbor in unvisitedNeighborIds do
+          visitedMut := visitedMut.set! neighbor true
+        let containerWithNewNodes := container.addAll unvisitedNeighborIds
+        BFSAux g target visitedMut containerWithNewNodes n
+        
 
 def breadthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool := 
   if source == target then true
   else 
     let visited : Array Bool := mkArray g.vertices.size false
-    let q : Std.Queue Nat := Std.Queue.empty
-    BFSAux g target (visited.set! source true) (q.enqueue source) g.vertices.size
+    BFSAux g target (visited.set! source true) (Container.emptyQueue.add source) g.vertices.size
 
 
 
