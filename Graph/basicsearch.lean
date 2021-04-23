@@ -63,26 +63,32 @@ end Container
 --             container := container.add edge.target
 --         BFSAuxx g target visitedMutable container n
 
-private def BFSAux (g : Graph α) (target : Nat) (visited : Array Bool) (container : Container Nat β) : Nat -> Bool
+private def searchAux (g : Graph α) (target : Nat) (visited : Array Bool) (container : Container Nat β) : Nat -> Bool
   | 0 => false
   | n+1 => match container.remove? with
     | none => false
-    | some (current, cont) => do
+    | some (current, containerWithNodeRemoved) => do
       let mut visitedMut := visited
       let unvisitedNeighborIds := (g.vertices[current].adjacencyList.map (λ e => e.target)).filter (λ e => !visitedMut[e])
       if unvisitedNeighborIds.contains target then true
       else
         for neighbor in unvisitedNeighborIds do
           visitedMut := visitedMut.set! neighbor true
-        let containerWithNewNodes := container.addAll unvisitedNeighborIds
-        BFSAux g target visitedMut containerWithNewNodes n
+        let containerWithNewNodes := containerWithNodeRemoved.addAll unvisitedNeighborIds
+        searchAux g target visitedMut containerWithNewNodes n
         
 
 def breadthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool := 
   if source == target then true
   else 
     let visited : Array Bool := mkArray g.vertices.size false
-    BFSAux g target (visited.set! source true) (Container.emptyQueue.add source) g.vertices.size
+    searchAux g target (visited.set! source true) (Container.emptyQueue.add source) g.vertices.size
+
+def depthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool := 
+  if source == target then true
+  else 
+    let visited : Array Bool := mkArray g.vertices.size false
+    searchAux g target (visited.set! source true) (Container.emptyStack.add source) g.vertices.size
 
 
 
