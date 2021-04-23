@@ -45,6 +45,15 @@ def dequeue! (q : Std.Queue α) : Std.Queue α := match q.dequeue? with
   | none => Std.Queue.empty
 
 end Queue
+
+namespace Stack
+
+def pop? {α : Type} [Inhabited α] (s : Std.Stack α) : Option (α × (Std.Stack α)) := match s.peek? with
+  | some element => (element, s.pop)
+  | none => none
+
+end Stack
+
 end Std
 
 -- Note: See test functions for Container at the end of this file
