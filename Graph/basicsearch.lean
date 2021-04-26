@@ -15,13 +15,36 @@ end Std
 
 namespace Graph
 variable {α : Type} [BEq α] [Inhabited α]
-universe u
+universes u v
 
-structure Container (β : Type u) (containerType : Type u -> Type u) where -- TODO make private
-  χ := containerType β
+-- The previous version was
+--
+--   structure Container (β : Type u) (containerType : Type u -> Type u) where
+--
+-- This is a bit simpler and more general (also with more general universes):
+structure Container (β : Type u) (χ : Type v) where
   container : χ
   addFun : β -> χ -> χ
   removeFun : χ -> Option (β × χ)
+
+-- Alternatively, consider making a typeclass for container types with instances
+-- `ContainerC (Queue α) α` and `ContainerC (Stack α) α`.
+-- The constraint [Container α ε] means that α is a type that serves as a
+-- container for elements of ε.
+class ContainerC (α : Type u) (ε : Type v) where
+  empty : α
+  add : α → ε → α
+  remove : α → Option (ε × α)
+
+-- Yet another variant. This one only works for polymorphic containers, i.e.
+-- containers that can store elements of arbitrary types. Stack and Queue are
+-- both polymorphic, so that works out, but in general this type class is more
+-- restrictive than the other one. It may or may not provide better type
+-- inference.
+class ContainerC₂ (F : Type u → Type v) where
+  empty : ∀ {α}, F α
+  add : ∀ {α}, α → F α → F α
+  remove : ∀ {α}, F α → Option (α × F α)
 
 namespace Container
 
@@ -35,14 +58,14 @@ def addAll (cont : Container b c) (arr : Array b) : Container b c := do
   res
 
 def remove? (cont : Container b c) : Option (b × (Container b c)) := match cont.removeFun cont.container with
-  | some (element, containerWithoutElement) => 
+  | some (element, containerWithoutElement) =>
     let newCont := { cont with container := containerWithoutElement }
     some (element, newCont)
   | none => none
 
-def emptyStack [Inhabited α] : Container α Std.Stack := { container := Std.Stack.empty, addFun := Std.Stack.push, removeFun := Std.Stack.pop? }
+def emptyStack [Inhabited α] : Container α (Std.Stack α) := { container := Std.Stack.empty, addFun := Std.Stack.push, removeFun := Std.Stack.pop? }
 
-def emptyQueue {α : Type} : Container α Std.Queue := { container := Std.Queue.empty, addFun := Std.Queue.enqueue, removeFun := Std.Queue.dequeue? }
+def emptyQueue {α : Type} : Container α (Std.Queue α) := { container := Std.Queue.empty, addFun := Std.Queue.enqueue, removeFun := Std.Queue.dequeue? }
 
 end Container
 -- Note: See test functions for Container at the end of this file
@@ -76,17 +99,17 @@ private def searchAux (g : Graph α) (target : Nat) (visited : Array Bool) (cont
           visitedMut := visitedMut.set! neighbor true
         let containerWithNewNodes := containerWithNodeRemoved.addAll unvisitedNeighborIds
         searchAux g target visitedMut containerWithNewNodes n
-        
 
-def breadthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool := 
+
+def breadthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool :=
   if source == target then true
-  else 
+  else
     let visited : Array Bool := mkArray g.vertices.size false
     searchAux g target (visited.set! source true) (Container.emptyQueue.add source) g.vertices.size
 
-def depthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool := 
+def depthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool :=
   if source == target then true
-  else 
+  else
     let visited : Array Bool := mkArray g.vertices.size false
     searchAux g target (visited.set! source true) (Container.emptyStack.add source) g.vertices.size
 
