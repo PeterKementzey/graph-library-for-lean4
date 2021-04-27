@@ -22,7 +22,7 @@ universes u v
 --   structure Container (β : Type u) (containerType : Type u -> Type u) where
 --
 -- This is a bit simpler and more general (also with more general universes):
-structure Container (β : Type u) (χ : Type v) where
+structure Container (β : Type u) (χ : Type v) where -- TODO make private
   container : χ
   addFun : β -> χ -> χ
   removeFun : χ -> Option (β × χ)

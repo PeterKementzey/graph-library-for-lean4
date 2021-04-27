@@ -15,6 +15,8 @@ namespace Graph
 
 variable {α : Type} [BEq α] [Inhabited α]
 
+def empty {α : Type} : Graph α := ⟨#[]⟩ 
+
 def addVertex (g : Graph α) (x : α): (Graph α) × Nat := 
   let res := { g with vertices := g.vertices.push { userData := x } }
   let id : Nat := res.vertices.size - 1

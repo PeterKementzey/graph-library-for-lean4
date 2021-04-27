@@ -75,7 +75,7 @@ def exampleGraph3 : Graph Nat := do
   gx
 
 def exampleGraph4 : Graph Nat := do
-  let mut gx : Graph Nat := ⟨#[]⟩
+  let mut gx : Graph Nat := Graph.empty
   gx := (gx.addVertex 0).1
   gx := (gx.addVertex 1).1
   gx := (gx.addVertex 2).1
@@ -111,5 +111,12 @@ def exampleGraph4 : Graph Nat := do
 
 def emptygraph: Graph Char := ⟨#[]⟩
 
+def exampleGraph5 : Graph.UndirectedGraph Nat := do
+  let mut ug : Graph.UndirectedGraph Nat := ⟨⟨#[]⟩⟩
+  ug := (ug.addVertex 0).1
+  ug := (ug.addVertex 1).1
+  ug := ug.addEdgeById 0 1 5
+  ug
+
 def main : IO Unit :=
-  IO.println (exampleGraph4.breadthFirstSearch 0 7)
+  IO.println (exampleGraph5)
