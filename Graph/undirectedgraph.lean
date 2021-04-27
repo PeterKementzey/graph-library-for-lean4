@@ -1,4 +1,6 @@
 import Graph.graphrepresentation
+import Graph.basicsearch
+import Graph.dijkstra
 
 namespace Graph
 
@@ -21,6 +23,23 @@ def addEdgeById (ug : UndirectedGraph α) (source : Nat) (target : Nat) (weight 
   { graph := graphWithOppositeEdge }
 
 instance : ToString (UndirectedGraph α) where toString ug := toString ug.graph.vertices
+
+
+-- Basic search
+
+def breadthFirstSearch (ug : UndirectedGraph α) (source : Nat) (target : Nat) : Bool :=
+  ug.graph.breadthFirstSearch source target
+
+def depthFirstSearch (ug : UndirectedGraph α) (source : Nat) (target : Nat) : Bool :=
+  ug.graph.depthFirstSearch source target
+
+-- Dijkstra
+
+def dijkstraUnsafe (ug : UndirectedGraph α) (source : Nat) : ShortestPathTree :=
+  ug.graph.dijkstraUnsafe source
+
+def dijkstraUnsafeWithDestination (ug : UndirectedGraph α) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) := 
+  ug.graph.dijkstraUnsafeWithDestination source target
 
 end UndirectedGraph
 end Graph
