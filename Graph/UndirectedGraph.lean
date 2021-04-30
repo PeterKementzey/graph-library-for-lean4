@@ -1,6 +1,6 @@
-import Graph.graphrepresentation
-import Graph.basicsearch
-import Graph.dijkstra
+import Graph.Graph
+import Graph.Search
+import Graph.Dijkstra
 
 namespace Graph
 

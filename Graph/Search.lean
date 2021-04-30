@@ -1,4 +1,4 @@
-import Graph.graphrepresentation
+import Graph.Graph
 import Std.Data.Queue
 import Std.Data.Stack
 

@@ -1,4 +1,4 @@
-import Graph.graphall
+import Graph.default
 
 def exampleGraph : Graph Char :=
   let v0 : Vertex Char := { userData := 'a', adjacencyList := #[ {target := 1} ] }

@@ -1,5 +1,5 @@
-import Graph.graphrepresentation
-import Graph.dijkstra
-import Graph.basicsearch
-import Graph.undirectedgraph
+import Graph.Graph 
+import Graph.Dijkstra 
+import Graph.Search 
+import Graph.UndirectedGraph
 
