@@ -26,6 +26,8 @@ def addEdgeById (g : Graph α) (source : Nat) (target : Nat) (weight : Int := 1)
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
 
+-- TODO removeVertex, retrieveVertexPayload, removeEdge, changePayload
+
 instance : ToString (Edge) where toString e := "target: " ++ toString e.target ++ ", weight: " ++ toString e.weight
 instance : ToString (Vertex α) where toString v := toString v.adjacencyList ++ "\n"
 instance : ToString (Graph α) where toString g := toString g.vertices
