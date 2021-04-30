@@ -22,24 +22,22 @@ def addEdgeById (ug : UndirectedGraph α) (source : Nat) (target : Nat) (weight 
   let graphWithOppositeEdge := graphWithNewEdge.addEdgeById target source weight
   { graph := graphWithOppositeEdge }
 
+def getVertexPayload (ug : UndirectedGraph α) := ug.graph.getVertexPayload
+
 instance : ToString (UndirectedGraph α) where toString ug := toString ug.graph.vertices
 
 
 -- Basic search
 
-def breadthFirstSearch (ug : UndirectedGraph α) (source : Nat) (target : Nat) : Bool :=
-  ug.graph.breadthFirstSearch source target
+def breadthFirstSearch (ug : UndirectedGraph α) := ug.graph.breadthFirstSearch
 
-def depthFirstSearch (ug : UndirectedGraph α) (source : Nat) (target : Nat) : Bool :=
-  ug.graph.depthFirstSearch source target
+def depthFirstSearch (ug : UndirectedGraph α) := ug.graph.depthFirstSearch
 
 -- Dijkstra
 
-def dijkstraUnsafe (ug : UndirectedGraph α) (source : Nat) : ShortestPathTree :=
-  ug.graph.dijkstraUnsafe source
+def dijkstraUnsafe (ug : UndirectedGraph α) := ug.graph.dijkstraUnsafe
 
-def dijkstraUnsafeWithDestination (ug : UndirectedGraph α) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) := 
-  ug.graph.dijkstraUnsafeWithDestination source target
+def dijkstraUnsafeWithDestination (ug : UndirectedGraph α) := ug.graph.dijkstraUnsafeWithDestination
 
 end UndirectedGraph
 end Graph
