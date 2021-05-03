@@ -28,7 +28,19 @@ def addEdgeById (g : Graph α) (source : Nat) (target : Nat) (weight : Int := 1)
 
 def getVertexPayload (g : Graph α) (id : Nat) : α := g.vertices[id].userData
 
--- TODO removeVertex, retrieveVertexPayload, removeEdge, changePayload
+def removeAllEdgesFromTo (g : Graph α) (source : Nat) (target : Nat) (weight : Option Int := none) : Graph α := { -- TODO test this
+  g with vertices := g.vertices.modify source (λ vertex => { vertex with adjacencyList := vertex.adjacencyList.filter (λ edge => 
+    match weight with
+    | some w => (edge.weight != w) || edge.target != target
+    | none => edge.target != target
+  )})
+}
+
+def updateVertexPayload (g : Graph α) (id : Nat) (payload : α) : Graph α := {
+  g with vertices := g.vertices.modify id (fun vertex => { vertex with userData := payload })
+}
+
+-- TODO removeVertex
 
 instance : ToString (Edge) where toString e := "target: " ++ toString e.target ++ ", weight: " ++ toString e.weight
 instance : ToString (Vertex α) where toString v := toString v.adjacencyList ++ "\n"
