@@ -23,7 +23,7 @@ structure KruskalEdge where
   target : Nat
   weight : Int := 1
 
-instance : BEq KruskalEdge := ⟨ (fun l r => l.weight == r.weight && l.source == r.source && l.target == r.target) ⟩
+instance : BEq KruskalEdge := ⟨ (fun l r => l.weight == r.weight && ((l.source == r.source && l.target == r.target) || (l.source == r.target && l.target == r.source))) ⟩
 instance : Hashable KruskalEdge where hash e := mixHash (hash e.source) (mixHash (hash e.target) (hash e.weight))
 instance : Inhabited KruskalEdge := ⟨ { source := arbitrary, target := arbitrary } ⟩
 
@@ -50,11 +50,12 @@ def kruskal (ug : UndirectedGraph α) : UndirectedGraph α := do
   for source in [0:ug.graph.vertices.size] do
     for edge in ug.graph.vertices[source].adjacencyList do
       kruskalEdges := kruskalEdges.push { source := source, target := edge.target, weight := edge.weight }
+  let sortedEdges := kruskalEdges.insertionSort (λ l r => l.weight > r.weight) -- TODO this might not be ther right way around
 
-  let sortedEdges := kruskalEdges.insertionSort (λ l r => l.weight < r.weight) -- TODO this might not be ther right way around
+  let mut forest : Array (Std.HashSet Nat) := Array.empty
+  for i in [0:ug.graph.vertices.size] do forest := forest.push (Std.HashSet.empty.insert i)
 
-
-  _
-
+  let spanningEdges := kruskalAux ug sortedEdges forest Std.HashSet.empty sortedEdges.size
+  spanningEdges.fold (λ spanningForest kruskalEdge => spanningForest.addEdgeById kruskalEdge.source kruskalEdge.target kruskalEdge.weight) ug.removeAllEdges
 
 end UndirectedGraph end Graph
