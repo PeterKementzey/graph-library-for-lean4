@@ -116,6 +116,7 @@ def exampleGraph5 : Graph.UndirectedGraph Nat := do
   ug := (ug.addVertex 0).1
   ug := (ug.addVertex 1).1
   ug := ug.addEdgeById 0 1 5
+  ug := ug.addEdgeById 1 0 3
   ug
 
 def exampleGraph6 : Graph Nat := do
@@ -128,6 +129,21 @@ def exampleGraph6 : Graph Nat := do
   g := g.addEdgeById 1 0 4
   g
 
+def exampleGraph7 : Graph.UndirectedGraph Nat := do
+  let mut ug : Graph.UndirectedGraph Nat := Graph.UndirectedGraph.empty
+  ug := (ug.addVertex 0).1
+  ug := (ug.addVertex 1).1
+  ug := (ug.addVertex 2).1
+  ug := (ug.addVertex 3).1
+  ug := ug.addEdgeById 0 1 6
+  ug := ug.addEdgeById 0 0 8
+  ug := ug.addEdgeById 0 1 14
+  ug := ug.addEdgeById 0 2 2
+  ug := ug.addEdgeById 1 2 1
+  ug := ug.addEdgeById 1 3 3
+  ug := ug.addEdgeById 2 3 2
+  ug := ug.addEdgeById 3 3 5
+  ug
 
 def main : IO Unit :=
-  IO.println (exampleGraph6.removeAllEdgesFromTo 1 0)
+  IO.println (exampleGraph7.kruskal)
