@@ -36,6 +36,10 @@ def removeAllEdgesFromTo (g : Graph α) (source : Nat) (target : Nat) (weight : 
   )})
 }
 
+def removeAllEdges (g : Graph α) : Graph α := {
+  g with vertices := g.vertices.map (λ vertex => { vertex with adjacencyList := Array.empty })
+}
+
 def updateVertexPayload (g : Graph α) (id : Nat) (payload : α) : Graph α := {
   g with vertices := g.vertices.modify id (fun vertex => { vertex with userData := payload })
 }

@@ -24,6 +24,16 @@ def addEdgeById (ug : UndirectedGraph α) (source : Nat) (target : Nat) (weight 
 
 def getVertexPayload (ug : UndirectedGraph α) := ug.graph.getVertexPayload
 
+-- def removeAllEdgesFromTo (ug : UndirectedGraph α) (source : Nat) (target : Nat) (weight : Option Int := none) : UndirectedGraph α := _ -- TODO don't forget about edges the other way around
+
+def removeAllEdges (ug : UndirectedGraph α) : UndirectedGraph α := 
+  let newGraph := ug.graph.removeAllEdges
+  { graph := newGraph }
+
+def updateVertexPayload (ug : UndirectedGraph α) (id : Nat) (payload : α) : UndirectedGraph α := 
+  let newGraph := ug.graph.updateVertexPayload id payload
+  { graph := newGraph }
+
 instance : ToString (UndirectedGraph α) where toString ug := toString ug.graph.vertices
 
 
