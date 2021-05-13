@@ -1,4 +1,4 @@
-import Graph.default
+import Graph.All
 
 def exampleGraph : Graph Char :=
   let v0 : Vertex Char := { userData := 'a', adjacencyList := #[ {target := 1} ] }
@@ -118,5 +118,16 @@ def exampleGraph5 : Graph.UndirectedGraph Nat := do
   ug := ug.addEdgeById 0 1 5
   ug
 
+def exampleGraph6 : Graph Nat := do
+  let mut g : Graph Nat := Graph.empty
+  g := (g.addVertex 0).1
+  g := (g.addVertex 1).1
+  g := g.addEdgeById 0 1 1
+  g := g.addEdgeById 0 1 2
+  g := g.addEdgeById 1 0 3
+  g := g.addEdgeById 1 0 4
+  g
+
+
 def main : IO Unit :=
-  IO.println (exampleGraph5)
+  IO.println (exampleGraph6.removeAllEdgesFromTo 1 0)
