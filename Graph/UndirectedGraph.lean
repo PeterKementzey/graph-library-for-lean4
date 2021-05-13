@@ -19,7 +19,7 @@ def addVertex (ug : UndirectedGraph α) (x : α): (UndirectedGraph α) × Nat :=
 
 def addEdgeById (ug : UndirectedGraph α) (source : Nat) (target : Nat) (weight : Int := 1) : UndirectedGraph α :=
   let graphWithNewEdge := ug.graph.addEdgeById source target weight
-  let graphWithOppositeEdge := graphWithNewEdge.addEdgeById target source weight
+  let graphWithOppositeEdge := if source != target then graphWithNewEdge.addEdgeById target source weight else graphWithNewEdge
   { graph := graphWithOppositeEdge }
 
 def getVertexPayload (ug : UndirectedGraph α) := ug.graph.getVertexPayload
