@@ -1,6 +1,19 @@
 import Graph.UndirectedGraph
 import Std.Data.HashSet
 
+namespace Std namespace Option
+
+def get! {α : Type _} [Inhabited α] : Option α -> α
+  | some x => x
+  | none => panic! "This cannot be none"
+
+end Option namespace HashSet
+
+def merge {α : Type u} [BEq α] [Hashable α] (l : HashSet α) (r : HashSet α) : HashSet α := r.fold insert l
+
+end HashSet end Std
+
+
 namespace Graph namespace UndirectedGraph
 
 variable {α : Type} [BEq α] [Inhabited α]
@@ -18,14 +31,19 @@ instance : Inhabited KruskalEdge := ⟨ { source := arbitrary, target := arbitra
 private def kruskalAux (ug : UndirectedGraph α) (remainingEdges : Array KruskalEdge) (forest : Array (Std.HashSet Nat)) (spanningEdges : Std.HashSet KruskalEdge) : Nat -> Std.HashSet KruskalEdge
   | 0 => spanningEdges
   | n + 1 =>
-    -- let currentEdge := remainingEdges.back
-    -- let tree := _ -- find a tree in the forest that contains an edge that contains the source
+    let currentEdge := remainingEdges.back -- Question: is this efficient or is there some kind of head like thing
+    let sourceTreeId : Nat := (forest.findIdx? (fun tree => tree.contains currentEdge.source)).get!
 
-    -- if found then check if it also contains the target, if it does then discard the edge since it would be a loop
-    -- if it does not then find the tree that contains the target and merge the two sets and add the current edge
-
-    -- sortedEdges.pop
-    _
+    if forest[sourceTreeId].contains currentEdge.target then
+      kruskalAux ug remainingEdges.pop forest spanningEdges n
+    else
+      let sourceTree := forest[sourceTreeId]
+      let forestWithoutSource := forest.eraseIdx sourceTreeId
+      let targetTreeId : Nat := (forestWithoutSource.findIdx? (fun tree => tree.contains currentEdge.target)).get!
+      let mergedTrees : Std.HashSet Nat := sourceTree.merge forestWithoutSource[targetTreeId]
+      let newForest := (forestWithoutSource.eraseIdx targetTreeId).push mergedTrees
+      let newSpanningEdges := spanningEdges.insert currentEdge
+      kruskalAux ug remainingEdges.pop newForest newSpanningEdges n
 
 def kruskal (ug : UndirectedGraph α) : UndirectedGraph α := do
   let mut kruskalEdges : Array KruskalEdge := Array.empty
@@ -33,7 +51,7 @@ def kruskal (ug : UndirectedGraph α) : UndirectedGraph α := do
     for edge in ug.graph.vertices[source].adjacencyList do
       kruskalEdges := kruskalEdges.push { source := source, target := edge.target, weight := edge.weight }
 
-  let sortedEdges := kruskalEdges.insertionSort (λ l r => l.weight < r.weight)
+  let sortedEdges := kruskalEdges.insertionSort (λ l r => l.weight < r.weight) -- TODO this might not be ther right way around
 
 
   _
