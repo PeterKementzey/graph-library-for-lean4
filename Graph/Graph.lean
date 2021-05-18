@@ -44,7 +44,7 @@ def updateVertexPayload (g : Graph α) (id : Nat) (payload : α) : Graph α := {
   g with vertices := g.vertices.modify id (fun vertex => { vertex with userData := payload })
 }
 
--- TODO removeVertex
+-- TODO removeVertex not sure if this is practical or possible
 
 instance : ToString (Edge) where toString e := "target: " ++ toString e.target ++ ", weight: " ++ toString e.weight
 instance : ToString (Vertex α) where toString v := toString v.adjacencyList ++ "\n"
