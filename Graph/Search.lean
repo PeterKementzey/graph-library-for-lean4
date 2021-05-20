@@ -17,12 +17,13 @@ namespace Graph
 variable {α : Type} [BEq α] [Inhabited α]
 universes u v
 
+namespace Internal
 -- The previous version was
 --
 --   structure Container (β : Type u) (containerType : Type u -> Type u) where
 --
 -- This is a bit simpler and more general (also with more general universes):
-structure Container (β : Type u) (χ : Type v) where -- TODO make private
+structure Container (β : Type u) (χ : Type v) where
   container : χ
   addFun : β -> χ -> χ
   removeFun : χ -> Option (β × χ)
@@ -68,6 +69,7 @@ def emptyStack [Inhabited α] : Container α (Std.Stack α) := { container := St
 def emptyQueue {α : Type} : Container α (Std.Queue α) := { container := Std.Queue.empty, addFun := Std.Queue.enqueue, removeFun := Std.Queue.dequeue? }
 
 end Container
+end Internal 
 -- Note: See test functions for Container at the end of this file
 
 
@@ -85,6 +87,8 @@ end Container
 --             visitedMutable := visitedMutable.set! edge.target true
 --             container := container.add edge.target
 --         BFSAuxx g target visitedMutable container n
+
+open Internal
 
 private def searchAux (g : Graph α) (target : Nat) (visited : Array Bool) (container : Container Nat β) : Nat -> Bool
   | 0 => false
