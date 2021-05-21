@@ -145,5 +145,8 @@ def exampleGraph7 : Graph.UndirectedGraph Nat := do
   ug := ug.addEdgeById 3 3 5
   ug
 
+def printOne : String := toString (exampleGraph3.depthFirstSearch 0 4)
+def printTwo : String := toString (exampleGraph3.depthFirstSearch2 0 4)
+
 def main : IO Unit :=
-  IO.println (exampleGraph7.kruskal)
+  IO.println (printOne ++ "\n\n" ++ printTwo)
