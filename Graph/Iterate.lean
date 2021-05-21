@@ -10,7 +10,7 @@ open Internal
 
 variable {α : Type} [BEq α] [Inhabited α]
 
-private def iterateAux {β : Type _} {containerType : Type _} (g : Graph α) (visited : Array Bool) (container : Container Nat containerType) (state : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) : Nat -> β
+private def traverseAux {β : Type _} {containerType : Type _} (g : Graph α) (visited : Array Bool) (container : Container Nat containerType) (state : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) (completeTraversal : Bool) : Nat -> β
   | 0 => state
   | n + 1 => match container.remove? with
     | none => state -- Add option to continue from different source node
@@ -24,27 +24,27 @@ private def iterateAux {β : Type _} {containerType : Type _} (g : Graph α) (vi
           for neighbor in unvisitedNeighborIds do
             visitedMut := visitedMut.set! neighbor true
           let containerWithNewNodes := containerWithNodeRemoved.addAll unvisitedNeighborIds
-          let stateAfterFurtherSearch := iterateAux g visitedMut containerWithNewNodes newState visit leave n
+          let stateAfterFurtherSearch := traverseAux g visitedMut containerWithNewNodes newState visit leave completeTraversal n
           match leave with
             | some leaveFunction => leaveFunction currentNodeId stateAfterFurtherSearch
             | none => stateAfterFurtherSearch
 
 
-def breadthFirstIteration (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) : β :=
+def breadthFirstTraversal (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) (completeTraversal : Bool := false) : β :=
   let visited : Array Bool := mkArray g.vertices.size false
-  iterateAux g (visited.set! source true) (Container.emptyQueue.add source) startingState visit leave g.vertices.size
+  traverseAux g (visited.set! source true) (Container.emptyQueue.add source) startingState visit leave completeTraversal g.vertices.size
 
-def depthFirstIteration (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) : β :=
+def depthFirstTraversal (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) (completeTraversal : Bool := false) : β :=
   let visited : Array Bool := mkArray g.vertices.size false
-  iterateAux g (visited.set! source true) (Container.emptyStack.add source) startingState visit leave g.vertices.size
+  traverseAux g (visited.set! source true) (Container.emptyStack.add source) startingState visit leave completeTraversal g.vertices.size
 
 
 -- Example use:
-private def iterationOrder (id : Nat) (state : Array Nat) := (state.push id, false)
-private def iterationReverseOrder (id : Nat) (state : Array Nat) := state.push id
+private def traversalOrder (id : Nat) (state : Array Nat) := (state.push id, false)
+private def traversalReverseOrder (id : Nat) (state : Array Nat) := state.push id
 
 -- Results in an array that contains the node ids in order of visiting, then in reverse order (added when leaving the node)
-def depthFirstIterationOrder (g : Graph α) (source : Nat) : Array Nat := g.depthFirstIteration source Array.empty iterationOrder (some iterationReverseOrder)
-def breadthFirstIterationOrder (g : Graph α) (source : Nat) : Array Nat := g.breadthFirstIteration source Array.empty iterationOrder (some iterationReverseOrder)
+def depthFirstTraversalOrder (g : Graph α) (source : Nat) : Array Nat := g.depthFirstTraversal source Array.empty traversalOrder (some traversalReverseOrder)
+def breadthFirstTraversalOrder (g : Graph α) (source : Nat) : Array Nat := g.breadthFirstTraversal source Array.empty traversalOrder (some traversalReverseOrder)
 
 end Graph
