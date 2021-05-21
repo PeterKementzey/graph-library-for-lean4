@@ -158,10 +158,34 @@ def exampleGraph8 : Graph Nat := do
   gx := gx.addEdgeById 6 8
   gx := gx.addEdgeById 5 8
   gx := gx.addEdgeById 7 8
+  gx := (gx.addVertex 10).1
+  gx := (gx.addVertex 11).1
+  gx := (gx.addVertex 12).1
+  gx := (gx.addVertex 13).1
+  gx := (gx.addVertex 14).1
+  gx := (gx.addVertex 15).1
+  gx := (gx.addVertex 16).1
+  gx := (gx.addVertex 17).1
+  gx := (gx.addVertex 18).1
+  gx := (gx.addVertex 19).1
+  gx := gx.addEdgeById 10 11
+  gx := gx.addEdgeById 11 12
+  gx := gx.addEdgeById 11 15
+  gx := gx.addEdgeById 11 14
+  gx := gx.addEdgeById 11 17
+  gx := gx.addEdgeById 12 13
+  gx := gx.addEdgeById 12 16
+  gx := gx.addEdgeById 13 19
+  gx := gx.addEdgeById 13 18
+  gx := gx.addEdgeById 16 19
+  gx := gx.addEdgeById 16 18
+  gx := gx.addEdgeById 15 18
+  gx := gx.addEdgeById 17 18
   gx
 
 def printOne : String := toString (exampleGraph4.depthFirstTraversalOrder 0)
 def printTwo : String := toString (exampleGraph4.breadthFirstTraversalOrder 0)
 
 def main : IO Unit :=
-  IO.println (printOne ++ "\n\n" ++ printTwo)
+  -- IO.println (printOne ++ "\n\n" ++ printTwo)
+  IO.println (exampleGraph8.topologicalSort)
