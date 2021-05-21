@@ -2,7 +2,7 @@ import Graph.Graph
 import Std.Data.Queue
 import Std.Data.Stack
 
-import Graph.Search
+import Graph.Container
 
 namespace Graph
 
@@ -10,7 +10,7 @@ open Internal
 
 variable {α : Type} [BEq α] [Inhabited α]
 
-private def iterateAux {β : Type _} {containerType : Type _} (g : Graph α) (visited : Array Bool) (container : Container Nat containerType) (visit : Nat -> β -> β × Bool) (state : β) : Nat -> β
+private def iterateAux {β : Type _} {containerType : Type _} (g : Graph α) (visited : Array Bool) (container : Container Nat containerType) (state : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) : Nat -> β
   | 0 => state -- The iteration has not terminated on any node, might change to a function which calculates the return value based on the current state (β)
   | n+1 => match container.remove? with
     | none => state -- This case is theoretically impossible to happen
@@ -24,24 +24,35 @@ private def iterateAux {β : Type _} {containerType : Type _} (g : Graph α) (vi
           for neighbor in unvisitedNeighborIds do
             visitedMut := visitedMut.set! neighbor true
           let containerWithNewNodes := containerWithNodeRemoved.addAll unvisitedNeighborIds
-          iterateAux g visitedMut containerWithNewNodes visit newState n
+          let stateAfterFurtherSearch := iterateAux g visitedMut containerWithNewNodes newState visit leave n
+          match leave with
+            | some leaveFunction => leaveFunction currentNodeId stateAfterFurtherSearch
+            | none => stateAfterFurtherSearch
 
 
--- def breadthFirstSearch (g : Graph α) (source : Nat) (target : Nat) : Bool :=
---   if source == target then true
---   else
---     let visited : Array Bool := mkArray g.vertices.size false
---     iterateAux g target (visited.set! source true) (Container.emptyQueue.add source) g.vertices.size
-
-
-def depthFirstIteration (g : Graph α) (source : Nat) (visit : Nat -> β -> β × Bool) (state : β) : β :=
+def breadthFirstIteration (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) : β :=
   let visited : Array Bool := mkArray g.vertices.size false
-  iterateAux g (visited.set! source true) (Container.emptyStack.add source) visit state g.vertices.size
+  iterateAux g (visited.set! source true) (Container.emptyQueue.add source) startingState visit leave g.vertices.size
 
-def searchVisit (target : Nat) (id : Nat) (state : Bool) :=
-  if id == target then (true, true)
-  else (false, false)
+def depthFirstIteration (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) : β :=
+  let visited : Array Bool := mkArray g.vertices.size false
+  iterateAux g (visited.set! source true) (Container.emptyStack.add source) startingState visit leave g.vertices.size
 
-def depthFirstSearch2 (g : Graph α) (source : Nat) (target : Nat) : Bool := g.depthFirstIteration source (searchVisit target) false
+
+
+
+def depthFirstSearch2 (g : Graph α) (source : Nat) (target : Nat) : Bool := g.depthFirstIteration source false (searchVisit target) none where
+  searchVisit (target : Nat) (id : Nat) (state : Bool) :=
+    if id == target then (true, true)
+    else (false, false)
+
+
+
+
+def iterationOrder (id : Nat) (state : Array Nat) := (state.push id, false)
+def iterationReverseOrder (id : Nat) (state : Array Nat) := state.push id
+
+def depthFirstIterationOrder (g : Graph α) (source : Nat) : Array Nat := g.depthFirstIteration source Array.empty iterationOrder (some iterationReverseOrder)
+def breadthFirstIterationOrder (g : Graph α) (source : Nat) : Array Nat := g.breadthFirstIteration source Array.empty iterationOrder (some iterationReverseOrder)
 
 end Graph
