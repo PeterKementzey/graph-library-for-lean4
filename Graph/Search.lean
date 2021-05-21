@@ -1,4 +1,4 @@
-import Graph.Iterate
+import Graph.Traverse
 
 namespace Graph
 

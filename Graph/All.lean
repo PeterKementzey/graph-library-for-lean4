@@ -4,4 +4,4 @@ import Graph.Search
 import Graph.UndirectedGraph
 import Graph.MinimumSpanningTree
 import Graph.TopologicalSort
-import Graph.Iterate
+import Graph.Traverse
