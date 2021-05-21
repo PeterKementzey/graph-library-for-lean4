@@ -35,7 +35,7 @@ private def leave (id : Nat) (s : Option State) : Option State :=
 
 
 def topologicalSort (g : Graph α) : Option (Array Nat) := 
-  let res : Option State := g.depthFirstTraversal 0 initialState visit leave -- Why does this work? This should be (some leave)
+  let res : Option State := g.depthFirstTraversal 0 initialState visit (some leave)
   match res with
     | some state => some state.res.reverse
     | none => none

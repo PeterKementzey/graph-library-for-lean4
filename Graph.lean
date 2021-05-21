@@ -163,9 +163,5 @@ def exampleGraph8 : Graph Nat := do
 def printOne : String := toString (exampleGraph3.depthFirstTraversalOrder 0)
 def printTwo : String := toString (exampleGraph3.breadthFirstTraversalOrder 0)
 
-def what : Option Nat -> Nat
-  | some x => x
-  | none => 5
-
 def main : IO Unit :=
-  IO.println (what (some 3))
+  IO.println (exampleGraph8.topologicalSort)
