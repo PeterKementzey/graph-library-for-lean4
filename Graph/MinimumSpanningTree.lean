@@ -1,17 +1,7 @@
 import Graph.UndirectedGraph
 import Std.Data.HashSet
 
-namespace Std namespace Option
-
-def get! {α : Type _} [Inhabited α] : Option α -> α
-  | some x => x
-  | none => panic! "This cannot be none"
-
-end Option namespace HashSet
-
-def merge {α : Type u} [BEq α] [Hashable α] (l : HashSet α) (r : HashSet α) : HashSet α := r.fold insert l
-
-end HashSet end Std
+import Graph.StdExtensions -- uses Std.Option.get! and Std.Data.HashSet.merge
 
 
 namespace Graph namespace UndirectedGraph

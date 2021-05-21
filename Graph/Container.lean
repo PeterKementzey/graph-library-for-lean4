@@ -1,13 +1,7 @@
 import Std.Data.Queue
 import Std.Data.Stack
 
-namespace Std namespace Stack
-
-def pop? {α : Type} [Inhabited α] (s : Std.Stack α) : Option (α × (Std.Stack α)) := match s.peek? with
-  | some element => (element, s.pop)
-  | none => none
-
-end Stack end Std
+import Graph.StdExtensions -- uses Std.Data.Stack.pop?
 
 
 namespace Graph namespace Internal
