@@ -39,9 +39,9 @@ instance : ToString (UndirectedGraph α) where toString ug := toString ug.graph.
 
 -- Basic search
 
--- def breadthFirstSearch (ug : UndirectedGraph α) := ug.graph.breadthFirstSearch TODO fix once reimplemented with iteration
+def breadthFirstSearch (ug : UndirectedGraph α) := ug.graph.breadthFirstSearch
 
--- def depthFirstSearch (ug : UndirectedGraph α) := ug.graph.depthFirstSearch
+def depthFirstSearch (ug : UndirectedGraph α) := ug.graph.depthFirstSearch
 
 -- Dijkstra
 
