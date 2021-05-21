@@ -160,8 +160,8 @@ def exampleGraph8 : Graph Nat := do
   gx := gx.addEdgeById 7 8
   gx
 
-def printOne : String := toString (exampleGraph3.depthFirstTraversalOrder 0)
-def printTwo : String := toString (exampleGraph3.breadthFirstTraversalOrder 0)
+def printOne : String := toString (exampleGraph4.depthFirstTraversalOrder 0)
+def printTwo : String := toString (exampleGraph4.breadthFirstTraversalOrder 0)
 
 def main : IO Unit :=
-  IO.println (exampleGraph8.topologicalSort)
+  IO.println (printOne ++ "\n\n" ++ printTwo)
