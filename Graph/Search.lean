@@ -4,7 +4,7 @@ namespace Graph
 
 variable {α : Type} [BEq α] [Inhabited α]
 
-def searchVisit (target : Nat) (id : Nat) (state : Bool) :=
+private def searchVisit (target : Nat) (id : Nat) (state : Bool) :=
   if id == target then (true, true)
   else (false, false)
 

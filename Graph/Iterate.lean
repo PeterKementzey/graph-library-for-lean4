@@ -40,8 +40,8 @@ def depthFirstIteration (g : Graph α) (source : Nat) (startingState : β) (visi
 
 
 -- Example use:
-def iterationOrder (id : Nat) (state : Array Nat) := (state.push id, false)
-def iterationReverseOrder (id : Nat) (state : Array Nat) := state.push id
+private def iterationOrder (id : Nat) (state : Array Nat) := (state.push id, false)
+private def iterationReverseOrder (id : Nat) (state : Array Nat) := state.push id
 
 -- Results in an array that contains the node ids in order of visiting, then in reverse order (added when leaving the node)
 def depthFirstIterationOrder (g : Graph α) (source : Nat) : Array Nat := g.depthFirstIteration source Array.empty iterationOrder (some iterationReverseOrder)
