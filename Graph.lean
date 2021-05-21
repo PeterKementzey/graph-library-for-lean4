@@ -145,8 +145,8 @@ def exampleGraph7 : Graph.UndirectedGraph Nat := do
   ug := ug.addEdgeById 3 3 5
   ug
 
-def printOne : String := toString (exampleGraph4.depthFirstIterationOrder 0)
-def printTwo : String := toString (exampleGraph4.breadthFirstIterationOrder 0)
+def printOne : String := toString (exampleGraph3.depthFirstSearch 1 1)
+def printTwo : String := toString (exampleGraph3.breadthFirstSearch 1 1)
 
 def main : IO Unit :=
   IO.println (printOne ++ "\n\n" ++ printTwo)

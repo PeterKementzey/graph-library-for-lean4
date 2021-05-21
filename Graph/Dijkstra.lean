@@ -59,7 +59,7 @@ def predecessorOfVertex (t : ShortestPathTree) (id : Nat) : Option Nat :=
 
 private def pathToVertexAux (t : ShortestPathTree) (id : Nat) (pathSoFar : Path false) : Nat -> Path true
   | 0 => Path.empty
-  | n+1 =>
+  | n + 1 =>
     let currentVertex := t.dijkstraVertices[id]
     match currentVertex.distance with
       | none => panic! "Current vertex in shortest path tree is not reachable, this should not be possible"
