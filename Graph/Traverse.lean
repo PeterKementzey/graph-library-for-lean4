@@ -30,11 +30,11 @@ private def traverseAux {β : Type _} {containerType : Type _} (g : Graph α) (v
             | none => stateAfterFurtherSearch
 
 
-def breadthFirstTraversal (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) : β :=
+def breadthFirstTraversal (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β) := none) : β :=
   let visited : Array Bool := mkArray g.vertices.size false
   traverseAux g (visited.set! source true) (Container.emptyQueue.add source) startingState visit leave g.vertices.size
 
-def depthFirstTraversal (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) : β :=
+def depthFirstTraversal (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β) := none) : β :=
   let visited : Array Bool := mkArray g.vertices.size false
   traverseAux g (visited.set! source true) (Container.emptyStack.add source) startingState visit leave g.vertices.size
 
@@ -44,7 +44,7 @@ private def traversalOrder (id : Nat) (state : Array Nat) := (state.push id, fal
 private def traversalReverseOrder (id : Nat) (state : Array Nat) := state.push id
 
 -- Results in an array that contains the node ids in order of visiting, then in reverse order (added when leaving the node)
-def depthFirstTraversalOrder (g : Graph α) (source : Nat) : Array Nat := g.depthFirstTraversal source Array.empty traversalOrder (some traversalReverseOrder)
-def breadthFirstTraversalOrder (g : Graph α) (source : Nat) : Array Nat := g.breadthFirstTraversal source Array.empty traversalOrder (some traversalReverseOrder)
+def depthFirstTraversalOrder (g : Graph α) (source : Nat) : Array Nat := g.depthFirstTraversal source Array.empty traversalOrder
+def breadthFirstTraversalOrder (g : Graph α) (source : Nat) : Array Nat := g.breadthFirstTraversal source Array.empty traversalOrder
 
 end Graph
