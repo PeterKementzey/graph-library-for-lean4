@@ -15,7 +15,7 @@ structure State where
 instance : Inhabited State := ⟨ arbitrary, arbitrary, arbitrary ⟩
 
 private def topologicalSortAux (g : Graph α) (s : Option State) : Nat -> Option State
-  | 0 => s -- TODO is this correct in the edge case?
+  | 0 => s
   | n + 1 => match s with
     | some state =>
       match state.permanentMark.findIdx? (!.) with
