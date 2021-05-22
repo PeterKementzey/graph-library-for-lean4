@@ -58,7 +58,7 @@ def predecessorOfVertex (t : ShortestPathTree) (id : Nat) : Option Nat :=
     | none => none
 
 private def pathToVertexAux (t : ShortestPathTree) (id : Nat) (pathSoFar : Path false) : Nat -> Path true
-  | 0 => Path.empty
+  | 0 => Path.empty -- This case is impossible since the longest shortest path possible can contain atmost n-1 vertices
   | n + 1 =>
     let currentVertex := t.dijkstraVertices[id]
     match currentVertex.distance with
@@ -96,7 +96,7 @@ private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array Dijkst
 -- Note for thesis :Fuel pattern - give enough fuel to always treminate
 private def dijkstraAux (g : Graph α) (current : Nat) (target : Option Nat) (unvisited : Std.HashSet Nat) (dijkstraVerticesTemp : Array DijkstraVertex) : Nat -> Array DijkstraVertex
   | 0 => return dijkstraVerticesTemp
-  | (n + 1) => do
+  | n + 1 => do
     let mut dijkstraVertices : Array DijkstraVertex := dijkstraVerticesTemp
     for edge in g.vertices[current].adjacencyList do
       if unvisited.contains edge.target then
@@ -138,7 +138,7 @@ def dijkstraUnsafe (g : Graph α) (source : Nat) : ShortestPathTree := ⟨ (dijk
 
 def dijkstraUnsafeWithDestination (g : Graph α) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) := 
   let shortestPathTree : ShortestPathTree := ⟨ (dijkstraAuxBase g source (some target)) ⟩
-  shortestPathTree.pathToVertex target -- TODO check what happens if the path cannot be constructed
+  shortestPathTree.pathToVertex target
 
 -- def dijkstraSafe TODO check for negative weights and other requirements ?
 
