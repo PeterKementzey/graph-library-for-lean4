@@ -93,7 +93,7 @@ private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array Dijkst
     | none => panic! "this should not be possible"
     | some temp => temp
 
--- Note for thesis :Fuel pattern - give enough fuel to always treminate
+-- Note for thesis: Fuel pattern - give enough fuel to always treminate
 private def dijkstraAux (g : Graph α) (current : Nat) (target : Option Nat) (unvisited : Std.HashSet Nat) (dijkstraVerticesTemp : Array DijkstraVertex) : Nat -> Array DijkstraVertex
   | 0 => return dijkstraVerticesTemp
   | n + 1 => do
@@ -116,7 +116,6 @@ private def dijkstraAux (g : Graph α) (current : Nat) (target : Option Nat) (un
         | none => dijkstraVertices
         | some x => dijkstraAux g nextCurrent target (unvisited.erase nextCurrent) dijkstraVertices n
 
-
 private def dijkstraAuxBase (g : Graph α) (source : Nat) (target : Option Nat) : Array (DijkstraVertex) :=
   let dijkstraVerticesInitial : Array (DijkstraVertex) := mkArray g.vertices.size {predecessor := source} -- predecessor is only a placeholder here, it has no significance and will be replaced or not used
   if h : source < dijkstraVerticesInitial.size then
@@ -136,10 +135,18 @@ private def dijkstraAuxBase (g : Graph α) (source : Nat) (target : Option Nat) 
 
 def dijkstraUnsafe (g : Graph α) (source : Nat) : ShortestPathTree := ⟨ (dijkstraAuxBase g source none) ⟩
 
-def dijkstraUnsafeWithDestination (g : Graph α) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) := 
+def dijkstraUnsafeWithTarget (g : Graph α) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) :=
   let shortestPathTree : ShortestPathTree := ⟨ (dijkstraAuxBase g source (some target)) ⟩
   shortestPathTree.pathToVertex target
 
--- def dijkstraSafe TODO check for negative weights and other requirements ?
+private def hasNoNegativeEdgeWeights (g : Graph α) : Bool := g.vertices.all (λ vertex => vertex.adjacencyList.all (λ edge => edge.weight >= 0))
+
+def dijkstraSafe (g : Graph α) (source : Nat) : Option ShortestPathTree := match g.hasNoNegativeEdgeWeights with
+  | true => g.dijkstraUnsafe source
+  | false => none
+
+def dijkstraSafeWithTarget (g : Graph α) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) := match g.hasNoNegativeEdgeWeights with
+  | true => g.dijkstraUnsafeWithTarget source target
+  | false => none
 
 end Graph

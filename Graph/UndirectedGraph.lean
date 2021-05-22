@@ -55,7 +55,7 @@ def depthFirstSearch (ug : UndirectedGraph α) := ug.graph.depthFirstSearch
 
 def dijkstraUnsafe (ug : UndirectedGraph α) := ug.graph.dijkstraUnsafe
 
-def dijkstraUnsafeWithDestination (ug : UndirectedGraph α) := ug.graph.dijkstraUnsafeWithDestination
+def dijkstraUnsafeWithTarget (ug : UndirectedGraph α) := ug.graph.dijkstraUnsafeWithTarget
 
 end UndirectedGraph
 end Graph
