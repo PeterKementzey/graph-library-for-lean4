@@ -44,7 +44,20 @@ def updateVertexPayload (g : Graph α) (id : Nat) (payload : α) : Graph α := {
   g with vertices := g.vertices.modify id (fun vertex => { vertex with userData := payload })
 }
 
--- TODO removeVertex also provide a mapping from old IDs to new ones
+def removeVertex (g : Graph α) (id : Nat) : (Graph α) × (Nat -> Nat) := 
+  let mapping : Nat -> Nat := mappingBase id
+  let verticesWithEdgesRemoved := g.vertices.map (λ vertex => {
+    vertex with adjacencyList := vertex.adjacencyList.filter (λ edge => edge.target != id)
+  })
+  let verticesWithMapping := verticesWithEdgesRemoved.map (λ vertex => {
+    vertex with adjacencyList := vertex.adjacencyList.map (λ edge : Edge => {
+      edge with target := mapping edge.target
+    })
+  })
+  let verticesWithVertexRemoved := verticesWithMapping.eraseIdx id
+  (⟨ verticesWithVertexRemoved ⟩, mapping)
+  where
+    mappingBase (id : Nat) (x : Nat) : Nat := if x > id then x - 1 else x
 
 instance : ToString (Edge) where toString e := "target: " ++ toString e.target ++ ", weight: " ++ toString e.weight
 instance : ToString (Vertex α) where toString v := toString v.adjacencyList ++ "\n"
