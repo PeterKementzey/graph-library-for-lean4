@@ -24,7 +24,10 @@ def addEdgeById (ug : UndirectedGraph α) (source : Nat) (target : Nat) (weight 
 
 def getVertexPayload (ug : UndirectedGraph α) := ug.graph.getVertexPayload
 
--- def removeAllEdgesFromTo (ug : UndirectedGraph α) (source : Nat) (target : Nat) (weight : Option Int := none) : UndirectedGraph α := _ -- TODO don't forget about edges the other way around
+def removeAllEdgesFromTo (ug : UndirectedGraph α) (source : Nat) (target : Nat) (weight : Option Int := none) : UndirectedGraph α := 
+let graphWithEdgeRemoved := ug.graph.removeAllEdgesFromTo source target weight
+let graphWithOppositeEdgeRemoved := ug.graph.removeAllEdgesFromTo target source weight
+⟨ graphWithOppositeEdgeRemoved ⟩
 
 def removeAllEdges (ug : UndirectedGraph α) : UndirectedGraph α := 
   let newGraph := ug.graph.removeAllEdges
