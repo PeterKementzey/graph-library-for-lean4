@@ -183,9 +183,19 @@ def exampleGraph8 : Graph Nat := do
   gx := gx.addEdgeById 17 18
   gx
 
+def exampleGraph9 : Graph Nat := do -- Graph without edges
+  let mut gx : Graph Nat := Graph.empty
+  gx := (gx.addVertex 0).1
+  gx := (gx.addVertex 1).1
+  gx := (gx.addVertex 2).1
+  gx := (gx.addVertex 3).1
+  gx := (gx.addVertex 4).1
+  gx := (gx.addVertex 5).1
+  gx
+
 def printOne : String := toString (exampleGraph4.depthFirstTraversalOrder 0)
 def printTwo : String := toString (exampleGraph4.breadthFirstTraversalOrder 0)
 
 def main : IO Unit :=
   -- IO.println (printOne ++ "\n\n" ++ printTwo)
-  IO.println (exampleGraph8.topologicalSort)
+  IO.println (exampleGraph9.topologicalSort)
