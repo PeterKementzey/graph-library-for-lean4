@@ -20,16 +20,16 @@ private def topologicalSortAux (g : Graph α) (s : Option State) : Nat -> Option
     | some state =>
       match state.permanentMark.findIdx? (!.) with
         | some unmarkedId =>
-          let stateWithConnectedComponentSorted := g.depthFirstTraversal unmarkedId s visit leave
+          let stateWithConnectedComponentSorted := g.depthFirstTraversal unmarkedId s (visit g) leave
           g.topologicalSortAux stateWithConnectedComponentSorted n
         | none => state
     | none => none
 
   where
-    visit (id : Nat) (s : Option State) : Option State × Bool :=
+    visit (g : Graph α) (id : Nat) (s : Option State) : Option State × Bool :=
       let state := s.get!
       if state.permanentMark[id] then return (some state, false) else
-      if state.temporaryMark[id] then return (none, true) else
+      if g.vertices[id].adjacencyList.any (λ edge => state.temporaryMark[edge.target]) then return (none, true) else
       let updatedState := { state with
         temporaryMark := state.temporaryMark.set! id true
       }
