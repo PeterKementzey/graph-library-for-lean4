@@ -123,8 +123,8 @@ def exampleGraph7 : Graph.UndirectedGraph Nat := do
   ug := (ug.addVertex 1).1
   ug := (ug.addVertex 2).1
   ug := (ug.addVertex 3).1
-  ug := ug.addEdgeById 0 1 6
   ug := ug.addEdgeById 0 0 8
+  ug := ug.addEdgeById 0 1 6
   ug := ug.addEdgeById 0 1 14
   ug := ug.addEdgeById 0 2 2
   ug := ug.addEdgeById 1 2 1
@@ -193,9 +193,8 @@ def exampleGraph9 : Graph Nat := do -- Graph without edges
   gx := (gx.addVertex 5).1
   gx
 
-def printOne : String := toString (exampleGraph4.depthFirstTraversalOrder 0)
-def printTwo : String := toString (exampleGraph4.breadthFirstTraversalOrder 0)
+def printOne : String := toString (exampleGraph7)
+def printTwo : String := toString (exampleGraph7.removeAllEdgesFromTo 0 0)
 
 def main : IO Unit :=
-  -- IO.println (printOne ++ "\n\n" ++ printTwo)
-  IO.println (exampleGraph9.topologicalSort)
+  IO.println (printOne ++ "\n\n" ++ printTwo)

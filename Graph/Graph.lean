@@ -28,7 +28,7 @@ def addEdgeById (g : Graph α) (source : Nat) (target : Nat) (weight : Int := 1)
 
 def getVertexPayload (g : Graph α) (id : Nat) : α := g.vertices[id].userData
 
-def removeAllEdgesFromTo (g : Graph α) (source : Nat) (target : Nat) (weight : Option Int := none) : Graph α := { -- TODO test this
+def removeAllEdgesFromTo (g : Graph α) (source : Nat) (target : Nat) (weight : Option Int := none) : Graph α := {
   g with vertices := g.vertices.modify source (λ vertex => { vertex with adjacencyList := vertex.adjacencyList.filter (λ edge => 
     match weight with
     | some w => (edge.weight != w) || edge.target != target
