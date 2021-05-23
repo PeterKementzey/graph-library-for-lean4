@@ -1,56 +1,59 @@
-structure Edge where
+structure Edge (β : Type) where
   target : Nat
-  weight : Int := 1
+  weight : β
 
-structure Vertex (α : Type) where
+structure Vertex (α : Type) (β : Type) where
   userData : α
-  adjacencyList : Array Edge := #[]
+  adjacencyList : Array (Edge β) := #[]
 
-instance [Inhabited α] : Inhabited (Vertex α) := ⟨ { userData := arbitrary } ⟩ 
+instance [Inhabited α] : Inhabited (Vertex α β) := ⟨ { userData := arbitrary } ⟩
 
-structure Graph (α : Type) where
-  vertices : Array (Vertex α) := #[]
+structure Graph (α : Type) (β : Type) where
+  vertices : Array (Vertex α β) := #[]
 
 namespace Graph
 
-variable {α : Type} [BEq α] [Inhabited α]
+variable {α : Type} [BEq α] [Inhabited α] variable {β : Type} -- TODO this might not be the right syntax
 
-def empty {α : Type} : Graph α := ⟨#[]⟩ 
+def empty : Graph α β := ⟨#[]⟩
 
-def addVertex (g : Graph α) (x : α): (Graph α) × Nat := 
+def addVertex (g : Graph α β) (x : α) : (Graph α β) × Nat :=
   let res := { g with vertices := g.vertices.push { userData := x } }
   let id : Nat := res.vertices.size - 1
   (res, id)
 
-def addEdgeById (g : Graph α) (source : Nat) (target : Nat) (weight : Int := 1) : Graph α := {
+class DefaultEdgeWeight (β : Type) where
+  default : β
+
+def addEdgeById [DefaultEdgeWeight β] (g : Graph α β) (source : Nat) (target : Nat) (weight : β := DefaultEdgeWeight.default) : Graph α β := {
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
 
-def getVertexPayload (g : Graph α) (id : Nat) : α := g.vertices[id].userData
+def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].userData
 
-def removeAllEdgesFromTo (g : Graph α) (source : Nat) (target : Nat) (weight : Option Int := none) : Graph α := {
-  g with vertices := g.vertices.modify source (λ vertex => { vertex with adjacencyList := vertex.adjacencyList.filter (λ edge => 
+def removeAllEdgesFromTo [BEq β] (g : Graph α β) (source : Nat) (target : Nat) (weight : Option β := none) : Graph α β := {
+  g with vertices := g.vertices.modify source (λ vertex => { vertex with adjacencyList := vertex.adjacencyList.filter (λ edge =>
     match weight with
     | some w => (edge.weight != w) || edge.target != target
     | none => edge.target != target
   )})
 }
 
-def removeAllEdges (g : Graph α) : Graph α := {
+def removeAllEdges (g : Graph α β) : Graph α β := {
   g with vertices := g.vertices.map (λ vertex => { vertex with adjacencyList := Array.empty })
 }
-  
-def updateVertexPayload (g : Graph α) (id : Nat) (payload : α) : Graph α := {
+
+def updateVertexPayload (g : Graph α β) (id : Nat) (payload : α) : Graph α β := {
   g with vertices := g.vertices.modify id (fun vertex => { vertex with userData := payload })
 }
 
-def removeVertex (g : Graph α) (id : Nat) : (Graph α) × (Nat -> Nat) := 
+def removeVertex (g : Graph α β) (id : Nat) : (Graph α β) × (Nat -> Nat) :=
   let mapping : Nat -> Nat := mappingBase id
   let verticesWithEdgesRemoved := g.vertices.map (λ vertex => {
     vertex with adjacencyList := vertex.adjacencyList.filter (λ edge => edge.target != id)
   })
   let verticesWithMapping := verticesWithEdgesRemoved.map (λ vertex => {
-    vertex with adjacencyList := vertex.adjacencyList.map (λ edge : Edge => {
+    vertex with adjacencyList := vertex.adjacencyList.map (λ edge => {
       edge with target := mapping edge.target
     })
   })
@@ -59,25 +62,16 @@ def removeVertex (g : Graph α) (id : Nat) : (Graph α) × (Nat -> Nat) :=
   where
     mappingBase (id : Nat) (x : Nat) : Nat := if x > id then x - 1 else x
 
-instance : ToString (Edge) where toString e := "target: " ++ toString e.target ++ ", weight: " ++ toString e.weight
-instance : ToString (Vertex α) where toString v := toString v.adjacencyList ++ "\n"
-instance : ToString (Graph α) where toString g := toString g.vertices
+instance : ToString (Edge Nat) where toString e := "target: " ++ toString e.target ++ ", weight: " ++ toString e.weight
+instance : ToString (Vertex α Nat) where toString v := toString v.adjacencyList ++ "\n" -- TODO can I avoid needing these too?
+instance : ToString (Graph α Nat) where toString g := toString g.vertices
+instance : ToString (Edge β) where toString e := "target: " ++ toString e.target ++ ", weight: " -- FIXME this needs [ToString β]
+instance : ToString (Vertex α β) where toString v := toString v.adjacencyList ++ "\n"
+instance : ToString (Graph α β) where toString g := toString g.vertices
 
 end Graph
 
 
 
 
--- def findVertexId (g : Graph α) (userData : α) : Option Nat := g.vertices.findIdx? (fun v => v.userData == userData)
-
-
-
--- Test: can we define a circle with two vertices?
--- Answer: yes, if the current representation is what I think it is.
-partial def circle : Graph Char :=
-  let v0 : Vertex Char := { userData := 'a', adjacencyList := #[{target := 1}]}
-  let v1 : Vertex Char := { userData := 'b', adjacencyList := #[{target := 0}]}
-  ⟨#[v0, v1]⟩
-  -- N.B. This is yet another way to construct values of structures. ⟨x, y, z⟩
-  -- is the structure constructor (here Graph.mk) applied to x, y and z.
-  -- Peter: this is cool but this character is not present on my US international keyboard :DD is there a backslash shortcut for it?
+-- def findVertexId (g : Graph α β) (userData : α) : Option Nat := g.vertices.findIdx? (fun v => v.userData == userData) -- TODO

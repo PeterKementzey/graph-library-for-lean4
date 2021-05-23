@@ -3,7 +3,7 @@ import Std.Data.HashSet
 
 namespace Graph
 
-variable {α : Type} [BEq α] [Inhabited α]
+variable {α : Type} [BEq α] [Inhabited α] variable {β : Type}
 
 private structure DijkstraVertex where
   predecessor : Nat
@@ -13,7 +13,7 @@ private structure DijkstraVertex where
 instance : ToString DijkstraVertex where toString dv := "Predecessor: " ++ (toString dv.predecessor) ++ ", current distance: " ++ (toString dv.distance) ++ "\n"
 instance : Inhabited DijkstraVertex := ⟨ { predecessor := arbitrary } ⟩
 
-
+-- TODO Dijkstra only works with Graph α Nat now, should I fix this?
 structure ShortestPathTree where
   dijkstraVertices : Array DijkstraVertex
 
@@ -94,16 +94,16 @@ private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array Dijkst
     | some temp => temp
 
 -- Note for thesis: Fuel pattern - give enough fuel to always treminate
-private def dijkstraAux (g : Graph α) (current : Nat) (target : Option Nat) (unvisited : Std.HashSet Nat) (dijkstraVerticesTemp : Array DijkstraVertex) : Nat -> Array DijkstraVertex
+private def dijkstraAux (g : Graph α Nat) (current : Nat) (target : Option Nat) (unvisited : Std.HashSet Nat) (dijkstraVerticesTemp : Array DijkstraVertex) : Nat -> Array DijkstraVertex
   | 0 => return dijkstraVerticesTemp
   | n + 1 => do
     let mut dijkstraVertices : Array DijkstraVertex := dijkstraVerticesTemp
     for edge in g.vertices[current].adjacencyList do
       if unvisited.contains edge.target then
         let tentativeDistance : Nat := match dijkstraVertices[current].distance with
-          | some x => x + edge.weight.toNat
+          | some x => x + edge.weight -- This had toNat FIXME remove this comment once not needed anymore
           | none => panic! "Current node has no distance assigned, this should not be possible"
-        let newDijkstraVertex : DijkstraVertex := {predecessor := current, distance := tentativeDistance, edgeWeightToPredecessor := edge.weight.toNat}
+        let newDijkstraVertex : DijkstraVertex := {predecessor := current, distance := tentativeDistance, edgeWeightToPredecessor := edge.weight} -- This had toNat FIXME remove this comment once not needed anymore
         dijkstraVertices := match dijkstraVertices[edge.target].distance with
           | some x => if tentativeDistance < x then dijkstraVertices.set! edge.target newDijkstraVertex else dijkstraVertices
           | none => dijkstraVertices.set! edge.target newDijkstraVertex
@@ -116,7 +116,7 @@ private def dijkstraAux (g : Graph α) (current : Nat) (target : Option Nat) (un
         | none => dijkstraVertices
         | some x => dijkstraAux g nextCurrent target (unvisited.erase nextCurrent) dijkstraVertices n
 
-private def dijkstraAuxBase (g : Graph α) (source : Nat) (target : Option Nat) : Array (DijkstraVertex) :=
+private def dijkstraAuxBase (g : Graph α Nat) (source : Nat) (target : Option Nat) : Array (DijkstraVertex) :=
   let dijkstraVerticesInitial : Array (DijkstraVertex) := mkArray g.vertices.size {predecessor := source} -- predecessor is only a placeholder here, it has no significance and will be replaced or not used
   if h : source < dijkstraVerticesInitial.size then
     let dijkstraVertices := dijkstraVerticesInitial.set ⟨source, h⟩ {predecessor := source, distance := some 0}
@@ -133,19 +133,19 @@ private def dijkstraAuxBase (g : Graph α) (source : Nat) (target : Option Nat) 
   else
       panic! "source out of bounds"
 
-def dijkstraUnsafe (g : Graph α) (source : Nat) : ShortestPathTree := ⟨ (dijkstraAuxBase g source none) ⟩
+def dijkstraUnsafe (g : Graph α Nat) (source : Nat) : ShortestPathTree := ⟨ (dijkstraAuxBase g source none) ⟩
 
-def dijkstraUnsafeWithTarget (g : Graph α) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) :=
+def dijkstraUnsafeWithTarget (g : Graph α Nat) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) :=
   let shortestPathTree : ShortestPathTree := ⟨ (dijkstraAuxBase g source (some target)) ⟩
   shortestPathTree.pathToVertex target
 
-private def hasNoNegativeEdgeWeights (g : Graph α) : Bool := g.vertices.all (λ vertex => vertex.adjacencyList.all (λ edge => edge.weight >= 0))
+private def hasNoNegativeEdgeWeights (g : Graph α Nat) : Bool := g.vertices.all (λ vertex => vertex.adjacencyList.all (λ edge => edge.weight >= 0))
 
-def dijkstraSafe (g : Graph α) (source : Nat) : Option ShortestPathTree := match g.hasNoNegativeEdgeWeights with
+def dijkstraSafe (g : Graph α Nat) (source : Nat) : Option ShortestPathTree := match g.hasNoNegativeEdgeWeights with
   | true => g.dijkstraUnsafe source
   | false => none
 
-def dijkstraSafeWithTarget (g : Graph α) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) := match g.hasNoNegativeEdgeWeights with
+def dijkstraSafeWithTarget (g : Graph α Nat) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) := match g.hasNoNegativeEdgeWeights with
   | true => g.dijkstraUnsafeWithTarget source target
   | false => none
 

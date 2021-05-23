@@ -6,19 +6,19 @@ import Graph.StdExtensions -- uses Std.Option.get! and Std.Data.HashSet.merge
 
 namespace Graph namespace UndirectedGraph
 
-variable {α : Type} [BEq α] [Inhabited α]
+variable {α : Type} [BEq α] [Inhabited α] variable {β : Type} [BEq β] [Hashable β] [Inhabited β] [DefaultEdgeWeight β]
 
-structure KruskalEdge where
+structure KruskalEdge (β : Type) where
   source : Nat
   target : Nat
-  weight : Int := 1
+  weight : β
 
-instance : BEq KruskalEdge := ⟨ (fun l r => l.weight == r.weight && ((l.source == r.source && l.target == r.target) || (l.source == r.target && l.target == r.source))) ⟩
-instance : Hashable KruskalEdge where hash e := mixHash (hash e.source) (mixHash (hash e.target) (hash e.weight))
-instance : Inhabited KruskalEdge := ⟨ { source := arbitrary, target := arbitrary } ⟩
+instance : BEq (KruskalEdge β) := ⟨ (fun l r => l.weight == r.weight && ((l.source == r.source && l.target == r.target) || (l.source == r.target && l.target == r.source))) ⟩
+instance : Hashable (KruskalEdge β) where hash e := mixHash (hash e.source) (mixHash (hash e.target) (hash e.weight))
+instance : Inhabited (KruskalEdge β) := ⟨ { source := arbitrary, target := arbitrary, weight := arbitrary } ⟩
 
---                                               edges to add to spanning tree     connected vertex id's              resulting edges                            size of sortedEdges
-private def kruskalAux (ug : UndirectedGraph α) (sortedEdges : Array KruskalEdge) (forest : Array (Std.HashSet Nat)) (spanningEdges : Std.HashSet KruskalEdge) : Nat -> Std.HashSet KruskalEdge
+--                                                 edges to add to spanning tree         connected vertex id's              resulting edges                                size of sortedEdges
+private def kruskalAux (ug : UndirectedGraph α β) (sortedEdges : Array (KruskalEdge β)) (forest : Array (Std.HashSet Nat)) (spanningEdges : Std.HashSet (KruskalEdge β)) : Nat -> Std.HashSet (KruskalEdge β)
   | 0 => spanningEdges
   | n + 1 =>
     let currentEdge := sortedEdges[n-1]
@@ -35,13 +35,14 @@ private def kruskalAux (ug : UndirectedGraph α) (sortedEdges : Array KruskalEdg
       let newSpanningEdges := spanningEdges.insert currentEdge
       kruskalAux ug sortedEdges newForest newSpanningEdges n
 
-def kruskal (ug : UndirectedGraph α) : UndirectedGraph α := do
-  let mut kruskalEdges : Array KruskalEdge := Array.empty
-  let mut kruskalEdges : Std.HashSet KruskalEdge := Std.HashSet.empty
+-- TODO better solution than the lt function? ask Jannis
+def kruskal (ug : UndirectedGraph α β) (lt : β -> β -> Bool) : UndirectedGraph α β := do
+  let mut kruskalEdges : Array (KruskalEdge β) := Array.empty
+  let mut kruskalEdges : Std.HashSet (KruskalEdge β) := Std.HashSet.empty
   for source in [0:ug.graph.vertices.size] do
     for edge in ug.graph.vertices[source].adjacencyList do
       kruskalEdges := kruskalEdges.insert { source := source, target := edge.target, weight := edge.weight }
-  let sortedEdges := kruskalEdges.toArray.insertionSort (λ l r => l.weight > r.weight)
+  let sortedEdges := kruskalEdges.toArray.insertionSort (λ l r => lt r.weight l.weight) -- (λ l r => l.weight < r.weight)
 
   let mut forest : Array (Std.HashSet Nat) := Array.empty
   for i in [0:ug.graph.vertices.size] do forest := forest.push (Std.HashSet.empty.insert i)

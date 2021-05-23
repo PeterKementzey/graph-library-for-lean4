@@ -8,9 +8,9 @@ namespace Graph
 
 open Internal
 
-variable {α : Type} [BEq α] [Inhabited α]
+variable {α : Type} [BEq α] [Inhabited α] variable {β : Type}
 
-private def traverseAux {β : Type _} {containerType : Type _} (g : Graph α) (visited : Array Bool) (container : Container (Nat × Bool) containerType) (state : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β)) : Nat -> β
+private def traverseAux {γ  : Type _} {containerType : Type _} (g : Graph α β) (visited : Array Bool) (container : Container (Nat × Bool) containerType) (state : γ ) (visit : Nat -> γ  -> γ  × Bool) (leave : Option (Nat -> γ  -> γ )) : Nat -> γ
   | 0 => state
   | n + 1 => match container.remove? with
     | none => state
@@ -34,11 +34,11 @@ private def traverseAux {β : Type _} {containerType : Type _} (g : Graph α) (v
           | none => traverseAux g visited containerWithNodeRemoved state visit leave n -- This should be impossible
 
 
-def breadthFirstTraversal (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β) := none) : β :=
+def breadthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) (leave : Option (Nat -> γ  -> γ ) := none) : γ  :=
   let visited : Array Bool := mkArray g.vertices.size false
   traverseAux g (visited.set! source true) (Container.emptyQueue.add (source, true)) startingState visit leave (g.vertices.size * 2)
 
-def depthFirstTraversal (g : Graph α) (source : Nat) (startingState : β) (visit : Nat -> β -> β × Bool) (leave : Option (Nat -> β -> β) := none) : β :=
+def depthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) (leave : Option (Nat -> γ  -> γ ) := none) : γ  :=
   let visited : Array Bool := mkArray g.vertices.size false
   traverseAux g (visited.set! source true) (Container.emptyStack.add (source, true)) startingState visit leave (g.vertices.size * 2)
 
@@ -48,8 +48,8 @@ private def traversalArrivingOrderVisit (id : Nat) (state : Array Int) := (state
 private def traversalLeavingOrderVisit (id : Nat) (state : Array Int) := state.push (id * -1)
 
 -- Results in an array that contains the node ids in order of visiting, node id * (-1) for order of leaving them
-def depthFirstTraversalOrder (g : Graph α) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit
-def depthFirstTraversalOrderWithLeaving (g : Graph α) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit traversalLeavingOrderVisit -- Why does this work? Shouldn't it be (some t...traversalLeavingOrderVisit)
-def breadthFirstTraversalOrder (g : Graph α) (source : Nat) : Array Int := g.breadthFirstTraversal source Array.empty traversalArrivingOrderVisit
+def depthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit
+def depthFirstTraversalOrderWithLeaving (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit traversalLeavingOrderVisit -- Why does this work? Shouldn't it be (some t...traversalLeavingOrderVisit)
+def breadthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.breadthFirstTraversal source Array.empty traversalArrivingOrderVisit
 
 end Graph

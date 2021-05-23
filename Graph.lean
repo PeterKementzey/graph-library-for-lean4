@@ -1,14 +1,14 @@
 import Graph.All
 
-def exampleGraph1 : Graph Char :=
-  let v0 : Vertex Char := { userData := 'a', adjacencyList := #[ {target := 1} ] }
-  let v1 : Vertex Char := { userData := 'b', adjacencyList := #[ {target := 2} ] }
-  let v2 : Vertex Char := { userData := 'c', adjacencyList := #[ {target := 3}, { target := 2} ] }
-  let v3 : Vertex Char := { userData := 'd', adjacencyList := #[ {target := 0} ] }
+def exampleGraph1 : Graph Char Nat :=
+  let v0 : Vertex Char Nat := { userData := 'a', adjacencyList := #[ {target := 1, weight := 1} ] }
+  let v1 : Vertex Char Nat := { userData := 'b', adjacencyList := #[ {target := 2, weight := 1} ] }
+  let v2 : Vertex Char Nat := { userData := 'c', adjacencyList := #[ {target := 3, weight := 1}, {target := 2, weight := 1} ] }
+  let v3 : Vertex Char Nat := { userData := 'd', adjacencyList := #[ {target := 0, weight := 1} ] }
   ⟨#[v0, v1, v2, v3]⟩
 
-def exampleGraph2 : Graph Char := 
-  let v0 : Vertex Char := {
+def exampleGraph2 : Graph Char Nat :=
+  let v0 : Vertex Char Nat := {
     userData := '0',
     adjacencyList := #[
       {target := 1, weight := 4},
@@ -16,7 +16,7 @@ def exampleGraph2 : Graph Char :=
       {target := 3, weight := 6}
     ]
   }
-  let v1 : Vertex Char := {
+  let v1 : Vertex Char Nat := {
     userData := '1',
     adjacencyList := #[
       {target := 0, weight := 4},
@@ -24,7 +24,7 @@ def exampleGraph2 : Graph Char :=
       {target := 4, weight := 9}
     ]
   }
-  let v2 : Vertex Char := {
+  let v2 : Vertex Char Nat := {
     userData := '2',
     adjacencyList := #[
       {target := 0, weight := 9},
@@ -33,7 +33,7 @@ def exampleGraph2 : Graph Char :=
       {target := 4, weight := 1}
     ]
   }
-  let v3 : Vertex Char := {
+  let v3 : Vertex Char Nat := {
     userData := '3',
     adjacencyList := #[
       {target := 0, weight := 6},
@@ -41,7 +41,7 @@ def exampleGraph2 : Graph Char :=
       {target := 4, weight := 5}
     ]
   }
-  let v4 : Vertex Char := {
+  let v4 : Vertex Char Nat := {
     userData := '4',
     adjacencyList := #[
       {target := 1, weight := 9},
@@ -51,8 +51,10 @@ def exampleGraph2 : Graph Char :=
   }
   ⟨#[v0, v1, v2, v3, v4]⟩
 
-def exampleGraph3 : Graph Nat := do
-  let mut gx : Graph Nat := ⟨#[]⟩
+instance : Graph.DefaultEdgeWeight Nat where default := 1
+
+def exampleGraph3 : Graph Nat Nat := do
+  let mut gx : Graph Nat Nat := ⟨#[]⟩
   gx := (gx.addVertex 0).1
   gx := (gx.addVertex 1).1
   gx := (gx.addVertex 2).1
@@ -66,8 +68,8 @@ def exampleGraph3 : Graph Nat := do
   gx := gx.addEdgeById 4 3 9
   gx
 
-def exampleGraph4 : Graph Nat := do
-  let mut gx : Graph Nat := Graph.empty
+def exampleGraph4 : Graph Nat Nat := do
+  let mut gx : Graph Nat Nat := Graph.empty
   gx := (gx.addVertex 0).1
   gx := (gx.addVertex 1).1
   gx := (gx.addVertex 2).1
@@ -99,16 +101,16 @@ def exampleGraph4 : Graph Nat := do
   gx := gx.addEdgeById 6 14
   gx
 
-def exampleGraph5 : Graph.UndirectedGraph Nat := do
-  let mut ug : Graph.UndirectedGraph Nat := ⟨⟨#[]⟩⟩
+def exampleGraph5 : Graph.UndirectedGraph Nat Nat := do
+  let mut ug : Graph.UndirectedGraph Nat Nat := ⟨⟨#[]⟩⟩
   ug := (ug.addVertex 0).1
   ug := (ug.addVertex 1).1
   ug := ug.addEdgeById 0 1 5
   ug := ug.addEdgeById 1 0 3
   ug
 
-def exampleGraph6 : Graph Nat := do
-  let mut g : Graph Nat := Graph.empty
+def exampleGraph6 : Graph Nat Nat := do
+  let mut g : Graph Nat Nat := Graph.empty
   g := (g.addVertex 0).1
   g := (g.addVertex 1).1
   g := g.addEdgeById 0 1 1
@@ -117,8 +119,8 @@ def exampleGraph6 : Graph Nat := do
   g := g.addEdgeById 1 0 4
   g
 
-def exampleGraph7 : Graph.UndirectedGraph Nat := do
-  let mut ug : Graph.UndirectedGraph Nat := Graph.UndirectedGraph.empty
+def exampleGraph7 : Graph.UndirectedGraph Nat Nat := do
+  let mut ug : Graph.UndirectedGraph Nat Nat := Graph.UndirectedGraph.empty
   ug := (ug.addVertex 0).1
   ug := (ug.addVertex 1).1
   ug := (ug.addVertex 2).1
@@ -133,8 +135,8 @@ def exampleGraph7 : Graph.UndirectedGraph Nat := do
   ug := ug.addEdgeById 3 3 5
   ug
 
-def exampleGraph8 : Graph Nat := do
-  let mut gx : Graph Nat := Graph.empty
+def exampleGraph8 : Graph Nat Nat := do
+  let mut gx : Graph Nat Nat := Graph.empty
   gx := (gx.addVertex 0).1
   gx := (gx.addVertex 1).1
   gx := (gx.addVertex 2).1
@@ -183,8 +185,8 @@ def exampleGraph8 : Graph Nat := do
   gx := gx.addEdgeById 17 18
   gx
 
-def exampleGraph9 : Graph Nat := do -- Graph without edges
-  let mut gx : Graph Nat := Graph.empty
+def exampleGraph9 : Graph Nat Nat := do -- Graph without edges
+  let mut gx : Graph Nat Nat := Graph.empty
   gx := (gx.addVertex 0).1
   gx := (gx.addVertex 1).1
   gx := (gx.addVertex 2).1
@@ -194,7 +196,7 @@ def exampleGraph9 : Graph Nat := do -- Graph without edges
   gx
 
 def printOne : String := toString (exampleGraph7)
-def printTwo : String := toString (exampleGraph7.removeAllEdgesFromTo 0 0)
+def printTwo : String := toString (exampleGraph7.kruskal (.<.))
 
 def main : IO Unit :=
   IO.println (printOne ++ "\n\n" ++ printTwo)
