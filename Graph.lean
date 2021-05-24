@@ -195,8 +195,48 @@ def exampleGraph9 : Graph Nat Nat := do -- Graph without edges
   gx := (gx.addVertex 5).1
   gx
 
-def printOne : String := toString (exampleGraph7)
-def printTwo : String := toString (exampleGraph7.kruskal (.<.))
+def exampleGraph10 : Graph Nat Nat := do
+  let mut gx : Graph Nat Nat := Graph.empty
+  gx := (gx.addVertex 0).1
+  gx := (gx.addVertex 1).1
+  gx := (gx.addVertex 2).1
+  gx := (gx.addVertex 3).1
+  gx := (gx.addVertex 4).1
+  gx := (gx.addVertex 5).1
+  gx := (gx.addVertex 6).1
+  gx := (gx.addVertex 7).1
+  gx := (gx.addVertex 8).1
+  gx := (gx.addVertex 9).1
+  gx := gx.addEdgeById 0 1 43
+  gx := gx.addEdgeById 1 2 40
+  gx := gx.addEdgeById 1 5 5
+  gx := gx.addEdgeById 1 4 10
+  gx := gx.addEdgeById 1 7 4
+  gx := gx.addEdgeById 2 3 13
+  gx := gx.addEdgeById 2 6 10
+  gx := gx.addEdgeById 3 9 100
+  gx := gx.addEdgeById 3 8 20
+  gx := gx.addEdgeById 6 9 100
+  gx := gx.addEdgeById 6 8 5
+  gx := gx.addEdgeById 5 8 4
+  gx := gx.addEdgeById 7 8 2
+  gx := gx.addEdgeById 6 3 10
+  gx
+
+instance : Inhabited Graph.FlowNetwork := ⟨ { } ⟩
+
+private def foldEdges (e : (Edge Graph.MaxFlowEdge)) (s : String) : String :=
+  s ++ "   target: " ++ (toString e.target) ++ ", flow: " ++ (toString e.weight.flow) ++ ", capacity: " ++ (toString e.weight.capacity) ++ "\n"
+
+instance : ToString Graph.VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height)
+instance : ToString (Vertex Graph.VertexState Graph.MaxFlowEdge) where toString v := "\nVertex state: " ++ toString v.userData ++ "\n" ++ v.adjacencyList.foldr foldEdges "" ++ "\n"
+instance : ToString Graph.FlowNetwork where toString fn := do
+  let mut indices : Array Nat := Array.empty
+  for i in [0:fn.vertices.size-1] do indices := indices.push i
+  toString (indices.zip fn.vertices)
+
+def printOne : String := toString (exampleGraph10)
+def printTwo : String := toString ((exampleGraph10.findMaxFlow 0 8).get!)
 
 def main : IO Unit :=
   IO.println (printOne ++ "\n\n" ++ printTwo)

@@ -65,6 +65,7 @@ def removeVertex (g : Graph α β) (id : Nat) : (Graph α β) × (Nat -> Nat) :=
 instance : ToString (Edge Nat) where toString e := "target: " ++ toString e.target ++ ", weight: " ++ toString e.weight
 instance : ToString (Vertex α Nat) where toString v := toString v.adjacencyList ++ "\n" -- TODO can I avoid needing these too?
 instance : ToString (Graph α Nat) where toString g := toString g.vertices
+
 instance : ToString (Edge β) where toString e := "target: " ++ toString e.target ++ ", weight: " -- FIXME this needs [ToString β]
 instance : ToString (Vertex α β) where toString v := toString v.adjacencyList ++ "\n"
 instance : ToString (Graph α β) where toString g := toString g.vertices
