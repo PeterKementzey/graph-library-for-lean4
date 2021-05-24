@@ -1,15 +1,15 @@
 import Graph.All
 
 def exampleGraph1 : Graph Char Nat :=
-  let v0 : Vertex Char Nat := { userData := 'a', adjacencyList := #[ {target := 1, weight := 1} ] }
-  let v1 : Vertex Char Nat := { userData := 'b', adjacencyList := #[ {target := 2, weight := 1} ] }
-  let v2 : Vertex Char Nat := { userData := 'c', adjacencyList := #[ {target := 3, weight := 1}, {target := 2, weight := 1} ] }
-  let v3 : Vertex Char Nat := { userData := 'd', adjacencyList := #[ {target := 0, weight := 1} ] }
+  let v0 : Vertex Char Nat := { payload := 'a', adjacencyList := #[ {target := 1, weight := 1} ] }
+  let v1 : Vertex Char Nat := { payload := 'b', adjacencyList := #[ {target := 2, weight := 1} ] }
+  let v2 : Vertex Char Nat := { payload := 'c', adjacencyList := #[ {target := 3, weight := 1}, {target := 2, weight := 1} ] }
+  let v3 : Vertex Char Nat := { payload := 'd', adjacencyList := #[ {target := 0, weight := 1} ] }
   ⟨#[v0, v1, v2, v3]⟩
 
 def exampleGraph2 : Graph Char Nat :=
   let v0 : Vertex Char Nat := {
-    userData := '0',
+    payload := '0',
     adjacencyList := #[
       {target := 1, weight := 4},
       {target := 2, weight := 9},
@@ -17,7 +17,7 @@ def exampleGraph2 : Graph Char Nat :=
     ]
   }
   let v1 : Vertex Char Nat := {
-    userData := '1',
+    payload := '1',
     adjacencyList := #[
       {target := 0, weight := 4},
       {target := 2, weight := 4},
@@ -25,7 +25,7 @@ def exampleGraph2 : Graph Char Nat :=
     ]
   }
   let v2 : Vertex Char Nat := {
-    userData := '2',
+    payload := '2',
     adjacencyList := #[
       {target := 0, weight := 9},
       {target := 1, weight := 4},
@@ -34,7 +34,7 @@ def exampleGraph2 : Graph Char Nat :=
     ]
   }
   let v3 : Vertex Char Nat := {
-    userData := '3',
+    payload := '3',
     adjacencyList := #[
       {target := 0, weight := 6},
       {target := 2, weight := 3},
@@ -42,7 +42,7 @@ def exampleGraph2 : Graph Char Nat :=
     ]
   }
   let v4 : Vertex Char Nat := {
-    userData := '4',
+    payload := '4',
     adjacencyList := #[
       {target := 1, weight := 9},
       {target := 2, weight := 1},
@@ -229,7 +229,7 @@ private def foldEdges (e : (Edge Graph.MaxFlowEdge)) (s : String) : String :=
   s ++ "   target: " ++ (toString e.target) ++ ", flow: " ++ (toString e.weight.flow) ++ ", capacity: " ++ (toString e.weight.capacity) ++ "\n"
 
 instance : ToString Graph.VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height)
-instance : ToString (Vertex Graph.VertexState Graph.MaxFlowEdge) where toString v := "\nVertex state: " ++ toString v.userData ++ "\n" ++ v.adjacencyList.foldr foldEdges "" ++ "\n"
+instance : ToString (Vertex Graph.VertexState Graph.MaxFlowEdge) where toString v := "\nVertex state: " ++ toString v.payload ++ "\n" ++ v.adjacencyList.foldr foldEdges "" ++ "\n"
 instance : ToString Graph.FlowNetwork where toString fn := do
   let mut indices : Array Nat := Array.empty
   for i in [0:fn.vertices.size-1] do indices := indices.push i

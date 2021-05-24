@@ -22,7 +22,7 @@ structure MaxFlowEdge where
 def FlowNetwork := Graph VertexState MaxFlowEdge -- TODO make private again
 private def FlowVertex := Vertex VertexState MaxFlowEdge
 
-instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { userData := arbitrary } ⟩ -- Why does this not work automatically?
+instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { payload := arbitrary } ⟩ -- Why does this not work automatically?
 
 -- variable (FlowNetwork := Graph α Nat) -- TODO how to do this?
 
@@ -62,13 +62,13 @@ private def nullFlowNetwork (g : Graph α Nat) : Option FlowNetwork := do
       nextVertex := nextVertexPointers[i]
       neighborList := neighborSets[i].toArray
     }
-    vertices := vertices.push { userData := vertexState, adjacencyList := adjacencyLists[i] }
+    vertices := vertices.push { payload := vertexState, adjacencyList := adjacencyLists[i] }
 
   some ⟨ vertices ⟩
   
 private def initializePreflow (flowNetwork : FlowNetwork) (source : Nat) : FlowNetwork :=
   let verticesWithSourceAtHeightAndPreflowMaximized : Array FlowVertex := flowNetwork.vertices.modify source (λ vertex => {
-    userData := { vertex.userData with height := flowNetwork.vertices.size } 
+    payload := { vertex.payload with height := flowNetwork.vertices.size } 
     adjacencyList := vertex.adjacencyList.map (λ edge =>
       { edge with weight := { edge.weight with flow := edge.weight.capacity } }
     )
@@ -78,7 +78,7 @@ private def initializePreflow (flowNetwork : FlowNetwork) (source : Nat) : FlowN
     let mut vertices := verticesWithSourceAtHeightAndPreflowMaximized
     for edge in verticesWithSourceAtHeightAndPreflowMaximized[source].adjacencyList do
       vertices := vertices.modify edge.target (λ vertex =>
-        { vertex with userData := { vertex.userData with excess := edge.weight.capacity }}
+        { vertex with payload := { vertex.payload with excess := edge.weight.capacity }}
       )
     ⟨ vertices ⟩
 

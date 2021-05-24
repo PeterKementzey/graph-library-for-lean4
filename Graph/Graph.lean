@@ -3,10 +3,10 @@ structure Edge (β : Type) where
   weight : β
 
 structure Vertex (α : Type) (β : Type) where
-  userData : α
+  payload : α
   adjacencyList : Array (Edge β) := #[]
 
-instance [Inhabited α] : Inhabited (Vertex α β) := ⟨ { userData := arbitrary } ⟩
+instance [Inhabited α] : Inhabited (Vertex α β) := ⟨ { payload := arbitrary } ⟩
 
 structure Graph (α : Type) (β : Type) where
   vertices : Array (Vertex α β) := #[]
@@ -18,7 +18,7 @@ variable {α : Type} [BEq α] [Inhabited α] variable {β : Type} -- TODO this m
 def empty : Graph α β := ⟨#[]⟩
 
 def addVertex (g : Graph α β) (x : α) : (Graph α β) × Nat :=
-  let res := { g with vertices := g.vertices.push { userData := x } }
+  let res := { g with vertices := g.vertices.push { payload := x } }
   let id : Nat := res.vertices.size - 1
   (res, id)
 
@@ -29,7 +29,7 @@ def addEdgeById [DefaultEdgeWeight β] (g : Graph α β) (source : Nat) (target 
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
 
-def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].userData
+def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].payload
 
 def removeAllEdgesFromTo [BEq β] (g : Graph α β) (source : Nat) (target : Nat) (weight : Option β := none) : Graph α β := {
   g with vertices := g.vertices.modify source (λ vertex => { vertex with adjacencyList := vertex.adjacencyList.filter (λ edge =>
@@ -44,7 +44,7 @@ def removeAllEdges (g : Graph α β) : Graph α β := {
 }
 
 def updateVertexPayload (g : Graph α β) (id : Nat) (payload : α) : Graph α β := {
-  g with vertices := g.vertices.modify id (fun vertex => { vertex with userData := payload })
+  g with vertices := g.vertices.modify id (fun vertex => { vertex with payload := payload })
 }
 
 def removeVertex (g : Graph α β) (id : Nat) : (Graph α β) × (Nat -> Nat) :=
@@ -75,4 +75,4 @@ end Graph
 
 
 
--- def findVertexId (g : Graph α β) (userData : α) : Option Nat := g.vertices.findIdx? (fun v => v.userData == userData) -- TODO
+-- def findVertexId (g : Graph α β) (payload : α) : Option Nat := g.vertices.findIdx? (fun v => v.payload == payload) -- TODO
