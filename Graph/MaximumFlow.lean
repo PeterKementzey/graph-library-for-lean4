@@ -19,7 +19,11 @@ structure MaxFlowEdge where
   capacity : Nat
   flow : Nat := 0
 
-private def InternalFlowNetwork := Graph VertexState MaxFlowEdge
+def FlowNetwork := Graph VertexState MaxFlowEdge -- TODO make private again
+private def FlowVertex := Vertex VertexState MaxFlowEdge
+
+instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { userData := arbitrary } ⟩ -- Why does this not work automatically?
+
 -- variable (FlowNetwork := Graph α Nat) -- TODO how to do this?
 
 -- def basicMinimumCut (g : Graph α β) :
@@ -41,7 +45,7 @@ private def createAdjacencyListAndNeighborSets (vertex : Vertex α Nat) (id : Na
   some (adjacencyList, resultNeighborSets)
   
 
-private def nullFlowNetwork (g : Graph α Nat) : Option InternalFlowNetwork := do
+private def nullFlowNetwork (g : Graph α Nat) : Option FlowNetwork := do
   let mut adjacencyLists : Array (Array (Edge MaxFlowEdge)) := Array.empty
   let mut neighborSets : Array (Std.HashSet Nat) := mkArray g.vertices.size Std.HashSet.empty
   let mut nextVertexPointers : Array Nat := Array.empty
@@ -52,7 +56,7 @@ private def nullFlowNetwork (g : Graph α Nat) : Option InternalFlowNetwork := d
         neighborSets := newNeighborSets
         nextVertexPointers := nextVertexPointers.push i
       | none => return none
-  let mut vertices : Array (Vertex VertexState MaxFlowEdge) := Array.empty
+  let mut vertices : Array FlowVertex := Array.empty
   for i in [0:g.vertices.size] do
     let vertexState : VertexState := {
       nextVertex := nextVertexPointers[i]
@@ -62,15 +66,29 @@ private def nullFlowNetwork (g : Graph α Nat) : Option InternalFlowNetwork := d
 
   some ⟨ vertices ⟩
   
--- private def initializePreflow (g)
-  -- vertices := vertices.modify source (λ vertex => { vertex with userData := { vertex.userData with height := g.vertices.size } } )
+private def initializePreflow (flowNetwork : FlowNetwork) (source : Nat) : FlowNetwork :=
+  let verticesWithSourceAtHeightAndPreflowMaximized : Array FlowVertex := flowNetwork.vertices.modify source (λ vertex => {
+    userData := { vertex.userData with height := flowNetwork.vertices.size } 
+    adjacencyList := vertex.adjacencyList.map (λ edge =>
+      { edge with weight := { edge.weight with flow := edge.weight.capacity } }
+    )
+  })
 
--- def pushRelabelToFront (g : Graph α Nat) (source : Nat) (sink : Nat) : Option (Graph α Nat) :=
---   match nullFlowNetwork g with
---     | none => none
---     | some initialGraph =>
---       let preflowGraph : InternalFlowNetwork := _
+  do
+    let mut vertices := verticesWithSourceAtHeightAndPreflowMaximized
+    for edge in verticesWithSourceAtHeightAndPreflowMaximized[source].adjacencyList do
+      vertices := vertices.modify edge.target (λ vertex =>
+        { vertex with userData := { vertex.userData with excess := edge.weight.capacity }}
+      )
+    ⟨ vertices ⟩
 
---       _
+-- Push-relabel algorithm using relabel-to-fron selection
+def findMaxFlow (g : Graph α Nat) (source : Nat) (sink : Nat) : Option FlowNetwork := -- TODO change to this: Option (Graph α Nat) :=
+  match nullFlowNetwork g with
+    | none => none
+    | some initialGraph =>
+      let preflowGraph : FlowNetwork := initializePreflow initialGraph source
+
+      preflowGraph
 
 end Graph
