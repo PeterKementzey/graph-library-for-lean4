@@ -37,7 +37,7 @@ private def kruskalAux (ug : UndirectedGraph α β) (sortedEdges : Array (Kruska
 
 -- TODO better solution than the lt function? ask Jannis
 def kruskal (ug : UndirectedGraph α β) (lt : β -> β -> Bool) : UndirectedGraph α β := do
-  let mut kruskalEdges : Array (KruskalEdge β) := Array.empty
+  -- let mut kruskalEdges : Array (KruskalEdge β) := Array.empty
   let mut kruskalEdges : Std.HashSet (KruskalEdge β) := Std.HashSet.empty
   for source in [0:ug.graph.vertices.size] do
     for edge in ug.graph.vertices[source].adjacencyList do
