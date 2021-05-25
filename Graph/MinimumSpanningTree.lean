@@ -35,7 +35,6 @@ private def kruskalAux (ug : UndirectedGraph α β) (sortedEdges : Array (Kruska
       let newSpanningEdges := spanningEdges.insert currentEdge
       kruskalAux ug sortedEdges newForest newSpanningEdges n
 
--- TODO better solution than the lt function? ask Jannis
 def kruskal (ug : UndirectedGraph α β) (lt : β -> β -> Bool) : UndirectedGraph α β := do
   -- let mut kruskalEdges : Array (KruskalEdge β) := Array.empty
   let mut kruskalEdges : Std.HashSet (KruskalEdge β) := Std.HashSet.empty

@@ -1,5 +1,23 @@
 import Graph.All
 
+-- This is a comment
+
+/-
+this is
+a multi line comment
+-/
+
+/-!
+this is header documentation
+# heading
+-/
+
+
+/--
+this is function documentation
+`code`
+# heading
+-/
 def exampleGraph1 : Graph Char Nat :=
   let v0 : Vertex Char Nat := { payload := 'a', adjacencyList := #[ {target := 1, weight := 1} ] }
   let v1 : Vertex Char Nat := { payload := 'b', adjacencyList := #[ {target := 2, weight := 1} ] }

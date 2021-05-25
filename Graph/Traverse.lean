@@ -23,7 +23,7 @@ private def traverseAux {γ  : Type _} {containerType : Type _} (g : Graph α β
             let containerWithLeavingNodeAdded := if leave.isSome then containerWithNodeRemoved.add (currentNodeId, false) else containerWithNodeRemoved
             let unvisitedNeighborIds := (g.vertices[currentNodeId].adjacencyList.map (λ e => e.target)).filter (λ e => !visited[e])
             let unvisitedNeighborIdsWithArrivingFlags := unvisitedNeighborIds.map (λ id => (id, true))
-            let mut visitedMut := visited -- Can I avoid using this with some functional magic?
+            let mut visitedMut := visited -- Can I avoid using this with some functional magic? TODO make function that does this
             for neighbor in unvisitedNeighborIds do
               visitedMut := visitedMut.set! neighbor true
             let containerWithNewNodes := containerWithLeavingNodeAdded.addAll unvisitedNeighborIdsWithArrivingFlags
@@ -34,9 +34,9 @@ private def traverseAux {γ  : Type _} {containerType : Type _} (g : Graph α β
           | none => traverseAux g visited containerWithNodeRemoved state visit leave n -- This should be impossible
 
 
-def breadthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) (leave : Option (Nat -> γ  -> γ ) := none) : γ  :=
+def breadthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) : γ  :=
   let visited : Array Bool := mkArray g.vertices.size false
-  traverseAux g (visited.set! source true) (Container.emptyQueue.add (source, true)) startingState visit leave (g.vertices.size * 2)
+  traverseAux g (visited.set! source true) (Container.emptyQueue.add (source, true)) startingState visit none (g.vertices.size * 2)
 
 def depthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) (leave : Option (Nat -> γ  -> γ ) := none) : γ  :=
   let visited : Array Bool := mkArray g.vertices.size false
@@ -49,7 +49,7 @@ private def traversalLeavingOrderVisit (id : Nat) (state : Array Int) := state.p
 
 -- Results in an array that contains the node ids in order of visiting, node id * (-1) for order of leaving them
 def depthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit
-def depthFirstTraversalOrderWithLeaving (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit traversalLeavingOrderVisit -- Why does this work? Shouldn't it be (some t...traversalLeavingOrderVisit)
+def depthFirstTraversalOrderWithLeaving (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit (some traversalLeavingOrderVisit)
 def breadthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.breadthFirstTraversal source Array.empty traversalArrivingOrderVisit
 
 end Graph

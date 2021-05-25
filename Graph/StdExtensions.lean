@@ -3,7 +3,7 @@ import Std.Data.HashSet
 
 namespace Std
 
-
+-- TODO put this in graph.internal.std.option, then open graph.internal and it might work with dot notation
 namespace Option
 
 def get! {α : Type _} [Inhabited α] : Option α -> α

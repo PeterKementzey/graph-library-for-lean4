@@ -133,6 +133,7 @@ private def dijkstraAuxBase (g : Graph α Nat) (source : Nat) (target : Option N
   else
       panic! "source out of bounds"
 
+-- TODO provide mapping from β to Nat on graph
 def dijkstraUnsafe (g : Graph α Nat) (source : Nat) : ShortestPathTree := ⟨ (dijkstraAuxBase g source none) ⟩
 
 def dijkstraUnsafeWithTarget (g : Graph α Nat) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) :=

@@ -22,7 +22,7 @@ def addVertex (g : Graph α β) (x : α) : (Graph α β) × Nat :=
   let id : Nat := res.vertices.size - 1
   (res, id)
 
-class DefaultEdgeWeight (β : Type) where
+class DefaultEdgeWeight (β : Type) where -- TODO remove this
   default : β
 
 def addEdgeById [DefaultEdgeWeight β] (g : Graph α β) (source : Nat) (target : Nat) (weight : β := DefaultEdgeWeight.default) : Graph α β := {
