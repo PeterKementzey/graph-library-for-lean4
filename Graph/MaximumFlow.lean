@@ -56,7 +56,7 @@ private def nullFlowNetwork (g : Graph α Nat) : Option FlowNetwork := do
       | some (newAdjacencyList, newNeighborSets) =>
         adjacencyLists := adjacencyLists.push newAdjacencyList
         neighborSets := newNeighborSets
-        nextVertexPointers := nextVertexPointers.push i
+        nextVertexPointers := nextVertexPointers.push ((i + 1) % (g.vertices.size - 1))
       | none => return none
   let mut vertices : Array FlowVertex := Array.empty
   for i in [0:g.vertices.size] do
@@ -158,6 +158,16 @@ private def discharge (flowNetwork : FlowNetwork) (u : Nat) : Nat -> FlowNetwork
         ⟨ flowNetwork.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with currentNeighbor := vertex.payload.currentNeighbor + 1 } } ) ⟩
     newFlowNetwork.discharge u n
 
+private def initializeVertexList (flowNetwork : FlowNetwork) (source : Nat) (sink : Nat) : FlowNetwork × Nat :=
+  let wrapAround n := n % (flowNetwork.vertices.size - 1)
+  let sourceSkipped := flowNetwork.vertices.modify (wrapAround (source + flowNetwork.vertices.size - 2)) (λ vertex =>
+    { vertex with payload := { vertex.payload with nextVertex := wrapAround (source + 1) } }
+  )
+  let sinkSkipped := sourceSkipped.modify (wrapAround (sink + flowNetwork.vertices.size - 2)) (λ vertex =>
+    { vertex with payload := { vertex.payload with nextVertex := sourceSkipped[sink].payload.nextVertex } }
+  )
+  (⟨ sinkSkipped ⟩, wrapAround (source + 1))
+
 end FlowNetwork
 
 open FlowNetwork
@@ -169,6 +179,7 @@ def findMaxFlow (g : Graph α Nat) (source : Nat) (sink : Nat) : Option FlowNetw
     | some initialGraph =>
       let preflowGraph : FlowNetwork := initialGraph.initializePreflow source
 
-      preflowGraph
+      let (flowNetwork, head) := preflowGraph.initializeVertexList source sink
+      flowNetwork
 
 end Graph

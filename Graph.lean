@@ -226,7 +226,8 @@ def exampleGraph10 : Graph Nat Nat := do
 private def foldEdges (e : (Edge Graph.MaxFlowEdge)) (s : String) : String :=
   s ++ "   target: " ++ (toString e.target) ++ ", flow: " ++ (toString e.weight.flow) ++ ", capacity: " ++ (toString e.weight.capacity) ++ "\n"
 
-instance : ToString Graph.VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height) -- TODO add neighbors
+instance : ToString Graph.VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height) ++ ", next vertex: " ++ (toString s.nextVertex)
+  ++ "\ncurrent neighbor: " ++ (toString s.currentNeighbor) ++ ", neighbor list: " ++ (toString s.neighborList)
 instance : ToString (Vertex Graph.VertexState Graph.MaxFlowEdge) where toString v := "\nVertex state: " ++ toString v.payload ++ "\n" ++ v.adjacencyList.foldr foldEdges "" ++ "\n"
 instance : ToString Graph.FlowNetwork where toString fn := do
   let mut indices : Array Nat := Array.empty
