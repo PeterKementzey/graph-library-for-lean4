@@ -156,15 +156,20 @@ private def discharge (flowNetwork : FlowNetwork) (u : Nat) : Nat -> FlowNetwork
         ⟨ flowNetwork.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with currentNeighbor := vertex.payload.currentNeighbor + 1 } } ) ⟩
     newFlowNetwork.discharge u n
 
+private def removeFromList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat) : (FlowNetwork × Nat) :=
+  let wrapAround n := n % flowNetwork.vertices.size
+  if id == head then (flowNetwork, flowNetwork.vertices[head].payload.nextVertex) else
+  let parentId : Nat := (flowNetwork.vertices.findIdx? (λ vertex => vertex.payload.nextVertex == id)).get!
+  let newList := flowNetwork.vertices.modify parentId (λ vertex =>
+    { vertex with payload := { vertex.payload with nextVertex := flowNetwork.vertices[id].payload.nextVertex } }
+  )
+  (⟨ newList ⟩, head)
+
 private def initializeVertexList (flowNetwork : FlowNetwork) (source : Nat) (sink : Nat) : FlowNetwork × Nat :=
-  let wrapAround n := n % (flowNetwork.vertices.size - 1)
-  let sourceSkipped := flowNetwork.vertices.modify (wrapAround (source + flowNetwork.vertices.size - 2)) (λ vertex =>
-    { vertex with payload := { vertex.payload with nextVertex := wrapAround (source + 1) } }
-  )
-  let sinkSkipped := sourceSkipped.modify (wrapAround (sink + flowNetwork.vertices.size - 2)) (λ vertex =>
-    { vertex with payload := { vertex.payload with nextVertex := sourceSkipped[sink].payload.nextVertex } }
-  )
-  (⟨ sinkSkipped ⟩, wrapAround (source + 1))
+  let wrapAround n := n % (flowNetwork.vertices.size)
+  let (sourceSkipped, sourceSkippedHead) := flowNetwork.removeFromList source 0
+  let (sinkSkipped, sinkSkippedHead) := sourceSkipped.removeFromList sink sourceSkippedHead
+  (sinkSkipped, sinkSkippedHead)
 
 end FlowNetwork
 
@@ -181,6 +186,7 @@ def findMaxFlow (g : Graph α Nat) (source : Nat) (sink : Nat) : Option FlowNetw
 
       let (flowNetwork, head) := preflowGraph.initializeVertexList source sink
       flowNetwork
+      -- initialGraph
 
       
 end Graph
