@@ -118,6 +118,24 @@ private def push (flowNetwork : FlowNetwork) (u : Nat) (v : Nat) : FlowNetwork :
     let excessOfv := flowNetwork.vertices[v].payload.excess
     (flowNetwork.updateExcess u (excessOfu - quantity)).updateExcess v (excessOfv + quantity)
 
+private def relabel (flowNetwork : FlowNetwork) : FlowNetwork := sorry
+
+private def discharge (flowNetwork : FlowNetwork) (u : Nat) : FlowNetwork :=
+  let vertexState := flowNetwork.vertices[u].payload
+  if vertexState.currentNeighbor >= vertexState.neighborList.size then
+    _
+    -- Relabel
+    -- set current to 0
+  else
+    let currentNeighborId := vertexState.neighborList[vertexState.currentNeighbor]
+    if (vertexState.height == flowNetwork.vertices[currentNeighborId].payload.height + 1) && ((flowNetwork.residualCapacity u currentNeighborId).get! > 0) then
+      _
+      -- Push
+    else
+      -- currentNeighbor ++
+      _
+  _
+
 end FlowNetwork
 
 open FlowNetwork
