@@ -25,10 +25,6 @@ private def FlowVertex := Vertex VertexState MaxFlowEdge
 instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { payload := arbitrary } ⟩ -- Why does this not work automatically?
 instance : Inhabited FlowNetwork := ⟨ { } ⟩ -- what the hell
 
--- variable (FlowNetwork := Graph α Nat) -- TODO how to do this?
-
-def ExternalFlowNetwork (α : Type) := Graph α Nat
-
 -- def basicMinimumCut (g : Graph α β) :
 
 instance : Inhabited MaxFlowEdge := ⟨ { capacity := arbitrary } ⟩ 
@@ -177,7 +173,7 @@ open FlowNetwork
 -- Push-relabel algorithm using relabel-to-fron selection, TODO provide mapping to Nat and mention here
 -- no parallel or anti-parallel edges
 -- TODO provide conversion to graph with no anti-parallel edges or deal with them in algorithm
-def findMaxFlow (g : ExternalFlowNetwork α) (source : Nat) (sink : Nat) : Option FlowNetwork := -- TODO change to this: Option (Graph α Nat) :=
+def findMaxFlow (g : Graph α Nat) (source : Nat) (sink : Nat) : Option FlowNetwork := -- TODO change to this: Option (Graph α Nat) :=
   match nullFlowNetwork g with
     | none => none
     | some initialGraph =>
@@ -186,4 +182,5 @@ def findMaxFlow (g : ExternalFlowNetwork α) (source : Nat) (sink : Nat) : Optio
       let (flowNetwork, head) := preflowGraph.initializeVertexList source sink
       flowNetwork
 
+      
 end Graph
