@@ -241,22 +241,13 @@ def exampleGraph10 : Graph Nat Nat := do
   gx := gx.addEdgeById 6 3 10
   gx
 
-private def foldEdges (e : (Edge Graph.MaxFlowEdge)) (s : String) : String :=
-  s ++ "   target: " ++ (toString e.target) ++ ", flow: " ++ (toString e.weight.flow) ++ ", capacity: " ++ (toString e.weight.capacity) ++ "\n"
 
-instance : ToString Graph.VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height) ++ ", next vertex: " ++ (toString s.nextVertex)
-  ++ "\ncurrent neighbor: " ++ (toString s.currentNeighbor) ++ ", neighbor list: " ++ (toString s.neighborList)
-instance : ToString (Vertex Graph.VertexState Graph.MaxFlowEdge) where toString v := "\nVertex state: " ++ toString v.payload ++ "\n" ++ v.adjacencyList.foldr foldEdges "" ++ "\n"
-instance : ToString Graph.FlowNetwork where toString fn := do
-  let mut indices : Array Nat := Array.empty
-  for i in [0:fn.vertices.size] do indices := indices.push i
-  toString (indices.zip fn.vertices)
 
 def exampleGraph11 : Graph Nat Nat :=
   ((exampleGraph3.removeVertex 3).1.removeVertex 3).1.removeAllEdgesFromTo 1 1
 
-def printOne : String := toString (exampleGraph11)
-def printTwo : String := toString ((exampleGraph11.findMaxFlow 0 2).get!)
+def printOne : String := toString (exampleGraph10)
+def printTwo : String := toString ((exampleGraph10.findMaxFlow 0 2).get!)
 
 def main : IO Unit :=
   IO.println (printOne ++ "\n\n" ++ printTwo)

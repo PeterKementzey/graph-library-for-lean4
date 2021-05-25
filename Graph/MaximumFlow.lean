@@ -25,6 +25,18 @@ private def FlowVertex := Vertex VertexState MaxFlowEdge
 instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { payload := arbitrary } ⟩ -- Why does this not work automatically?
 instance : Inhabited FlowNetwork := ⟨ { } ⟩ -- what the hell
 
+-- TODO think about removing this
+  def foldEdges (e : (Edge Graph.MaxFlowEdge)) (s : String) : String :=
+    s ++ "   target: " ++ (toString e.target) ++ ", flow: " ++ (toString e.weight.flow) ++ ", capacity: " ++ (toString e.weight.capacity) ++ "\n"
+
+  instance : ToString Graph.VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height) ++ ", next vertex: " ++ (toString s.nextVertex)
+    ++ "\ncurrent neighbor: " ++ (toString s.currentNeighbor) ++ ", neighbor list: " ++ (toString s.neighborList)
+  instance : ToString (Vertex Graph.VertexState Graph.MaxFlowEdge) where toString v := "\nVertex state: " ++ toString v.payload ++ "\n" ++ v.adjacencyList.foldr foldEdges "" ++ "\n"
+  instance : ToString Graph.FlowNetwork where toString fn := do
+    let mut indices : Array Nat := Array.empty
+    for i in [0:fn.vertices.size] do indices := indices.push i
+    toString (indices.zip fn.vertices)
+
 -- def basicMinimumCut (g : Graph α β) :
 
 instance : Inhabited MaxFlowEdge := ⟨ { capacity := arbitrary } ⟩ 
@@ -120,7 +132,7 @@ private def findLowestNeighborAux (flowNetwork : FlowNetwork) (u : Nat) (neighbo
   | 0 => panic! "This should be impossible"
   | n + 1 =>
     if current >= neighborList.size then min else
-    if (flowNetwork.residualCapacity u current).get! == 0 then flowNetwork.findLowestNeighborAux u neighborList (current + 1) min n else
+    if (flowNetwork.residualCapacity u neighborList[current]).get! == 0 then flowNetwork.findLowestNeighborAux u neighborList (current + 1) min n else
     let nextMin := if flowNetwork.vertices[min].payload.height > flowNetwork.vertices[current].payload.height then current else min
     flowNetwork.findLowestNeighborAux u neighborList (current + 1) nextMin n
 
@@ -184,7 +196,7 @@ private def relabelToFront (flowNetwork : FlowNetwork) (current : Nat) (head : N
     let oldHeight := flowNetwork.vertices[current].payload.height
     let newFlowNetwork : FlowNetwork := flowNetwork.discharge current (flowNetwork.upperBoundOfDischargeIterations current)
     let (newList, newHead) : FlowNetwork × Nat := if newFlowNetwork.vertices[current].payload.height > oldHeight then
-      let (listWithoutCurrent, headWithoutCurrent) := flowNetwork.removeFromList current head
+      let (listWithoutCurrent, headWithoutCurrent) := newFlowNetwork.removeFromList current head
       listWithoutCurrent.addToFrontOfList current headWithoutCurrent
     else
       (newFlowNetwork, head)
