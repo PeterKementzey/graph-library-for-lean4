@@ -231,7 +231,7 @@ instance : ToString Graph.VertexState where toString s := "Excess: " ++ (toStrin
 instance : ToString (Vertex Graph.VertexState Graph.MaxFlowEdge) where toString v := "\nVertex state: " ++ toString v.payload ++ "\n" ++ v.adjacencyList.foldr foldEdges "" ++ "\n"
 instance : ToString Graph.FlowNetwork where toString fn := do
   let mut indices : Array Nat := Array.empty
-  for i in [0:fn.vertices.size-1] do indices := indices.push i
+  for i in [0:fn.vertices.size] do indices := indices.push i
   toString (indices.zip fn.vertices)
 
 def printOne : String := toString (exampleGraph10)
