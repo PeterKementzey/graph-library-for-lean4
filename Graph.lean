@@ -253,7 +253,7 @@ instance : ToString Graph.FlowNetwork where toString fn := do
   toString (indices.zip fn.vertices)
 
 def exampleGraph11 : Graph Nat Nat :=
-  ((exampleGraph3.removeVertex 3).1.removeVertex 4).1.removeAllEdgesFromTo 1 1
+  ((exampleGraph3.removeVertex 3).1.removeVertex 3).1.removeAllEdgesFromTo 1 1
 
 def printOne : String := toString (exampleGraph11)
 def printTwo : String := toString ((exampleGraph11.findMaxFlow 0 2).get!)
