@@ -131,7 +131,10 @@ private def findLowestNeighbor (flowNetwork : FlowNetwork) (u : Nat) : Nat :=
   let initial := (neighborList.findIdx? (λ id => (flowNetwork.residualCapacity u id).get! > 0)).get!
   flowNetwork.findLowestNeighborAux u neighborList (initial + 1) initial neighborList.size
 
-private def relabel (flowNetwork : FlowNetwork) : FlowNetwork := sorry
+private def relabel (flowNetwork : FlowNetwork) (u : Nat) : FlowNetwork :=
+  let lowestNeighbor := flowNetwork.findLowestNeighbor u
+  let newHeight := flowNetwork.vertices[lowestNeighbor].payload.height + 1
+  ⟨ flowNetwork.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with height := newHeight } } ) ⟩ 
 
 private def discharge (flowNetwork : FlowNetwork) (u : Nat) : FlowNetwork :=
   let vertexState := flowNetwork.vertices[u].payload
