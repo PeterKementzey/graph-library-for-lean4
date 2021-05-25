@@ -136,7 +136,12 @@ private def relabel (flowNetwork : FlowNetwork) (u : Nat) : FlowNetwork :=
   let newHeight := flowNetwork.vertices[lowestNeighbor].payload.height + 1
   ⟨ flowNetwork.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with height := newHeight } } ) ⟩ 
 
--- TODO what is the upper bound on the number of iterations here?
+private def upperBoundOfDischargeIterations (flowNetwork : FlowNetwork) (u : Nat) : Nat :=
+  let numberOfPointerAdvancements := flowNetwork.vertices[u].payload.neighborList.size
+  let numberOfRelabelOperations := numberOfPointerAdvancements
+  let numberOfPushOperations := flowNetwork.vertices[u].payload.excess + 1
+  numberOfPointerAdvancements + numberOfRelabelOperations + numberOfPushOperations + 1
+
 private def discharge (flowNetwork : FlowNetwork) (u : Nat) : Nat -> FlowNetwork
   | 0 => flowNetwork
   | n + 1 => 
