@@ -136,21 +136,22 @@ private def relabel (flowNetwork : FlowNetwork) (u : Nat) : FlowNetwork :=
   let newHeight := flowNetwork.vertices[lowestNeighbor].payload.height + 1
   ⟨ flowNetwork.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with height := newHeight } } ) ⟩ 
 
-private def discharge (flowNetwork : FlowNetwork) (u : Nat) : FlowNetwork :=
-  let vertexState := flowNetwork.vertices[u].payload
-  if vertexState.currentNeighbor >= vertexState.neighborList.size then
-    _
-    -- Relabel
-    -- set current to 0
-  else
-    let currentNeighborId := vertexState.neighborList[vertexState.currentNeighbor]
-    if (vertexState.height == flowNetwork.vertices[currentNeighborId].payload.height + 1) && ((flowNetwork.residualCapacity u currentNeighborId).get! > 0) then
-      _
-      -- Push
+-- TODO what is the upper bound on the number of iterations here?
+private def discharge (flowNetwork : FlowNetwork) (u : Nat) : Nat -> FlowNetwork
+  | 0 => flowNetwork
+  | n + 1 => 
+    let vertexState := flowNetwork.vertices[u].payload
+    if vertexState.excess == 0 then flowNetwork else
+    let newFlowNetwork := if vertexState.currentNeighbor >= vertexState.neighborList.size then
+      let flowNetworkWithRelabeling := flowNetwork.relabel u
+    ⟨ flowNetworkWithRelabeling.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with currentNeighbor := 0 } } ) ⟩ 
     else
-      -- currentNeighbor ++
-      _
-  _
+      let currentNeighborId := vertexState.neighborList[vertexState.currentNeighbor]
+      if (vertexState.height == flowNetwork.vertices[currentNeighborId].payload.height + 1) && ((flowNetwork.residualCapacity u currentNeighborId).get! > 0) then
+        flowNetwork.push u currentNeighborId
+      else
+        ⟨ flowNetwork.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with currentNeighbor := vertex.payload.currentNeighbor + 1 } } ) ⟩
+    newFlowNetwork.discharge u n
 
 end FlowNetwork
 
