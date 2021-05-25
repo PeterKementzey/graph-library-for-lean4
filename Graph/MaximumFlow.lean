@@ -118,6 +118,19 @@ private def push (flowNetwork : FlowNetwork) (u : Nat) (v : Nat) : FlowNetwork :
     let excessOfv := flowNetwork.vertices[v].payload.excess
     (flowNetwork.updateExcess u (excessOfu - quantity)).updateExcess v (excessOfv + quantity)
 
+private def findLowestNeighborAux (flowNetwork : FlowNetwork) (u : Nat) (neighborList : Array Nat) (current : Nat) (min : Nat) : Nat -> Nat
+  | 0 => panic! "This should be impossible"
+  | n + 1 =>
+    if current >= neighborList.size then min else
+    if (flowNetwork.residualCapacity u current).get! == 0 then flowNetwork.findLowestNeighborAux u neighborList (current + 1) min n else
+    let nextMin := if flowNetwork.vertices[min].payload.height > flowNetwork.vertices[current].payload.height then current else min
+    flowNetwork.findLowestNeighborAux u neighborList (current + 1) nextMin n
+
+private def findLowestNeighbor (flowNetwork : FlowNetwork) (u : Nat) : Nat :=
+  let neighborList := flowNetwork.vertices[u].payload.neighborList
+  let initial := (neighborList.findIdx? (λ id => (flowNetwork.residualCapacity u id).get! > 0)).get!
+  flowNetwork.findLowestNeighborAux u neighborList (initial + 1) initial neighborList.size
+
 private def relabel (flowNetwork : FlowNetwork) : FlowNetwork := sorry
 
 private def discharge (flowNetwork : FlowNetwork) (u : Nat) : FlowNetwork :=
