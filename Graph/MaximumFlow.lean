@@ -108,13 +108,13 @@ private def push (flowNetwork : FlowNetwork) (u : Nat) (v : Nat) : FlowNetwork :
     let quantity : Nat :=
       let residualCapacity := match flowNetwork.residualCapacity u v with | some x => x | none => panic! "Pushing on non existent edge"
       if excessOfu < residualCapacity then excessOfu else residualCapacity
-    let udpatedFlow : FlowNetwork := match flowNetwork.vertices[u].adjacencyList.findIdx? (λ edge => edge.target == v) with
+    let updatedFlow : FlowNetwork := match flowNetwork.vertices[u].adjacencyList.findIdx? (λ edge => edge.target == v) with
       | some edgeId => flowNetwork.updateFlow u edgeId (flowNetwork.vertices[u].adjacencyList[edgeId].weight.flow + quantity)
       | none => match flowNetwork.vertices[v].adjacencyList.findIdx? (λ edge => edge.target == u) with
         | some edgeId => flowNetwork.updateFlow v edgeId (flowNetwork.vertices[v].adjacencyList[edgeId].weight.flow - quantity)
         | none => panic! "Pushing on non existent edge"
     let excessOfv := flowNetwork.vertices[v].payload.excess
-    (flowNetwork.updateExcess u (excessOfu - quantity)).updateExcess v (excessOfv + quantity)
+    (updatedFlow.updateExcess u (excessOfu - quantity)).updateExcess v (excessOfv + quantity)
 
 private def findLowestNeighborAux (flowNetwork : FlowNetwork) (u : Nat) (neighborList : Array Nat) (current : Nat) (min : Nat) : Nat -> Nat
   | 0 => panic! "This should be impossible"
@@ -156,7 +156,7 @@ private def discharge (flowNetwork : FlowNetwork) (u : Nat) : Nat -> FlowNetwork
         ⟨ flowNetwork.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with currentNeighbor := vertex.payload.currentNeighbor + 1 } } ) ⟩
     newFlowNetwork.discharge u n
 
-private def removeFromList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat) : (FlowNetwork × Nat) :=
+private def removeFromList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat) : FlowNetwork × Nat :=
   let wrapAround n := n % flowNetwork.vertices.size
   if id == head then (flowNetwork, flowNetwork.vertices[head].payload.nextVertex) else
   let parentId : Nat := (flowNetwork.vertices.findIdx? (λ vertex => vertex.payload.nextVertex == id)).get!
@@ -165,11 +165,30 @@ private def removeFromList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat) :
   )
   (⟨ newList ⟩, head)
 
+private def addToFrontOfList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat) : FlowNetwork × Nat :=
+  let newList := flowNetwork.vertices.modify id (λ vertex =>
+    { vertex with payload := { vertex.payload with nextVertex := head } }
+  )
+  (⟨ newList ⟩, id)
+
 private def initializeVertexList (flowNetwork : FlowNetwork) (source : Nat) (sink : Nat) : FlowNetwork × Nat :=
   let wrapAround n := n % (flowNetwork.vertices.size)
   let (sourceSkipped, sourceSkippedHead) := flowNetwork.removeFromList source 0
   let (sinkSkipped, sinkSkippedHead) := sourceSkipped.removeFromList sink sourceSkippedHead
   (sinkSkipped, sinkSkippedHead)
+
+private def relabelToFront (flowNetwork : FlowNetwork) (current : Nat) (head : Nat) : Nat -> FlowNetwork
+  | 0 => panic! "Iteration count was too low"
+  | n + 1 =>
+    if current >= flowNetwork.vertices.size then flowNetwork else
+    let oldHeight := flowNetwork.vertices[current].payload.height
+    let newFlowNetwork : FlowNetwork := flowNetwork.discharge current (flowNetwork.upperBoundOfDischargeIterations current)
+    let (newList, newHead) : FlowNetwork × Nat := if newFlowNetwork.vertices[current].payload.height > oldHeight then
+      let (listWithoutCurrent, headWithoutCurrent) := flowNetwork.removeFromList current head
+      listWithoutCurrent.addToFrontOfList current headWithoutCurrent
+    else
+      (newFlowNetwork, head)
+    newList.relabelToFront (newList.vertices[current].payload.nextVertex) newHead n
 
 end FlowNetwork
 
@@ -185,8 +204,6 @@ def findMaxFlow (g : Graph α Nat) (source : Nat) (sink : Nat) : Option FlowNetw
       let preflowGraph : FlowNetwork := initialGraph.initializePreflow source
 
       let (flowNetwork, head) := preflowGraph.initializeVertexList source sink
-      flowNetwork
-      -- initialGraph
-
+      flowNetwork.relabelToFront head head 30
       
 end Graph
