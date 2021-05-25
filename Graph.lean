@@ -247,7 +247,7 @@ def exampleGraph11 : Graph Nat Nat :=
   ((exampleGraph3.removeVertex 3).1.removeVertex 3).1.removeAllEdgesFromTo 1 1
 
 def printOne : String := toString (exampleGraph10)
-def printTwo : String := toString ((exampleGraph10.findMaxFlow 0 2).get!)
+def printTwo : String := toString ((exampleGraph10.findMaxFlow 0 8).get!)
 
 def main : IO Unit :=
   IO.println (printOne ++ "\n\n" ++ printTwo)

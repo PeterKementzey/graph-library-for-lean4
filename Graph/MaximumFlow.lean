@@ -133,7 +133,7 @@ private def findLowestNeighborAux (flowNetwork : FlowNetwork) (u : Nat) (neighbo
   | n + 1 =>
     if current >= neighborList.size then min else
     if (flowNetwork.residualCapacity u neighborList[current]).get! == 0 then flowNetwork.findLowestNeighborAux u neighborList (current + 1) min n else
-    let nextMin := if flowNetwork.vertices[min].payload.height > flowNetwork.vertices[current].payload.height then current else min
+    let nextMin := if flowNetwork.vertices[neighborList[min]].payload.height > flowNetwork.vertices[neighborList[current]].payload.height then current else min
     flowNetwork.findLowestNeighborAux u neighborList (current + 1) nextMin n
 
 private def findLowestNeighbor (flowNetwork : FlowNetwork) (u : Nat) : Nat :=
@@ -143,7 +143,7 @@ private def findLowestNeighbor (flowNetwork : FlowNetwork) (u : Nat) : Nat :=
 
 private def relabel (flowNetwork : FlowNetwork) (u : Nat) : FlowNetwork :=
   let lowestNeighbor := flowNetwork.findLowestNeighbor u
-  let newHeight := flowNetwork.vertices[lowestNeighbor].payload.height + 1
+  let newHeight := flowNetwork.vertices[flowNetwork.vertices[u].payload.neighborList[lowestNeighbor]].payload.height + 1
   ⟨ flowNetwork.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with height := newHeight } } ) ⟩ 
 
 private def upperBoundOfDischargeIterations (flowNetwork : FlowNetwork) (u : Nat) : Nat :=
@@ -170,7 +170,11 @@ private def discharge (flowNetwork : FlowNetwork) (u : Nat) : Nat -> FlowNetwork
 
 private def removeFromList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat) : FlowNetwork × Nat :=
   let wrapAround n := n % flowNetwork.vertices.size
-  if id == head then (flowNetwork, flowNetwork.vertices[head].payload.nextVertex) else
+  if id == head then
+    let newList := flowNetwork.vertices.modify id (λ vertex =>
+      { vertex with payload := { vertex.payload with nextVertex := flowNetwork.vertices.size } }
+    )
+    (⟨ newList ⟩, flowNetwork.vertices[head].payload.nextVertex) else
   let parentId : Nat := (flowNetwork.vertices.findIdx? (λ vertex => vertex.payload.nextVertex == id)).get!
   let newList := flowNetwork.vertices.modify parentId (λ vertex =>
     { vertex with payload := { vertex.payload with nextVertex := flowNetwork.vertices[id].payload.nextVertex } }
@@ -178,6 +182,7 @@ private def removeFromList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat) :
   (⟨ newList ⟩, head)
 
 private def addToFrontOfList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat) : FlowNetwork × Nat :=
+  if id == head then (flowNetwork, head) else
   let newList := flowNetwork.vertices.modify id (λ vertex =>
     { vertex with payload := { vertex.payload with nextVertex := head } }
   )
@@ -189,6 +194,7 @@ private def initializeVertexList (flowNetwork : FlowNetwork) (source : Nat) (sin
   let (sinkSkipped, sinkSkippedHead) := sourceSkipped.removeFromList sink sourceSkippedHead
   (sinkSkipped, sinkSkippedHead)
 
+-- TODO figure out iteration count
 private def relabelToFront (flowNetwork : FlowNetwork) (current : Nat) (head : Nat) : Nat -> FlowNetwork
   | 0 => panic! "Iteration count was too low"
   | n + 1 =>
@@ -207,7 +213,7 @@ end FlowNetwork
 open FlowNetwork
 
 -- Push-relabel algorithm using relabel-to-fron selection, TODO provide mapping to Nat and mention here
--- no parallel or anti-parallel edges
+-- no parallel or anti-parallel edges, no self loops
 -- TODO provide conversion to graph with no anti-parallel edges or deal with them in algorithm
 def findMaxFlow (g : Graph α Nat) (source : Nat) (sink : Nat) : Option FlowNetwork := -- TODO change to this: Option (Graph α Nat) :=
   match nullFlowNetwork g with
@@ -216,6 +222,6 @@ def findMaxFlow (g : Graph α Nat) (source : Nat) (sink : Nat) : Option FlowNetw
       let preflowGraph : FlowNetwork := initialGraph.initializePreflow source
 
       let (flowNetwork, head) := preflowGraph.initializeVertexList source sink
-      flowNetwork.relabelToFront head head 30
+      flowNetwork.relabelToFront head head 100
       
 end Graph
