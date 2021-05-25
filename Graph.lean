@@ -243,11 +243,37 @@ def exampleGraph10 : Graph Nat Nat := do
 
 
 
-def exampleGraph11 : Graph Nat Nat :=
-  ((exampleGraph3.removeVertex 3).1.removeVertex 3).1.removeAllEdgesFromTo 1 1
+def exampleGraph11 : Graph Nat Nat := do
+  let mut gx : Graph Nat Nat := Graph.empty
+  gx := (gx.addVertex 0).1
+  gx := (gx.addVertex 1).1
+  gx := (gx.addVertex 2).1
+  gx := (gx.addVertex 3).1
+  gx := (gx.addVertex 4).1
+  gx := (gx.addVertex 5).1
+  gx := gx.addEdgeById 0 1 16
+  gx := gx.addEdgeById 0 2 13
+  gx := gx.addEdgeById 1 2 10
+  gx := gx.addEdgeById 2 1 4
+  gx := gx.addEdgeById 1 3 12
+  gx := gx.addEdgeById 2 4 14
+  gx := gx.addEdgeById 3 2 9
+  gx := gx.addEdgeById 4 3 7
+  gx := gx.addEdgeById 3 5 20
+  gx := gx.addEdgeById 4 5 4
+  gx
 
-def printOne : String := toString (exampleGraph10)
-def printTwo : String := toString ((exampleGraph10.findMaxFlow 0 8).get!)
+def exampleGraph11' :=
+  let gx : Graph Nat Nat := exampleGraph11.removeAllEdgesFromTo 1 2
+  let gx := (gx.addVertex 6).1
+  let gx := gx.addEdgeById 1 6 10
+  let gx := gx.addEdgeById 6 2 10
+  gx
+
+
+
+def printOne : String := toString (exampleGraph11')
+def printTwo : String := toString ((exampleGraph11'.findMaxFlow 0 5).get!)
 
 def main : IO Unit :=
   IO.println (printOne ++ "\n\n" ++ printTwo)
