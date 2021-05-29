@@ -15,22 +15,29 @@ namespace Graph
 
 variable {α : Type} [BEq α] [Inhabited α] variable {β : Type} -- TODO this might not be the right syntax
 
+/-- Empty graph, α is the vertex payload type, β is edge weight type. -/
 def empty : Graph α β := ⟨#[]⟩
 
-def addVertex (g : Graph α β) (x : α) : (Graph α β) × Nat :=
-  let res := { g with vertices := g.vertices.push { payload := x } }
+/-- Add a vertex to the graph.
+    Returns new graph and unique vertex ID. -/
+def addVertex (g : Graph α β) (payload : α) : (Graph α β) × Nat :=
+  let res := { g with vertices := g.vertices.push { payload := payload } }
   let id : Nat := res.vertices.size - 1
   (res, id)
 
 class DefaultEdgeWeight (β : Type) where -- TODO remove this
   default : β
 
+/-- -/
 def addEdgeById [DefaultEdgeWeight β] (g : Graph α β) (source : Nat) (target : Nat) (weight : β := DefaultEdgeWeight.default) : Graph α β := {
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
 
+/-- -/
 def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].payload
 
+/-- Removes all edges from source to target with specific weight.
+    If weight is not specified all edges from source to target are removed. -/
 def removeAllEdgesFromTo [BEq β] (g : Graph α β) (source : Nat) (target : Nat) (weight : Option β := none) : Graph α β := {
   g with vertices := g.vertices.modify source (λ vertex => { vertex with adjacencyList := vertex.adjacencyList.filter (λ edge =>
     match weight with
@@ -39,14 +46,18 @@ def removeAllEdgesFromTo [BEq β] (g : Graph α β) (source : Nat) (target : Nat
   )})
 }
 
+/-- Removes all edges from the entire graph -/
 def removeAllEdges (g : Graph α β) : Graph α β := {
   g with vertices := g.vertices.map (λ vertex => { vertex with adjacencyList := Array.empty })
 }
 
+/-- -/
 def updateVertexPayload (g : Graph α β) (id : Nat) (payload : α) : Graph α β := {
   g with vertices := g.vertices.modify id (fun vertex => { vertex with payload := payload })
 }
 
+/-- Warning! This function is deprecated, vertex IDs will change if used.
+    Returns graph without vertex and a mapping from old vertex IDs to new vertex IDs. -/
 def removeVertex (g : Graph α β) (id : Nat) : (Graph α β) × (Nat -> Nat) :=
   let mapping : Nat -> Nat := mappingBase id
   let verticesWithEdgesRemoved := g.vertices.map (λ vertex => {
