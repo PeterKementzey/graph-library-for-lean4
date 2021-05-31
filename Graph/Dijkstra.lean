@@ -1,4 +1,5 @@
 import Graph.Graph
+import Graph.UndirectedGraph
 import Std.Data.HashSet
 
 namespace Graph
@@ -142,6 +143,7 @@ def dijkstraUnsafeWithTarget (g : Graph α Nat) (source : Nat) (target : Nat) : 
 
 private def hasNoNegativeEdgeWeights (g : Graph α Nat) : Bool := g.vertices.all (λ vertex => vertex.adjacencyList.all (λ edge => edge.weight >= 0))
 
+-- TODO remove this because naturals are always positive, rename other function to just dijkstra
 def dijkstraSafe (g : Graph α Nat) (source : Nat) : Option ShortestPathTree := match g.hasNoNegativeEdgeWeights with
   | true => g.dijkstraUnsafe source
   | false => none
@@ -150,4 +152,12 @@ def dijkstraSafeWithTarget (g : Graph α Nat) (source : Nat) (target : Nat) : Op
   | true => g.dijkstraUnsafeWithTarget source target
   | false => none
 
+
+namespace UndirectedGraph
+
+def dijkstra (ug : UndirectedGraph α Nat) := ug.graph.dijkstraUnsafe
+
+def dijkstraWithTarget (ug : UndirectedGraph α Nat) := ug.graph.dijkstraUnsafeWithTarget
+
+end UndirectedGraph
 end Graph

@@ -12,4 +12,11 @@ def depthFirstSearch (g : Graph α β) (source : Nat) (target : Nat) : Bool := g
 
 def breadthFirstSearch (g : Graph α β) (source : Nat) (target : Nat) : Bool := g.breadthFirstTraversal source false (searchVisit target)
 
+namespace UndirectedGraph
+
+def breadthFirstSearch (ug : UndirectedGraph α β) := ug.graph.breadthFirstSearch
+
+def depthFirstSearch (ug : UndirectedGraph α β) := ug.graph.depthFirstSearch
+
+end UndirectedGraph
 end Graph

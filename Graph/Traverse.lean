@@ -1,4 +1,5 @@
 import Graph.Graph
+import Graph.UndirectedGraph
 import Std.Data.Queue
 import Std.Data.Stack
 
@@ -52,4 +53,11 @@ def depthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.d
 def depthFirstTraversalOrderWithLeaving (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit (some traversalLeavingOrderVisit)
 def breadthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.breadthFirstTraversal source Array.empty traversalArrivingOrderVisit
 
+namespace UndirectedGraph
+
+def breadthFirstTraversal (ug : UndirectedGraph α β) : Nat -> γ -> (Nat -> γ -> γ × Bool) -> γ := ug.graph.breadthFirstTraversal
+
+-- def depthFirstTraversal (ug : UndirectedGraph α β) : Nat -> γ -> (Nat -> γ -> γ × Bool) -> (Option (Nat -> γ -> γ)) -> γ := ug.graph.depthFirstTraversal FIXME
+
+end UndirectedGraph
 end Graph

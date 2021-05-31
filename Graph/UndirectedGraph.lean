@@ -1,6 +1,4 @@
 import Graph.Graph
-import Graph.Search
-import Graph.Dijkstra
 
 namespace Graph
 
@@ -55,19 +53,6 @@ def removeVertex (ug : UndirectedGraph α β) (id : Nat) : (UndirectedGraph α �
 
 instance : ToString (UndirectedGraph α Nat) where toString ug := toString ug.graph.vertices
 instance : ToString (UndirectedGraph α β) where toString ug := toString ug.graph.vertices
-
-
--- Basic search
-
-def breadthFirstSearch (ug : UndirectedGraph α β) := ug.graph.breadthFirstSearch
-
-def depthFirstSearch (ug : UndirectedGraph α β) := ug.graph.depthFirstSearch
-
--- Dijkstra
-
-def dijkstraUnsafe (ug : UndirectedGraph α Nat) := ug.graph.dijkstraUnsafe
-
-def dijkstraUnsafeWithTarget (ug : UndirectedGraph α Nat) := ug.graph.dijkstraUnsafeWithTarget
 
 end UndirectedGraph
 end Graph
