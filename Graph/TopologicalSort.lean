@@ -1,8 +1,6 @@
 import Graph.Graph
 import Graph.Traverse
 
-import Graph.StdExtensions
-
 namespace Graph
 
 variable {α : Type} [BEq α] [Inhabited α] variable {β : Type}

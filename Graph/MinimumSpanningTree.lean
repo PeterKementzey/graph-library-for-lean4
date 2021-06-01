@@ -1,7 +1,11 @@
 import Graph.UndirectedGraph
 import Std.Data.HashSet
 
-import Graph.StdExtensions -- uses Std.Option.get! and Std.Data.HashSet.merge
+namespace Std namespace HashSet
+
+private def merge {α : Type u} [BEq α] [Hashable α] (l : Std.HashSet α) (r : Std.HashSet α) : Std.HashSet α := r.fold Std.HashSet.insert l
+
+end HashSet end Std
 
 
 namespace Graph namespace UndirectedGraph
