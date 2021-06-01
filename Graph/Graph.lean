@@ -73,13 +73,20 @@ def removeVertex (g : Graph α β) (id : Nat) : (Graph α β) × (Nat -> Nat) :=
   where
     mappingBase (id : Nat) (x : Nat) : Nat := if x > id then x - 1 else x
 
-instance : ToString (Edge Nat) where toString e := "target: " ++ toString e.target ++ ", weight: " ++ toString e.weight
-instance : ToString (Vertex α Nat) where toString v := toString v.adjacencyList ++ "\n" -- TODO can I avoid needing these too?
-instance : ToString (Graph α Nat) where toString g := toString g.vertices
+namespace Vertex
 
-instance : ToString (Edge β) where toString e := "target: " ++ toString e.target ++ ", weight: " -- FIXME this needs [ToString β]
-instance : ToString (Vertex α β) where toString v := toString v.adjacencyList ++ "\n"
-instance : ToString (Graph α β) where toString g := toString g.vertices
+private def toString [ToString α] [ToString β] (v : Vertex α β) : String := "\nVertex payload: " ++ ToString.toString v.payload ++ ", edges:\n" ++ v.adjacencyList.foldr foldEdges "" ++ "\n"
+  where foldEdges (e : Edge β) (s : String) : String :=
+    s ++ "   target: " ++ (ToString.toString e.target) ++ ", weight: " ++ (ToString.toString e.weight) ++ "\n"
+
+instance [ToString α] [ToString β] : ToString (Vertex α β) where toString := toString
+
+end Vertex
+
+instance [ToString α] [ToString β] : ToString (Graph α β) where toString g := do
+  let mut indices : Array Nat := Array.empty
+  for i in [0:g.vertices.size] do indices := indices.push i
+  toString (indices.zip g.vertices)
 
 end Graph
 

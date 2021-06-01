@@ -28,7 +28,7 @@ inductive Path : Bool → Type where
 
 namespace Path
 
-def toString : ∀ {b}, Path b → String
+private def toString : ∀ {b}, Path b → String
   | true, vertex id p =>
     "vertex id: " ++ ToString.toString id ++ ", " ++ toString p
   | false, edge weight p =>

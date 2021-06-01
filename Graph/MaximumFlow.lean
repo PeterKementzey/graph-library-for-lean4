@@ -14,33 +14,25 @@ structure VertexState where
   neighborList : Array Nat
 
 instance : Inhabited VertexState := ⟨ { nextVertex := arbitrary, neighborList := Array.empty } ⟩ 
+instance : ToString VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height) ++ ", next vertex: " ++ (toString s.nextVertex)
+  ++ "\ncurrent neighbor: " ++ (toString s.currentNeighbor) ++ ", neighbor list: " ++ (toString s.neighborList)
 
 structure MaxFlowEdge where
   capacity : Nat
   flow : Nat := 0
 
-def FlowNetwork := Graph VertexState MaxFlowEdge -- TODO make private again
-private def FlowVertex := Vertex VertexState MaxFlowEdge
-
-instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { payload := arbitrary } ⟩ -- Why does this not work automatically?
-instance : Inhabited FlowNetwork := ⟨ { } ⟩ -- what the hell
-
--- TODO think about removing this
-  def foldEdges (e : (Edge Graph.MaxFlowEdge)) (s : String) : String :=
-    s ++ "   target: " ++ (toString e.target) ++ ", flow: " ++ (toString e.weight.flow) ++ ", capacity: " ++ (toString e.weight.capacity) ++ "\n"
-
-  instance : ToString Graph.VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height) ++ ", next vertex: " ++ (toString s.nextVertex)
-    ++ "\ncurrent neighbor: " ++ (toString s.currentNeighbor) ++ ", neighbor list: " ++ (toString s.neighborList)
-  instance : ToString (Vertex Graph.VertexState Graph.MaxFlowEdge) where toString v := "\nVertex state: " ++ toString v.payload ++ "\n" ++ v.adjacencyList.foldr foldEdges "" ++ "\n"
-  instance : ToString Graph.FlowNetwork where toString fn := do
-    let mut indices : Array Nat := Array.empty
-    for i in [0:fn.vertices.size] do indices := indices.push i
-    toString (indices.zip fn.vertices)
-
--- def basicMinimumCut (g : Graph α β) :
-
+instance : ToString MaxFlowEdge where toString mfe := "flow: " ++ (toString mfe.flow) ++ ", capacity: " ++ (toString mfe.capacity)
 instance : Inhabited MaxFlowEdge := ⟨ { capacity := arbitrary } ⟩ 
 instance [Inhabited γ] : Inhabited (Edge γ) := ⟨ 0, arbitrary ⟩
+
+def FlowNetwork := Graph VertexState MaxFlowEdge -- TODO make private again
+
+instance : ToString FlowNetwork where toString fn := let g : Graph VertexState MaxFlowEdge := fn; toString g -- FIXME there must be a better way to do this
+instance : Inhabited FlowNetwork := ⟨ { } ⟩ -- what the hell
+
+private def FlowVertex := Vertex VertexState MaxFlowEdge
+instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { payload := arbitrary } ⟩ -- FIXME Why  does this not work automatically? already implemented in Graph.lean
+
 
 private def createAdjacencyListAndNeighborSets (vertex : Vertex α Nat) (id : Nat) (neighborSets : Array (Std.HashSet Nat)) : Option ((Array (Edge MaxFlowEdge)) × (Array (Std.HashSet Nat))) := do
   let mut neighborSets := neighborSets

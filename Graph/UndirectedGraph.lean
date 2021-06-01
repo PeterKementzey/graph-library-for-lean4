@@ -51,8 +51,8 @@ def removeVertex (ug : UndirectedGraph α β) (id : Nat) : (UndirectedGraph α �
   (⟨ newGraph ⟩, mapping)
 
 
-instance : ToString (UndirectedGraph α Nat) where toString ug := toString ug.graph.vertices
-instance : ToString (UndirectedGraph α β) where toString ug := toString ug.graph.vertices
+instance [ToString α] [ToString β] : ToString (UndirectedGraph α β) where toString ug := toString ug.graph
+instance [ToString α] [ToString β] : ToString (UndirectedGraph α β) where toString ug := toString ug.graph
 
 end UndirectedGraph
 end Graph
