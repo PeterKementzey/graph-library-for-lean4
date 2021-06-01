@@ -43,6 +43,7 @@ private def topologicalSortAux (g : Graph α β) (s : Option State) : Nat -> Opt
         res := state.res.push id
       }
 
+/-- Retruns a topological ordering of any DAG (directed acyclic graph). If the graph contains cycles then returns none. -/
 def topologicalSort (g : Graph α β) : Option (Array Nat) :=
   let res : Option State := g.topologicalSortAux initialState g.vertices.size
   match res with

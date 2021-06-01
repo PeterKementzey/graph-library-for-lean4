@@ -34,11 +34,15 @@ private def traverseAux {γ  : Type _} {containerType : Type _} (g : Graph α β
           | some leaveFunction => traverseAux g visited containerWithNodeRemoved (leaveFunction currentNodeId state) visit leave n
           | none => traverseAux g visited containerWithNodeRemoved state visit leave n -- This should be impossible
 
-
+/-- A breadth-first traversal of the graph starting at source. Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
+    it returns a new state and a boolean which terminates the traversal if true. Please provide a starting state. See example uses in Graph/Traverse.lean -/
 def breadthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) : γ  :=
   let visited : Array Bool := mkArray g.vertices.size false
   traverseAux g (visited.set! source true) (Container.emptyQueue.add (source, true)) startingState visit none (g.vertices.size * 2)
 
+/-- A depth-first traversal of the graph starting at source. Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
+    it returns a new state and a boolean which terminates the traversal if true. Leave is executed when the node is left, when all its successors have been visited, uses the same state.
+    Please provide a starting state. See example uses in Graph/Traverse.lean -/
 def depthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) (leave : Option (Nat -> γ  -> γ ) := none) : γ  :=
   let visited : Array Bool := mkArray g.vertices.size false
   traverseAux g (visited.set! source true) (Container.emptyStack.add (source, true)) startingState visit leave (g.vertices.size * 2)
