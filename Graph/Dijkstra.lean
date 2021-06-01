@@ -4,7 +4,7 @@ import Std.Data.HashSet
 
 namespace Graph
 
-variable {α : Type} [BEq α] [Inhabited α] variable {β : Type}
+variable {α : Type} [BEq α] [Inhabited α]
 
 private structure DijkstraVertex where
   predecessor : Nat
@@ -14,7 +14,6 @@ private structure DijkstraVertex where
 instance : ToString DijkstraVertex where toString dv := "Predecessor: " ++ (toString dv.predecessor) ++ ", current distance: " ++ (toString dv.distance) ++ "\n"
 instance : Inhabited DijkstraVertex := ⟨ { predecessor := arbitrary } ⟩
 
--- TODO Dijkstra only works with Graph α Nat now, should I fix this?
 structure ShortestPathTree where
   dijkstraVertices : Array DijkstraVertex
 
@@ -102,9 +101,9 @@ private def dijkstraAux (g : Graph α Nat) (current : Nat) (target : Option Nat)
     for edge in g.vertices[current].adjacencyList do
       if unvisited.contains edge.target then
         let tentativeDistance : Nat := match dijkstraVertices[current].distance with
-          | some x => x + edge.weight -- This had toNat FIXME remove this comment once not needed anymore
+          | some x => x + edge.weight
           | none => panic! "Current node has no distance assigned, this should not be possible"
-        let newDijkstraVertex : DijkstraVertex := {predecessor := current, distance := tentativeDistance, edgeWeightToPredecessor := edge.weight} -- This had toNat FIXME remove this comment once not needed anymore
+        let newDijkstraVertex : DijkstraVertex := {predecessor := current, distance := tentativeDistance, edgeWeightToPredecessor := edge.weight}
         dijkstraVertices := match dijkstraVertices[edge.target].distance with
           | some x => if tentativeDistance < x then dijkstraVertices.set! edge.target newDijkstraVertex else dijkstraVertices
           | none => dijkstraVertices.set! edge.target newDijkstraVertex
@@ -135,29 +134,18 @@ private def dijkstraAuxBase (g : Graph α Nat) (source : Nat) (target : Option N
       panic! "source out of bounds"
 
 -- TODO provide mapping from β to Nat on graph
-def dijkstraUnsafe (g : Graph α Nat) (source : Nat) : ShortestPathTree := ⟨ (dijkstraAuxBase g source none) ⟩
+def dijkstra (g : Graph α Nat) (source : Nat) : ShortestPathTree := ⟨ (dijkstraAuxBase g source none) ⟩
 
-def dijkstraUnsafeWithTarget (g : Graph α Nat) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) :=
+def dijkstraWithTarget (g : Graph α Nat) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) :=
   let shortestPathTree : ShortestPathTree := ⟨ (dijkstraAuxBase g source (some target)) ⟩
   shortestPathTree.pathToVertex target
-
-private def hasNoNegativeEdgeWeights (g : Graph α Nat) : Bool := g.vertices.all (λ vertex => vertex.adjacencyList.all (λ edge => edge.weight >= 0))
-
--- TODO remove this because naturals are always positive, rename other function to just dijkstra
-def dijkstraSafe (g : Graph α Nat) (source : Nat) : Option ShortestPathTree := match g.hasNoNegativeEdgeWeights with
-  | true => g.dijkstraUnsafe source
-  | false => none
-
-def dijkstraSafeWithTarget (g : Graph α Nat) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) := match g.hasNoNegativeEdgeWeights with
-  | true => g.dijkstraUnsafeWithTarget source target
-  | false => none
 
 
 namespace UndirectedGraph
 
-def dijkstra (ug : UndirectedGraph α Nat) := ug.graph.dijkstraUnsafe
+def dijkstra (ug : UndirectedGraph α Nat) := ug.graph.dijkstra
 
-def dijkstraWithTarget (ug : UndirectedGraph α Nat) := ug.graph.dijkstraUnsafeWithTarget
+def dijkstraWithTarget (ug : UndirectedGraph α Nat) := ug.graph.dijkstraWithTarget
 
 end UndirectedGraph
 end Graph
