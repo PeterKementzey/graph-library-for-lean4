@@ -59,9 +59,9 @@ def breadthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g
 
 namespace UndirectedGraph
 
-def breadthFirstTraversal (ug : UndirectedGraph α β) : Nat -> γ -> (Nat -> γ -> γ × Bool) -> γ := ug.graph.breadthFirstTraversal
+def breadthFirstTraversal (ug : UndirectedGraph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) : γ := ug.graph.breadthFirstTraversal source startingState visit
 
--- def depthFirstTraversal (ug : UndirectedGraph α β) : Nat -> γ -> (Nat -> γ -> γ × Bool) -> (Option (Nat -> γ -> γ)) -> γ := ug.graph.depthFirstTraversal FIXME
+def depthFirstTraversal (ug : UndirectedGraph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) (leave : Option (Nat -> γ  -> γ ) := none) : γ := ug.graph.depthFirstTraversal source startingState visit leave
 
 end UndirectedGraph
 end Graph
