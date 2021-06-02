@@ -25,11 +25,8 @@ def addVertex (g : Graph α β) (payload : α) : (Graph α β) × Nat :=
   let id : Nat := res.vertices.size - 1
   (res, id)
 
-class DefaultEdgeWeight (β : Type) where -- TODO remove this
-  default : β
-
 /-- -/
-def addEdgeById [DefaultEdgeWeight β] (g : Graph α β) (source : Nat) (target : Nat) (weight : β := DefaultEdgeWeight.default) : Graph α β := {
+def addEdgeById (g : Graph α β) (source : Nat) (target : Nat) (weight : β) : Graph α β := {
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
 
