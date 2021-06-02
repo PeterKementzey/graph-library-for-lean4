@@ -10,7 +10,7 @@ end HashSet end Std
 
 namespace Graph namespace UndirectedGraph
 
-variable {α : Type} [BEq α] [Inhabited α] variable {β : Type} [BEq β] [Hashable β] [Inhabited β] [DefaultEdgeWeight β]
+variable {α : Type} [BEq α] [Inhabited α] {β : Type} [BEq β] [Hashable β] [Inhabited β] [DefaultEdgeWeight β]
 
 structure KruskalEdge (β : Type) where
   source : Nat

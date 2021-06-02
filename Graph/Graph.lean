@@ -13,7 +13,7 @@ structure Graph (α : Type) (β : Type) where
 
 namespace Graph
 
-variable {α : Type} [BEq α] [Inhabited α] variable {β : Type} -- TODO this might not be the right syntax
+variable {α : Type} [BEq α] [Inhabited α] {β : Type}
 
 /-- Empty graph, α is the vertex payload type, β is edge weight type. -/
 def empty : Graph α β := ⟨#[]⟩

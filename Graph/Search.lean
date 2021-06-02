@@ -2,7 +2,7 @@ import Graph.Traverse
 
 namespace Graph
 
-variable {α : Type} [BEq α] [Inhabited α] variable {β : Type}
+variable {α : Type} [BEq α] [Inhabited α] {β : Type}
 
 private def searchVisit (target : Nat) (id : Nat) (state : Bool) :=
   if id == target then (true, true)
