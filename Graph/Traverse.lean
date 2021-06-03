@@ -35,27 +35,17 @@ private def traverseAux {γ  : Type _} {containerType : Type _} (g : Graph α β
           | none => traverseAux g visited containerWithNodeRemoved state visit leave n -- This should be impossible
 
 /-- A breadth-first traversal of the graph starting at source. Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
-    it returns a new state and a boolean which terminates the traversal if true. Please provide a starting state. See example uses in Graph/Traverse.lean -/
+    it returns a new state and a boolean which terminates the traversal if true. Please provide a starting state. See example uses in Graph/TraverseExample.lean -/
 def breadthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) : γ  :=
   let visited : Array Bool := mkArray g.vertices.size false
   traverseAux g (visited.set! source true) (Container.emptyQueue.add (source, true)) startingState visit none (g.vertices.size * 2)
 
 /-- A depth-first traversal of the graph starting at source. Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
     it returns a new state and a boolean which terminates the traversal if true. Leave is executed when the node is left, when all its successors have been visited, uses the same state.
-    Please provide a starting state. See example uses in Graph/Traverse.lean -/
+    Please provide a starting state. See example uses in Graph/TraverseExample.lean -/
 def depthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ  -> γ  × Bool) (leave : Option (Nat -> γ  -> γ ) := none) : γ  :=
   let visited : Array Bool := mkArray g.vertices.size false
   traverseAux g (visited.set! source true) (Container.emptyStack.add (source, true)) startingState visit leave (g.vertices.size * 2)
-
-
--- Example use:
-private def traversalArrivingOrderVisit (id : Nat) (state : Array Int) := (state.push id, false)
-private def traversalLeavingOrderVisit (id : Nat) (state : Array Int) := state.push (id * -1)
-
--- Results in an array that contains the node ids in order of visiting, node id * (-1) for order of leaving them
-def depthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit
-def depthFirstTraversalOrderWithLeaving (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit (some traversalLeavingOrderVisit)
-def breadthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.breadthFirstTraversal source Array.empty traversalArrivingOrderVisit
 
 namespace UndirectedGraph
 
