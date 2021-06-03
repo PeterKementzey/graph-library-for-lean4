@@ -13,7 +13,7 @@ structure Graph (α : Type) (β : Type) where
 
 namespace Graph
 
-variable {α : Type} [BEq α] [Inhabited α] {β : Type} -- TODO only require this if needed
+variable {α : Type} [Inhabited α] {β : Type} -- TODO only require this if needed
 
 /-- Empty graph, α is the vertex payload type, β is edge weight type. -/
 def empty : Graph α β := ⟨#[]⟩
@@ -71,12 +71,12 @@ def removeVertex (g : Graph α β) (id : Nat) : (Graph α β) × (Nat -> Nat) :=
     mappingBase (id : Nat) (x : Nat) : Nat := if x > id then x - 1 else x
 
 /-- Map vertex payloads. -/
-def mapVertices (g : Graph α β) (f : α -> γ) : Graph γ β := ⟨
+def mapVertices [Inhabited γ] (g : Graph α β) (f : α -> γ) : Graph γ β := ⟨
   g.vertices.map (λ vertex => { vertex with payload := f vertex.payload })
 ⟩
 
 /-- Map edge weights. -/
-def mapEdges (g : Graph α β) (f : β -> γ) : Graph α γ := ⟨
+def mapEdges [Inhabited γ] (g : Graph α β) (f : β -> γ) : Graph α γ := ⟨
   g.vertices.map (λ vertex => { vertex with adjacencyList := vertex.adjacencyList.map (λ edge =>
     { edge with weight := f edge.weight }
   )})

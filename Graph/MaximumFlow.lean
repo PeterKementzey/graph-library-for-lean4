@@ -3,7 +3,7 @@ import Std.Data.HashSet
 
 namespace Graph
 
-variable {α : Type} [BEq α] [Inhabited α] {β : Type}
+variable {α : Type} [Inhabited α] {β : Type}
 
 
 structure VertexState where

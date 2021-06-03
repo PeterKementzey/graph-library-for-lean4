@@ -9,7 +9,7 @@ namespace Graph
 
 open Internal
 
-variable {α : Type} [BEq α] [Inhabited α] {β : Type}
+variable {α : Type} [Inhabited α] {β : Type}
 
 private def traverseAux {γ  : Type _} {containerType : Type _} (g : Graph α β) (visited : Array Bool) (container : Container (Nat × Bool) containerType) (state : γ ) (visit : Nat -> γ  -> γ  × Bool) (leave : Option (Nat -> γ  -> γ )) : Nat -> γ
   | 0 => state

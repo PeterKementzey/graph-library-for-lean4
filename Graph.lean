@@ -270,7 +270,7 @@ def exampleGraph11' :=
 
 
 
-def printOne : String := toString (exampleGraph6.dijkstra)
+def printOne : String := toString (exampleGraph6)
 def printTwo : String := toString ((exampleGraph6.mapVertices (λ _ => 'a')).mapEdges (.+1))
 
 def main : IO Unit :=

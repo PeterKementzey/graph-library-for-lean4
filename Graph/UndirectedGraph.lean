@@ -7,7 +7,7 @@ structure UndirectedGraph (α : Type) (β : Type) where
 
 namespace UndirectedGraph
 
-variable {α : Type} [BEq α] [Inhabited α] {β : Type}
+variable {α : Type} [Inhabited α] {β : Type}
 
 /-- Empty undirected graph, α is vertex payload type, β is edge weight type. -/
 def empty {α : Type} : UndirectedGraph α β := ⟨ Graph.empty ⟩

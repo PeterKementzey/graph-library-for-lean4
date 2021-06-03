@@ -4,7 +4,7 @@ import Std.Data.HashSet
 
 namespace Graph
 
-variable {α : Type} [BEq α] [Inhabited α]
+variable {α : Type} [Inhabited α]
 
 private structure DijkstraVertex where
   predecessor : Nat
@@ -135,7 +135,7 @@ private def dijkstraAuxBase (g : Graph α Nat) (source : Nat) (target : Option N
 
 /-- Find shortest path tree from source. Please see ShortestPathTree documentation for more info.
     Note: To ensure non-negative weights this function currently only works on graphs with natural number edge weights. You may use the
-    ``` def mapEdges (g : Graph α β) (f : β -> γ) : Graph α γ ```
+    ``` def mapEdges [Inhabited γ] (g : Graph α β) (f : β -> γ) ```
     function to map your edge weights to Nat.-/
 def dijkstra (g : Graph α Nat) (source : Nat) : ShortestPathTree := ⟨ (dijkstraAuxBase g source none) ⟩
 
