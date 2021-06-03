@@ -1,3 +1,5 @@
+namespace Graph
+
 structure Edge (β : Type) where
   target : Nat
   weight : β
@@ -8,12 +10,33 @@ structure Vertex (α : Type) (β : Type) where
 
 instance [Inhabited α] : Inhabited (Vertex α β) := ⟨ { payload := arbitrary } ⟩
 
+end Graph
+
 structure Graph (α : Type) (β : Type) where
-  vertices : Array (Vertex α β) := #[]
+  vertices : Array (Graph.Vertex α β) := #[]
 
 namespace Graph
 
-variable {α : Type} [Inhabited α] {β : Type} -- TODO only require this if needed
+inductive Path (β : Type) : Bool → Type where
+  | vertex : Nat -> Path β false -> Path β true
+  | edge : β -> Path β true -> Path β false
+  | empty : ∀ {b}, Path β b
+
+namespace Path
+
+private def toString [ToString β] : ∀ {b}, (Path β b) → String
+  | true, vertex id p =>
+    "vertex id: " ++ ToString.toString id ++ ", " ++ toString p
+  | false, edge weight p =>
+    "edge weight: " ++ ToString.toString weight ++ ", " ++ toString p
+  | _, empty => "∎"
+
+instance [ToString β] : ToString (Path β b) where toString p := toString p
+instance : Inhabited (Path β b) where default := empty
+
+end Path
+
+variable {α : Type} [Inhabited α] {β : Type}
 
 /-- Empty graph, α is the vertex payload type, β is edge weight type. -/
 def empty : Graph α β := ⟨#[]⟩

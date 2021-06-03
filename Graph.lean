@@ -18,6 +18,10 @@ this is function documentation
 `code`
 # heading
 -/
+def hi := 5
+
+open Graph
+
 def exampleGraph1 : Graph Char Nat :=
   let v0 : Vertex Char Nat := { payload := 'a', adjacencyList := #[ {target := 1, weight := 1} ] }
   let v1 : Vertex Char Nat := { payload := 'b', adjacencyList := #[ {target := 2, weight := 1} ] }
@@ -270,8 +274,8 @@ def exampleGraph11' :=
 
 
 
-def printOne : String := toString (exampleGraph6)
-def printTwo : String := toString ((exampleGraph6.mapVertices (λ _ => 'a')).mapEdges (.+1))
+def printOne : String := toString (exampleGraph4.depthFirstPathSearch 0 10)
+def printTwo : String := toString (exampleGraph4.depthFirstPathSearch 2 10)
 
 def main : IO Unit :=
   IO.println (printOne ++ "\n\n" ++ printTwo)
