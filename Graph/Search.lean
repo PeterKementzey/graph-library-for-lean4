@@ -16,10 +16,10 @@ def breadthFirstSearch (g : Graph α β) (source : Nat) (target : Nat) : Bool :=
 
 namespace UndirectedGraph
 
-/-- Depth-first search of graph. Returns true if target node is reachable from source node. -/
+/-- See directed graph. -/
 def depthFirstSearch (ug : UndirectedGraph α β) := ug.graph.depthFirstSearch
 
-/-- Breadth-first search of graph. Returns true if target node is reachable from source node. -/
+/-- see directed graph. -/
 def breadthFirstSearch (ug : UndirectedGraph α β) := ug.graph.breadthFirstSearch
 
 end UndirectedGraph

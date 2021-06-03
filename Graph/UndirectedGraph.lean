@@ -50,8 +50,16 @@ def removeVertex (ug : UndirectedGraph α β) (id : Nat) : (UndirectedGraph α �
   let (newGraph, mapping) := ug.graph.removeVertex id
   (⟨ newGraph ⟩, mapping)
 
+/-- Map vertex payloads. -/
+def mapVertices [Inhabited γ] (ug : UndirectedGraph α β) (f : α -> γ) : UndirectedGraph γ β := ⟨
+  ug.graph.mapVertices f
+⟩
 
-instance [ToString α] [ToString β] : ToString (UndirectedGraph α β) where toString ug := toString ug.graph
+/-- Map edge weights. -/
+def mapEdges [Inhabited γ] (ug : UndirectedGraph α β) (f : β -> γ) : UndirectedGraph α γ := ⟨
+  ug.graph.mapEdges f
+⟩
+
 instance [ToString α] [ToString β] : ToString (UndirectedGraph α β) where toString ug := toString ug.graph
 
 end UndirectedGraph
