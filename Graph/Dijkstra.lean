@@ -133,9 +133,13 @@ private def dijkstraAuxBase (g : Graph α Nat) (source : Nat) (target : Option N
   else
       panic! "source out of bounds"
 
--- TODO provide mapping from β to Nat on graph
+/-- Find shortest path tree from source. Please see ShortestPathTree documentation for more info.
+    Note: To ensure non-negative weights this function currently only works on graphs with natural number edge weights. You may use the
+    ``` def mapEdges (g : Graph α β) (f : β -> γ) : Graph α γ ```
+    function to map your edge weights to Nat.-/
 def dijkstra (g : Graph α Nat) (source : Nat) : ShortestPathTree := ⟨ (dijkstraAuxBase g source none) ⟩
 
+/-- This function will terminate the shortest path search once it has found the specified target. -/
 def dijkstraWithTarget (g : Graph α Nat) (source : Nat) (target : Nat) : Option (ShortestPathTree.Path true) :=
   let shortestPathTree : ShortestPathTree := ⟨ (dijkstraAuxBase g source (some target)) ⟩
   shortestPathTree.pathToVertex target
@@ -143,8 +147,10 @@ def dijkstraWithTarget (g : Graph α Nat) (source : Nat) (target : Nat) : Option
 
 namespace UndirectedGraph
 
+/-- See directed graph. -/
 def dijkstra (ug : UndirectedGraph α Nat) := ug.graph.dijkstra
 
+/-- See directed graph. -/
 def dijkstraWithTarget (ug : UndirectedGraph α Nat) := ug.graph.dijkstraWithTarget
 
 end UndirectedGraph

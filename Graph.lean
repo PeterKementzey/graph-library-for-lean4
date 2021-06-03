@@ -270,8 +270,8 @@ def exampleGraph11' :=
 
 
 
-def printOne : String := toString (exampleGraph11')
-def printTwo : String := toString ((exampleGraph11'.findMaxFlow 0 5).get!)
+def printOne : String := toString (exampleGraph6.dijkstra)
+def printTwo : String := toString ((exampleGraph6.mapVertices (λ _ => 'a')).mapEdges (.+1))
 
 def main : IO Unit :=
   IO.println (printOne ++ "\n\n" ++ printTwo)
