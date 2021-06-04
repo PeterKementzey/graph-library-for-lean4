@@ -41,6 +41,11 @@ variable {α : Type} [Inhabited α] {β : Type}
 /-- Empty graph, α is the vertex payload type, β is edge weight type. -/
 def empty : Graph α β := ⟨#[]⟩
 
+/-- Creates a graph by mapping the array to vertices, indices in the array will be the respective node ids, the elements will be the payload. -/
+def makeGraphFromArray (a : Array α) : Graph α β := ⟨
+  a.map (λ element => { payload := element } )
+⟩
+
 /-- Add a vertex to the graph.
     Returns new graph and unique vertex ID. -/
 def addVertex (g : Graph α β) (payload : α) : (Graph α β) × Nat :=
