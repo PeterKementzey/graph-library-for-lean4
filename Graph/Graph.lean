@@ -61,6 +61,9 @@ def addEdgeById (g : Graph α β) (source : Nat) (target : Nat) (weight : β) : 
 /-- -/
 def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].payload
 
+/-- Total edge count in the graph. -/
+def edgeCount (g : Graph α β) : Nat := g.vertices.foldr (λ vertex count => vertex.adjacencyList.size + count) 0
+
 /-- Removes all edges from source to target with specific weight.
     If weight is not specified all edges from source to target are removed. -/
 def removeAllEdgesFromTo [BEq β] (g : Graph α β) (source : Nat) (target : Nat) (weight : Option β := none) : Graph α β := {
