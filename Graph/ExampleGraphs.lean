@@ -1,6 +1,8 @@
 import Graph.Graph
 import Graph.UndirectedGraph
 
+def emptyNatGraph : Graph Nat Nat := Graph.empty
+
 open Graph
 
 def exampleGraph1 : Graph Char Nat :=
