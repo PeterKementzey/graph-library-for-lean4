@@ -29,19 +29,22 @@ def hi := 5
 -- def printOne : String := toString (exampleGraph4.depthFirstPathSearch 0 10)
 -- def printTwo : String := toString (exampleGraph4.depthFirstPathSearch 2 10)
 
-def euMails := (265214, "../stanford-graphs/email-EuAll.txt")
+def euMails := "../stanford-graphs/email-EuAll.txt"
 
-def gnutella8 := (6301, "../stanford-graphs/p2p-Gnutella08.txt")
+def gnutella8 := "../stanford-graphs/p2p-Gnutella08.txt"
 
-def topSortGraph := (20, "../stanford-graphs/topsort-gen.txt")
-def bugSearchGraph := (5, "../stanford-graphs/bug-search.txt")
-def topSortBugGraph := (21, "../stanford-graphs/bug.txt")
+def topSortGraph := "../stanford-graphs/topsort-gen.txt"
+def bugSearchGraph := "../stanford-graphs/bug-search.txt"
+def topSortBugGraph := "../stanford-graphs/bug.txt"
+
+def mediumSparse := "../stanford-graphs/medium-sized-sparse-topsort-gen.txt"
+def maximumWorkingSize := "../stanford-graphs/maximum-working-size-topsort-gen.txt"
 
 def main : IO Unit := do
 
-  let (nodeCount, filePath) := topSortGraph
+  let filePath := maximumWorkingSize
 
-  let graph <- parseGraphFromEdgeList nodeCount filePath
+  let graph <- parseGraphFromEdgeList filePath
   -- IO.println (graph)
   IO.println (graph.topSort)
   -- IO.println (graph.depthFirstTraversalOrderWithLeaving 0)

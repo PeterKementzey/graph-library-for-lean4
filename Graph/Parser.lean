@@ -2,13 +2,15 @@ import Graph.Graph
 
 def toNatPairs (arr : Array String) : Array (Nat × Nat) :=
   let split := arr.map (λ e => (e.split (.=' ')).toArray)
-  split.map (λ tup =>
-    (match tup[0].toNat? with
+  split.map (λ tup => (
+    match tup[0].toNat? with
       | some num => num
-      | none => dbgTrace ("error: " ++ (toString tup)) (fun _ => 0),
+      | none => panic! "error on line: " ++ (toString tup),
     match tup[1].toNat? with
       | some num => num
-      | none => dbgTrace ("error: " ++ (toString tup)) (fun _ => 0)))
+      | none => panic! "error on line: " ++ (toString tup)
+    )
+  )
 
 
 def parser (nodeCount : Nat) (input : Array String) : Graph Bool Nat := do
@@ -20,6 +22,9 @@ def parser (nodeCount : Nat) (input : Array String) : Graph Bool Nat := do
     i := i+1
   gx
 
-def parseGraphFromEdgeList (nodeCount : Nat) (filePath : System.FilePath) : IO (Graph Bool Nat) := do
+def parseGraphFromEdgeList (filePath : System.FilePath) : IO (Graph Bool Nat) := do
   let input <- IO.FS.lines filePath
-  parser nodeCount input
+  let nodeCount : Nat := match input[0].toNat? with
+    | some n => n
+    | none => panic! "Node count not a natural number!"
+  parser nodeCount (input.eraseIdx 0)
