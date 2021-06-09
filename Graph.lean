@@ -59,14 +59,14 @@ def mediumVerySparse := "../generated-graphs/medium-very-sparse-topsort-gen.txt"
 def smallDense := "../generated-graphs/small-dense-topsort-gen.txt"
 def smallSparse := "../generated-graphs/small-sparse-topsort-gen.txt"
 
-def main (argv : List String) : IO Unit := do
+-- def main (argv : List String) : IO Unit := do
 
-  IO.println argv
-  let filePath := maximumSize
+--   IO.println argv
+--   let filePath := maximumSize
 
-  let graph <- parseGraphFromEdgeList filePath
-  -- IO.println (graph)
-  -- IO.println (graph.depthFirstTraversalOrderWithLeaving 0)
-  timeit "message: " do
-    IO.sleep 100
-    -- IO.println (sorted.get![0])
+--   let graph <- parseGraphFromEdgeList filePath
+--   -- IO.println (graph)
+--   -- IO.println (graph.depthFirstTraversalOrderWithLeaving 0)
+--   timeit "message: " do
+--     IO.sleep 100
+--     -- IO.println (sorted.get![0])
