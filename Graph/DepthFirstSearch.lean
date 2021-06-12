@@ -46,8 +46,7 @@ private partial def createForestAux (t : Tree (g : Graph α β)) (pair : Array (
         let forest := forest.push (expandedNode id subForest)
         (forest, visited)
 
-private partial def traverseForestAux (terminate? : Bool) (visit : Nat -> γ -> γ × Bool) (leave : (Nat -> γ -> γ )) (t : Tree (g : Graph α β)) (pair : γ × (Array Bool)) : γ × (Array Bool) :=
-  if terminate? then pair else
+private partial def traverseForestAux (visit : Nat -> γ -> γ × Bool) (leave : (Nat -> γ -> γ )) (t : Tree (g : Graph α β)) (pair : γ × (Array Bool)) : γ × (Array Bool) :=
   let state := pair.1
   let visited := pair.2
   have : Inhabited γ := ⟨ state ⟩
@@ -57,16 +56,42 @@ private partial def traverseForestAux (terminate? : Bool) (visit : Nat -> γ -> 
         if visited[id] then pair else
         let visited := visited.set! id true
         let (state, terminate?) := visit id state
-        if terminate? then (leave id state, visited) else
+        -- if terminate? then (leave id state, visited) else
         let adjacencyList := (g.vertices[id].adjacencyList.map (λ edge => edge.target)).filter (!visited[.])
         let subForest : Array (Tree g) := adjacencyList.map (λ n => nonExpandedNode n)
-        let (state, visited) := subForest.foldr (traverseForestAux false visit leave) (state, visited)
+        let (state, visited) := subForest.foldr (traverseForestAux visit leave) (state, visited)
         let state := leave id state
         (state, visited)
+
+    
+
 
 def fullyExpand (t : Tree (g : Graph α β)) : Tree g := (t.createForestAux (#[], mkArray g.vertices.size false)).1.back -- TODO this might be useless
 
 end Tree
+
+private def depthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × Bool) (leave : (Nat -> γ -> γ )) (state : γ) (sources : Array Nat) (visited : Array Bool) : Nat -> γ × Bool × Array Bool
+  | 0 => have : Inhabited γ := ⟨ state ⟩; panic! "not enough iterations" -- TODO try on line graph
+  | n + 1 => do
+    let mut visited := visited
+    let mut state := state
+    for id in sources do
+      if visited[id] then continue else
+      visited := visited.set! id true
+      let (newState, terminate?) := visit id state;
+      state := newState
+      if terminate? then return (leave id state, true, #[]) else
+      let adjacencyList := (g.vertices[id].adjacencyList.map (λ edge => edge.target)).filter (!visited[.]) -- TODO see how removing the filter here influences running time
+      let (newState, terminate?, newVisited) := g.depthFirstTraverseAux visit leave state adjacencyList visited n
+      visited := newVisited
+      state := leave id newState
+      if terminate? then return (state, true, #[])
+
+    return (state, false, visited)
+
+def depthFirstTraversal4 (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
+  (g.depthFirstTraverseAux visit leave startingState sources (mkArray g.vertices.size false) g.vertices.size).1
+
 open Tree
 
 def createForest (sources : Array Nat) (g : Graph α β) : Array (Tree g) :=
@@ -81,12 +106,12 @@ def expandForest (forest : Array (Tree (g : Graph α β))) : Array (Tree g) :=
 
 def depthFirstTraversal3 (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
   let forest := g.createForest sources
-  let res := forest.foldr (traverseForestAux false visit leave) (startingState, mkArray g.vertices.size false)
+  let res := forest.foldr (traverseForestAux visit leave) (startingState, mkArray g.vertices.size false)
   res.1
 
 def depthFirstCompleteTraversal3 (g : Graph α β) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
   let forest := g.createSpanningForest
-  let res := forest.foldr (traverseForestAux false visit leave) (startingState, mkArray g.vertices.size false)
+  let res := forest.foldr (traverseForestAux visit leave) (startingState, mkArray g.vertices.size false)
   res.1
 
 end Graph
