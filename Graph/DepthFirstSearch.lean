@@ -16,6 +16,13 @@ inductive Tree (g : Graph α β) where
 
 namespace Tree
 
+partial def toString (t : Tree (g : Graph α β)) (indent : String := "") : String := match t with
+  | nonExpandedNode n => "\n" ++ indent ++ "Non-expanded node: " ++ (ToString.toString n)
+  | expandedNode n subForest => "\n" ++ indent ++ "Expanded node: " ++ (ToString.toString n) ++
+    if subForest.isEmpty then "" else ((subForest.map (λ node => toString node (indent ++ "  "))).foldl (λ a b => a ++ b) "")
+
+instance : ToString (Tree (g : Graph α β)) where toString t := t.toString
+
 instance : Inhabited (Tree (g : Graph α β)) where default := nonExpandedNode arbitrary
 
 def expand (t : Tree (g : Graph α β)) (visited : Array Bool) : Tree g := match t with
@@ -29,7 +36,7 @@ private partial def createForestAux (t : Tree (g : Graph α β)) (pair : Array (
   let forest := pair.1
   let visited := pair.2
   match t with
-    | expandedNode _ _ => panic! "Expandind expanded node"
+    | expandedNode _ _ => panic! "Expanded node"
     | nonExpandedNode id =>
         if visited[id] then pair else
         let visited := visited.set! id true
@@ -39,44 +46,47 @@ private partial def createForestAux (t : Tree (g : Graph α β)) (pair : Array (
         let forest := forest.push (expandedNode id subForest)
         (forest, visited)
 
-def fullyExpand (t : Tree (g : Graph α β)) : Tree g := (t.createForestAux (#[], mkArray g.vertices.size false)).1.back
+private partial def traverseForestAux (terminate? : Bool) (visit : Nat -> γ -> γ × Bool) (leave : (Nat -> γ -> γ )) (t : Tree (g : Graph α β)) (pair : γ × (Array Bool)) : γ × (Array Bool) :=
+  if terminate? then pair else
+  let state := pair.1
+  let visited := pair.2
+  have : Inhabited γ := ⟨ state ⟩
+  match t with
+    | expandedNode _ _ => panic! "Expanded node"
+    | nonExpandedNode id =>
+        if visited[id] then pair else
+        let visited := visited.set! id true
+        let (state, terminate?) := visit id state
+        if terminate? then (leave id state, visited) else
+        let adjacencyList := (g.vertices[id].adjacencyList.map (λ edge => edge.target)).filter (!visited[.])
+        let subForest : Array (Tree g) := adjacencyList.map (λ n => nonExpandedNode n)
+        let (state, visited) := subForest.foldr (traverseForestAux false visit leave) (state, visited)
+        let state := leave id state
+        (state, visited)
+
+def fullyExpand (t : Tree (g : Graph α β)) : Tree g := (t.createForestAux (#[], mkArray g.vertices.size false)).1.back -- TODO this might be useless
 
 end Tree
 open Tree
 
 def createForest (sources : Array Nat) (g : Graph α β) : Array (Tree g) :=
-  let nodes : Array (Tree g) := sources.map (λ id => nonExpandedNode id)
-  let visited := mkArray g.vertices.size false
-  let (forest, visited) := nodes.foldr createForestAux (#[], visited)
-  forest
+  sources.map (λ id => nonExpandedNode id)
 
 def createSpanningForest (g : Graph α β) := g.createForest g.getAllVertexIDs
 
-private partial def depthFirstTraversalAux (visit : Nat -> γ -> γ × Bool) (leave : (Nat -> γ -> γ )) (t : Tree (g : Graph α β)) (state : γ ) : γ :=
-  have : Inhabited γ := ⟨ state ⟩
-  match t with
-    | nonExpandedNode _ => panic! "Contains non expanded node!"
-    | expandedNode id subForest =>
-      let (state, terminate?) := visit id state
-      let state := if !terminate? then subForest.foldr (depthFirstTraversalAux visit leave) state else state
-      leave id state
+def expandForest (forest : Array (Tree (g : Graph α β))) : Array (Tree g) :=
+  let visited := mkArray g.vertices.size false
+  let (forest, visited) := forest.foldr createForestAux (#[], visited)
+  forest
 
 def depthFirstTraversal3 (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
   let forest := g.createForest sources
-  forest.foldr (depthFirstTraversalAux visit leave) startingState
+  let res := forest.foldr (traverseForestAux false visit leave) (startingState, mkArray g.vertices.size false)
+  res.1
 
-
-
-
--- -- TODO remove this
--- private partial def depthFirstTraversalOrderAux (t : Tree (g : Graph α β)) (arr : Array Int) : Array Int := match t with
---   | nonExpandedNode _ => panic! "This should not be possible!"
---   | expandedNode id subForest =>
---     (subForest.foldr depthFirstTraversalOrderAux (arr.push id)).push (id * -1)
-
--- def depthFirstTraversalOrderWithLeaving3 (g : Graph α β) (source : Nat) : Array Int :=
---   let tree : Tree g := Tree.nonExpandedNode source
---   let expanded := tree.fullyExpand
---   expanded.depthFirstTraversalOrderAux #[]
+def depthFirstCompleteTraversal3 (g : Graph α β) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
+  let forest := g.createSpanningForest
+  let res := forest.foldr (traverseForestAux false visit leave) (startingState, mkArray g.vertices.size false)
+  res.1
 
 end Graph
