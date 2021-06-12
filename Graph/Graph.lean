@@ -53,7 +53,7 @@ def addVertex (g : Graph α β) (payload : α) : (Graph α β) × Nat :=
   let id : Nat := res.vertices.size - 1
   (res, id)
 
-/-- -/
+/-- -/ -- FIXME ID
 def addEdgeById (g : Graph α β) (source : Nat) (target : Nat) (weight : β) : Graph α β := {
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
@@ -63,6 +63,12 @@ def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].payload
 
 /-- Total edge count in the graph. -/
 def edgeCount (g : Graph α β) : Nat := g.vertices.foldr (λ vertex count => vertex.adjacencyList.size + count) 0
+
+/-- -/
+def getAllVertexIDs (g : Graph α β) : Array Nat := do
+  let mut arr := mkArray g.vertices.size 0
+  for i in [0:g.vertices.size] do arr := arr.set! i i
+  arr
 
 /-- Removes all edges from source to target with specific weight.
     If weight is not specified all edges from source to target are removed. -/
