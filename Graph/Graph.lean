@@ -65,6 +65,9 @@ def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].payload
 def edgeCount (g : Graph α β) : Nat := g.vertices.foldr (λ vertex count => vertex.adjacencyList.size + count) 0
 
 /-- -/
+def vertexCount (g : Graph α β) : Nat := g.vertices.size
+
+/-- -/
 def getAllVertexIDs (g : Graph α β) : Array Nat := do
   let mut arr := mkArray g.vertices.size 0
   for i in [0:g.vertices.size] do arr := arr.set! i i
@@ -129,10 +132,8 @@ instance [ToString α] [ToString β] : ToString (Vertex α β) where toString :=
 
 end Vertex
 
-instance [ToString α] [ToString β] : ToString (Graph α β) where toString g := do
-  let mut indices : Array Nat := Array.empty
-  for i in [0:g.vertices.size] do indices := indices.push i
-  toString (indices.zip g.vertices)
+instance [ToString α] [ToString β] : ToString (Graph α β) where toString g :=
+  return toString (g.getAllVertexIDs.zip g.vertices)
 
 end Graph
 

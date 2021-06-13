@@ -1,6 +1,4 @@
-import Graph.TraverseDeprecated
-
-import Graph.DepthFirstSearch -- FIXME
+import Graph.DepthFirstSearch
 
 namespace Graph
 
@@ -13,20 +11,15 @@ private def traversalArrivingOrderVisit (id : Nat) (state : Array Int) := (state
 private def traversalLeavingOrderVisit (id : Nat) (state : Array Int) := state.push (id * -1)
 
 -- Results in an array that contains the node ids in order of visiting
-def depthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit
+def depthFirstTraversalOrder (g : Graph α β) (sources : Array Nat) : Array Int := g.depthFirstTraverse sources Array.empty traversalArrivingOrderVisit
+def depthFirstCompleteTraversalOrder (g : Graph α β) : Array Int := g.depthFirstCompleteTraverse Array.empty traversalArrivingOrderVisit
 
--- FIXME
 -- Results in an array that contains the node ids in order of visiting, node id * (-1) when leaving them
-def depthFirstTraversalOrderWithLeaving (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit (some traversalLeavingOrderVisit)
-def depthFirstTraversalOrderWithLeaving2 (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal2 #[source] Array.empty traversalArrivingOrderVisit (some traversalLeavingOrderVisit)
-def depthFirstTraversalOrderWithLeaving4 (g : Graph α β) : Array Int := g.depthFirstTraversal4 g.getAllVertexIDs Array.empty traversalArrivingOrderVisit traversalLeavingOrderVisit
-
-
+def depthFirstTraversalOrderWithLeaving (g : Graph α β) (sources : Array Nat) : Array Int := g.depthFirstTraverse sources Array.empty traversalArrivingOrderVisit traversalLeavingOrderVisit
+def depthFirstCompleteTraversalOrderWithLeaving (g : Graph α β) : Array Int := g.depthFirstCompleteTraverse Array.empty traversalArrivingOrderVisit traversalLeavingOrderVisit
 
 -- Results in an array that contains the node ids in order of visiting
-def breadthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.breadthFirstTraversal source Array.empty traversalArrivingOrderVisit
-def breadthFirstTraversalOrder4 (g : Graph α β) (source : Nat) : Array Int := g.breadthFirstTraversal4 #[source] #[] traversalArrivingOrderVisit 
-def breadthFirstCompleteTraversalOrder4 (g : Graph α β) : Array Int := g.breadthFirstTraversal4 g.getAllVertexIDs #[] traversalArrivingOrderVisit 
-def breadthFirstCompleteTraversalOrder5 (g : Graph α β) : Array Int := g.breadthFirstTraversal5 g.getAllVertexIDs #[] traversalArrivingOrderVisit 
+def breadthFirstTraversalOrder (g : Graph α β) (sources : Array Nat) : Array Int := g.breadthFirstTraverse sources #[] traversalArrivingOrderVisit 
+def breadthFirstCompleteTraversalOrder (g : Graph α β) : Array Int := g.breadthFirstCompleteTraverse #[] traversalArrivingOrderVisit 
 
 end Graph

@@ -226,8 +226,6 @@ def exampleGraph10 : Graph Nat Nat := do
   gx := gx.addEdgeById 6 3 10
   gx
 
-
-
 def exampleGraph11 : Graph Nat Nat := do
   let mut gx : Graph Nat Nat := Graph.empty
   gx := (gx.addVertex 0).1

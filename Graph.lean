@@ -3,6 +3,8 @@ import Graph.All
 import Graph.ExampleGraphs
 import Graph.Parser
 import Graph.TraverseExample
+import Graph.DepthFirstSearch
+import Graph.TopologicalSort2
 -- This is a comment
 
 /-
@@ -44,7 +46,7 @@ def randomNecessaryFunctionForComment := 5
 
 --   let filePath := maximumWorkingSize
 
---   let graph <- parseGraphFromEdgeList filePath
+--   let graph <- parseGraphFromEdgeListFile filePath
 --   -- IO.println (graph)
 --   IO.println (graph.topSort)
 --   -- IO.println (graph.depthFirstTraversalOrderWithLeaving 0)
@@ -59,6 +61,7 @@ def mediumVerySparse := "../benchmarking/generated-graphs/medium-very-sparse-top
 def smallDense := "../benchmarking/generated-graphs/small-dense-topsort-gen.txt"
 def smallSparse := "../benchmarking/generated-graphs/small-sparse-topsort-gen.txt"
 def huge := "../benchmarking/generated-graphs/huge-topsort-gen.txt"
+def testGraph := "../benchmarking/generated-graphs/test-topsort-gen.txt"
 
 
 -- Wrt the `timeit` shenanigans: there could be all kinds of things going
@@ -70,17 +73,37 @@ def huge := "../benchmarking/generated-graphs/huge-topsort-gen.txt"
 -- behind the `topsort` within the `timeit` to force evaluation at this point.
 
 
+-- FIXME depthFirstTraversalOrder original does not add first node removal in case of exampleGraph4
+
+-- def main (argv : List String) : IO Unit := do
+
+--   let filePath := huge
+
+--   let graph <- parseGraphFromEdgeListFile filePath
+--   let res <- graph.breadthFirstCompleteTraversalOrder5
+--   -- let res <- exampleGraph3.breadthFirstCompleteTraversalOrder4
+--   -- let res <- exampleLineGraph.depthFirstTraversalOrderWithLeaving4
+--   -- let res <- exampleGraph3.getAllVertexIDs
+--   -- let res <- graph.topSortUnsafe
+--   -- let res <- graph.topSort
+--   -- let res <- graph.dijkstraWithTarget 8717 27573
+
+--   IO.println (res)
+  
 
 def main (argv : List String) : IO Unit := do
 
   let filePath := huge
 
-  let graph <- parseGraphFromEdgeList filePath
-  IO.println graph.vertices.back.payload
-  IO.println "Parsed graph"
+  let graph <- parseGraphFromEdgeListFile filePath
+  -- IO.println graph.vertices.back.payload
+  -- IO.println "Parsed graph"
   let start <- IO.monoMsNow
-  let res <- graph.topSort
+  -- let res <- graph.topSortUnsafe
+  let res <- graph.breadthFirstCompleteTraversalOrder
+  -- let res <- graph.topSort
   let stop <- IO.monoMsNow
   IO.println ("Sorted graph in: " ++ (toString (stop - start)) ++ " ms")
-  IO.println (res.get![0])
+  IO.println (res.back)
+  -- IO.println (res.get!.back)
   

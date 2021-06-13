@@ -1,6 +1,6 @@
 import Graph.Graph
 
-def toNatPairs (arr : Array String) : Array (Nat × Nat) :=
+private def toNatPairs (arr : Array String) : Array (Nat × Nat) :=
   let split := arr.map (λ e => (e.split (.=' ')).toArray)
   split.map (λ tup => (
     match tup[0].toNat? with
@@ -12,8 +12,7 @@ def toNatPairs (arr : Array String) : Array (Nat × Nat) :=
     )
   )
 
-
-def parser (nodeCount : Nat) (input : Array String) : Graph Bool Nat := do
+private def parse (nodeCount : Nat) (input : Array String) : Graph Bool Nat := do
   let edges : Array (Nat × Nat) := toNatPairs input
   let mut gx : Graph Bool Nat := Graph.makeGraphFromArray (mkArray nodeCount false)
   -- let mut i := 1
@@ -22,9 +21,14 @@ def parser (nodeCount : Nat) (input : Array String) : Graph Bool Nat := do
     -- i := i+1
   gx
 
-def parseGraphFromEdgeList (filePath : System.FilePath) : IO (Graph Bool Nat) := do
-  let input <- IO.FS.lines filePath
+/-- Parses a graph from an edge list, first element should contain node count, rest of the lines should be an edge list of vertex IDs where "0 1\n" means edge from ID 0 to 1. -/
+def parseGraphFromEdgeList (input : Array String) : Graph Bool Nat :=
   let nodeCount : Nat := match input[0].toNat? with
     | some n => n
     | none => panic! "Node count not a natural number: " ++ input[0]
-  parser nodeCount (input.eraseIdx 0)
+  parse nodeCount (input.eraseIdx 0)
+
+/-- See parseGraphFromEdgeList for description of format. -/ -- TODO add example file to library
+def parseGraphFromEdgeListFile (filePath : System.FilePath) : IO (Graph Bool Nat) := do
+  let input <- IO.FS.lines filePath
+  parseGraphFromEdgeList input

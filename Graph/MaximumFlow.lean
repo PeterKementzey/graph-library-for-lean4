@@ -53,7 +53,7 @@ private def nullFlowNetwork (g : Graph α Nat) : Option FlowNetwork := do
   let mut adjacencyLists : Array (Array (Edge MaxFlowEdge)) := Array.empty
   let mut neighborSets : Array (Std.HashSet Nat) := mkArray g.vertices.size Std.HashSet.empty
   let mut nextVertexPointers : Array Nat := Array.empty
-  for i in [0:g.vertices.size] do
+  for i in g.getAllVertexIDs do
     match createAdjacencyListAndNeighborSets g.vertices[i] i neighborSets with
       | some (newAdjacencyList, newNeighborSets) =>
         adjacencyLists := adjacencyLists.push newAdjacencyList
@@ -61,7 +61,7 @@ private def nullFlowNetwork (g : Graph α Nat) : Option FlowNetwork := do
         nextVertexPointers := nextVertexPointers.push (i + 1)
       | none => return none
   let mut vertices : Array FlowVertex := Array.empty
-  for i in [0:g.vertices.size] do
+  for i in g.getAllVertexIDs do
     let vertexState : VertexState := {
       nextVertex := nextVertexPointers[i]
       neighborList := neighborSets[i].toArray

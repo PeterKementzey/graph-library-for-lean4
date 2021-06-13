@@ -6,7 +6,7 @@ namespace Graph
 
 variable {α : Type} [Inhabited α]
 
-private structure DijkstraVertex where
+structure DijkstraVertex where
   predecessor : Nat
   distance : Option Nat := none
   edgeWeightToPredecessor : Nat := 0
@@ -53,7 +53,6 @@ private def pathToVertexAux (t : ShortestPathTree) (id : Nat) (pathSoFar : Path 
 def pathToVertex (t : ShortestPathTree) (id : Nat) : Option (Path Nat true) := match t.dijkstraVertices[id].distance with
   | none => none
   | some distance => some (pathToVertexAux t id Path.empty t.dijkstraVertices.size)
-
 
 end ShortestPathTree
 
@@ -108,7 +107,7 @@ private def dijkstraAuxBase (g : Graph α Nat) (source : Nat) (target : Option N
     else
       let unvisitedSet : Std.HashSet Nat := do
         let mut temp : Std.HashSet Nat := Std.HashSet.empty
-        for i in [0:g.vertices.size] do temp := temp.insert i
+        for i in g.getAllVertexIDs do temp := temp.insert i
         temp
       dijkstraAux g source target (unvisitedSet.erase source) dijkstraVertices (unvisitedSet.size-1)
   else

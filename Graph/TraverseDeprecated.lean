@@ -50,14 +50,14 @@ private def traverseAuxBase {containerType : Type _} (g : Graph α β) (containe
     it returns a new state and a boolean which terminates the traversal if true. Please provide a starting state. You may optionally provide an array of booleans of length
     |V|, then at each index that is set to true, the vertex with the respective ID and it's successors will be skipped.
     See example uses in Graph/TraverseExample.lean -/
-def breadthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (alreadyVisited : Option (Array Bool) := none) : γ :=
+def breadthFirstTraverseDeprecated (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (alreadyVisited : Option (Array Bool) := none) : γ :=
   traverseAuxBase g Container.emptyQueue source startingState visit none alreadyVisited
 
 /-- A depth-first traversal of the graph starting at source. Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
     it returns a new state and a boolean which terminates the traversal if true. Leave is executed when the node is left, when all its successors have been visited, uses the same state.
     You may optionally provide an array of booleans of length |V|, then at each index that is set to true, the vertex with the respective ID and it's successors will be skipped.
     Please provide a starting state. See example uses in Graph/TraverseExample.lean -/
-def depthFirstTraversal (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Option (Nat -> γ -> γ ) := none) (alreadyVisited : Option (Array Bool) := none) : γ :=
+def depthFirstTraverseDeprecated (g : Graph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Option (Nat -> γ -> γ ) := none) (alreadyVisited : Option (Array Bool) := none) : γ :=
   traverseAuxBase g Container.emptyStack source startingState visit leave alreadyVisited
 
 
@@ -94,18 +94,19 @@ private def traverseAux2 {containerType : Type _} (g : Graph α β) (startingCon
 
   return state
 
-def depthFirstTraversal2 (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Option (Nat -> γ -> γ ) := none) : γ :=
+-- TODO remove one of these
+def depthFirstTraverseDeprecated2 (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Option (Nat -> γ -> γ ) := none) : γ :=
   traverseAux2 g Container.emptyStack sources startingState visit leave
 
-namespace UndirectedGraph
+-- namespace UndirectedGraph
 
-/-- See directed graph. -/
-def breadthFirstTraversal (ug : UndirectedGraph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (alreadyVisited : Option (Array Bool) := none) : γ :=
-  ug.graph.breadthFirstTraversal source startingState visit alreadyVisited
+-- /-- See directed graph. -/
+-- def breadthFirstTraversal (ug : UndirectedGraph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (alreadyVisited : Option (Array Bool) := none) : γ :=
+--   ug.graph.breadthFirstTraversal source startingState visit alreadyVisited
 
-/-- See directed graph. -/
-def depthFirstTraversal (ug : UndirectedGraph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Option (Nat -> γ -> γ ) := none) (alreadyVisited : Option (Array Bool) := none) : γ :=
-  ug.graph.depthFirstTraversal source startingState visit leave alreadyVisited
+-- /-- See directed graph. -/
+-- def depthFirstTraversal (ug : UndirectedGraph α β) (source : Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Option (Nat -> γ -> γ ) := none) (alreadyVisited : Option (Array Bool) := none) : γ :=
+--   ug.graph.depthFirstTraversal source startingState visit leave alreadyVisited
 
-end UndirectedGraph
+-- end UndirectedGraph
 end Graph

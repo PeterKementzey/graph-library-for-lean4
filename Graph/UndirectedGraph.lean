@@ -2,6 +2,7 @@ import Graph.Graph
 
 namespace Graph
 
+-- TODO maybe make this something similar to the flow network declaration type
 structure UndirectedGraph (α : Type) (β : Type) where
   graph : Graph α β
 
@@ -26,6 +27,15 @@ def addEdgeById (ug : UndirectedGraph α β) (source : Nat) (target : Nat) (weig
 
 /-- -/
 def getVertexPayload (ug : UndirectedGraph α β) := ug.graph.getVertexPayload
+
+/-- Total edge count in the graph. Note that while the undirected graph representation contains all edges in both directions, this function returns only half of that, so the expected edge count. -/
+def edgeCount (ug : UndirectedGraph α β) : Nat := ug.graph.edgeCount / 2 -- TODO test this
+
+/-- -/
+def vertexCount (ug : UndirectedGraph α β) : Nat := ug.graph.vertexCount
+
+/-- -/
+def getAllVertexIDs (ug : UndirectedGraph α β) : Array Nat := ug.graph.getAllVertexIDs
 
 /-- Removes all edges between x and y with specific weight, order of vertex IDs does not matter.
     If weight is not specified all edges between x and y are removed. -/

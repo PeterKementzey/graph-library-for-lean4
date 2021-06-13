@@ -12,14 +12,14 @@ namespace Graph namespace UndirectedGraph
 
 variable {α : Type} [Inhabited α] {β : Type} [BEq β] [Hashable β] [Inhabited β]
 
-structure KruskalEdge (β : Type) where
+private structure KruskalEdge (β : Type) where
   source : Nat
   target : Nat
   weight : β
 
-instance : BEq (KruskalEdge β) := ⟨ (fun l r => l.weight == r.weight && ((l.source == r.source && l.target == r.target) || (l.source == r.target && l.target == r.source))) ⟩
-instance : Hashable (KruskalEdge β) where hash e := mixHash (hash e.source) (mixHash (hash e.target) (hash e.weight))
-instance : Inhabited (KruskalEdge β) := ⟨ { source := arbitrary, target := arbitrary, weight := arbitrary } ⟩
+private instance : BEq (KruskalEdge β) := ⟨ (fun l r => l.weight == r.weight && ((l.source == r.source && l.target == r.target) || (l.source == r.target && l.target == r.source))) ⟩
+private instance : Hashable (KruskalEdge β) where hash e := mixHash (hash e.source) (mixHash (hash e.target) (hash e.weight))
+private instance : Inhabited (KruskalEdge β) := ⟨ { source := arbitrary, target := arbitrary, weight := arbitrary } ⟩
 
 --                                                 edges to add to spanning tree         connected vertex id's              resulting edges                                size of sortedEdges
 private def kruskalAux (ug : UndirectedGraph α β) (sortedEdges : Array (KruskalEdge β)) (forest : Array (Std.HashSet Nat)) (spanningEdges : Std.HashSet (KruskalEdge β)) : Nat -> Std.HashSet (KruskalEdge β)
