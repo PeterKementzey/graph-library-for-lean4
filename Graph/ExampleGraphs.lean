@@ -254,3 +254,16 @@ def exampleGraph11' :=
   let gx := gx.addEdgeById 1 6 10
   let gx := gx.addEdgeById 6 2 10
   gx
+
+def exampleLineGraph :=
+  let gx : Graph Nat Nat := Graph.empty
+  let gx := (gx.addVertex 0).1
+  let gx := (gx.addVertex 1).1
+  let gx := (gx.addVertex 2).1
+  let gx := (gx.addVertex 3).1
+  let gx := (gx.addVertex 4).1
+  let gx := gx.addEdgeById 0 1 1
+  let gx := gx.addEdgeById 1 2 1
+  let gx := gx.addEdgeById 2 3 1
+  let gx := gx.addEdgeById 3 4 1
+  gx

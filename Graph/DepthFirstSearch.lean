@@ -71,7 +71,7 @@ def fullyExpand (t : Tree (g : Graph α β)) : Tree g := (t.createForestAux (#[]
 end Tree
 
 private def depthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × Bool) (leave : (Nat -> γ -> γ )) (state : γ) (sources : Array Nat) (visited : Array Bool) : Nat -> γ × Bool × Array Bool
-  | 0 => have : Inhabited γ := ⟨ state ⟩; panic! "not enough iterations" -- TODO try on line graph
+  | 0 => have : Inhabited γ := ⟨ state ⟩; panic! "not enough iterations"
   | n + 1 => do
     let mut visited := visited
     let mut state := state
@@ -90,7 +90,7 @@ private def depthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × 
     return (state, false, visited)
 
 def depthFirstTraversal4 (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
-  (g.depthFirstTraverseAux visit leave startingState sources (mkArray g.vertices.size false) g.vertices.size).1
+  (g.depthFirstTraverseAux visit leave startingState sources (mkArray g.vertices.size false) (g.vertices.size + 1)).1
 
 open Tree
 
