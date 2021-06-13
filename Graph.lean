@@ -1,10 +1,22 @@
-import Graph.All
-
-import Graph.ExampleGraphs
+import Graph.Dijkstra
+import Graph.Graph
+import Graph.MaximumFlow
+import Graph.MinimumSpanningTree
 import Graph.Parser
-import Graph.TraverseExample
-import Graph.Traverse
+import Graph.Search
 import Graph.TopologicalSort
+import Graph.Traverse
+import Graph.UndirectedGraph
+
+
+
+
+-- import Graph.ExampleGraphs
+-- import Graph.TraverseExample
+
+
+
+
 -- This is a comment
 
 /-
@@ -23,7 +35,7 @@ this is function documentation
 `code`
 # heading
 -/
-def randomNecessaryFunctionForComment := 5
+private def randomNecessaryFunctionForComment := 5
 
 
 
@@ -52,16 +64,16 @@ def randomNecessaryFunctionForComment := 5
 --   -- IO.println (graph.depthFirstTraversalOrderWithLeaving 0)
 
 
-def bitcoinSize := "../benchmarking/generated-graphs/stanford-bitcoin-sized-topsort-gen.txt"
-def maximumSize := "../benchmarking/generated-graphs/maximum-working-size-topsort-gen.txt"
-def mediumDense := "../benchmarking/generated-graphs/medium-dense-topsort-gen.txt"
-def mediumVeryDense := "../benchmarking/generated-graphs/medium-very-dense-topsort-gen.txt"
-def mediumSparse := "../benchmarking/generated-graphs/medium-sparse-topsort-gen.txt"
-def mediumVerySparse := "../benchmarking/generated-graphs/medium-very-sparse-topsort-gen.txt"
-def smallDense := "../benchmarking/generated-graphs/small-dense-topsort-gen.txt"
-def smallSparse := "../benchmarking/generated-graphs/small-sparse-topsort-gen.txt"
-def huge := "../benchmarking/generated-graphs/huge-topsort-gen.txt"
-def testGraph := "../benchmarking/generated-graphs/test-topsort-gen.txt"
+-- def bitcoinSize := "../benchmarking/generated-graphs/stanford-bitcoin-sized-topsort-gen.txt"
+-- def maximumSize := "../benchmarking/generated-graphs/maximum-working-size-topsort-gen.txt"
+-- def mediumDense := "../benchmarking/generated-graphs/medium-dense-topsort-gen.txt"
+-- def mediumVeryDense := "../benchmarking/generated-graphs/medium-very-dense-topsort-gen.txt"
+-- def mediumSparse := "../benchmarking/generated-graphs/medium-sparse-topsort-gen.txt"
+-- def mediumVerySparse := "../benchmarking/generated-graphs/medium-very-sparse-topsort-gen.txt"
+-- def smallDense := "../benchmarking/generated-graphs/small-dense-topsort-gen.txt"
+-- def smallSparse := "../benchmarking/generated-graphs/small-sparse-topsort-gen.txt"
+-- def huge := "../benchmarking/generated-graphs/huge-topsort-gen.txt"
+-- def testGraph := "../benchmarking/generated-graphs/test-topsort-gen.txt"
 
 
 -- Wrt the `timeit` shenanigans: there could be all kinds of things going
@@ -91,19 +103,19 @@ def testGraph := "../benchmarking/generated-graphs/test-topsort-gen.txt"
 --   IO.println (res)
   
 
-def main (argv : List String) : IO Unit := do
+-- def main (argv : List String) : IO Unit := do
 
-  let filePath := huge
+--   let filePath := huge
 
-  let graph <- parseGraphFromEdgeListFile filePath
-  -- IO.println graph.vertices.back.payload
-  -- IO.println "Parsed graph"
-  let start <- IO.monoMsNow
-  -- let res <- graph.topSortUnsafe
-  let res <- graph.breadthFirstCompleteTraversalOrder
-  -- let res <- graph.topSort
-  let stop <- IO.monoMsNow
-  IO.println ("Sorted graph in: " ++ (toString (stop - start)) ++ " ms")
-  IO.println (res.back)
-  -- IO.println (res.get!.back)
+--   let graph <- parseGraphFromEdgeListFile filePath
+--   -- IO.println graph.vertices.back.payload
+--   -- IO.println "Parsed graph"
+--   let start <- IO.monoMsNow
+--   -- let res <- graph.topSortUnsafe
+--   let res <- graph.breadthFirstCompleteTraversalOrder
+--   -- let res <- graph.topSort
+--   let stop <- IO.monoMsNow
+--   IO.println ("Sorted graph in: " ++ (toString (stop - start)) ++ " ms")
+--   IO.println (res.back)
+--   -- IO.println (res.get!.back)
   
