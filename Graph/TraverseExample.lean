@@ -1,4 +1,4 @@
-import Graph.Traverse
+import Graph.TraverseDeprecated
 
 import Graph.DepthFirstSearch -- FIXME
 
@@ -27,5 +27,6 @@ def depthFirstTraversalOrderWithLeaving4 (g : Graph α β) : Array Int := g.dept
 def breadthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.breadthFirstTraversal source Array.empty traversalArrivingOrderVisit
 def breadthFirstTraversalOrder4 (g : Graph α β) (source : Nat) : Array Int := g.breadthFirstTraversal4 #[source] #[] traversalArrivingOrderVisit 
 def breadthFirstCompleteTraversalOrder4 (g : Graph α β) : Array Int := g.breadthFirstTraversal4 g.getAllVertexIDs #[] traversalArrivingOrderVisit 
+def breadthFirstCompleteTraversalOrder5 (g : Graph α β) : Array Int := g.breadthFirstTraversal5 g.getAllVertexIDs #[] traversalArrivingOrderVisit 
 
 end Graph

@@ -1,4 +1,4 @@
-import Graph.Traverse
+import Graph.TraverseDeprecated
 
 namespace Graph
 
