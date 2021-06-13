@@ -19,7 +19,6 @@ def depthFirstTraversalOrder (g : Graph α β) (source : Nat) : Array Int := g.d
 -- Results in an array that contains the node ids in order of visiting, node id * (-1) when leaving them
 def depthFirstTraversalOrderWithLeaving (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal source Array.empty traversalArrivingOrderVisit (some traversalLeavingOrderVisit)
 def depthFirstTraversalOrderWithLeaving2 (g : Graph α β) (source : Nat) : Array Int := g.depthFirstTraversal2 #[source] Array.empty traversalArrivingOrderVisit (some traversalLeavingOrderVisit)
-def depthFirstTraversalOrderWithLeaving3 (g : Graph α β) : Array Int := g.depthFirstCompleteTraversal3 Array.empty traversalArrivingOrderVisit traversalLeavingOrderVisit
 def depthFirstTraversalOrderWithLeaving4 (g : Graph α β) : Array Int := g.depthFirstTraversal4 g.getAllVertexIDs Array.empty traversalArrivingOrderVisit traversalLeavingOrderVisit
 
 
