@@ -3,7 +3,7 @@ import Graph.All
 import Graph.ExampleGraphs
 import Graph.Parser
 import Graph.TraverseExample
-import Graph.DepthFirstSearch
+import Graph.Traverse
 import Graph.TopologicalSort2
 -- This is a comment
 

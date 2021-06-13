@@ -1,5 +1,5 @@
 import Graph.Graph
-import Graph.DepthFirstSearch
+import Graph.Traverse
 
 namespace Graph
 

@@ -1,4 +1,4 @@
-import Graph.DepthFirstSearch
+import Graph.Traverse
 
 namespace Graph
 
