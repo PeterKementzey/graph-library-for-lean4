@@ -4,7 +4,7 @@ import Graph.ExampleGraphs
 import Graph.Parser
 import Graph.TraverseExample
 import Graph.Traverse
-import Graph.TopologicalSort2
+import Graph.TopologicalSort
 -- This is a comment
 
 /-
