@@ -81,7 +81,7 @@ private def depthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × 
       let (newState, terminate?) := visit id state;
       state := newState
       if terminate? then return (leave id state, true, #[]) else
-      let adjacencyList := (g.vertices[id].adjacencyList.map (λ edge => edge.target)).filter (!visited[.]) -- TODO see how removing the filter here influences running time
+      let adjacencyList := (g.vertices[id].adjacencyList.map (λ edge => edge.target)).filter (!visited[.])
       let (newState, terminate?, newVisited) := g.depthFirstTraverseAux visit leave state adjacencyList visited n
       visited := newVisited
       state := leave id newState
