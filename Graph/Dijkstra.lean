@@ -21,7 +21,14 @@ namespace ShortestPathTree
 
 instance : ToString ShortestPathTree where toString t := toString t.dijkstraVertices
 
-def shortestDistanceToVertex (t : ShortestPathTree) (id : Nat) : Option Nat := t.dijkstraVertices[id].distance
+def distanceToVertex (t : ShortestPathTree) (id : Nat) : Option Nat := t.dijkstraVertices[id].distance
+
+/-- Returns the eccentricity of the root of the shortest path tree. If the graph is disconnected, the eccentricity of all vertices is infinite by definition, then the return value is none. -/
+def eccentricity (t : ShortestPathTree) : Option Nat := t.dijkstraVertices.foldr (λ dv ecc => match (dv.distance, ecc) with
+  | (none, _) => none
+  | (_, none) => none
+  | (some distance, some eccentricity) => if distance > eccentricity then some distance else some eccentricity
+) (some 0)
 
 -- Note: make note in documentation that this is not efficient
 def successorsOfVertex (t : ShortestPathTree) (id : Nat) : Array Nat := do

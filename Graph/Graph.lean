@@ -41,11 +41,20 @@ variable {α : Type} [Inhabited α] {β : Type}
 /-- Empty graph, α is the vertex payload type, β is edge weight type. -/
 def empty : Graph α β := ⟨#[]⟩
 
+/-- Total edge count in the graph. -/
+def edgeCount (g : Graph α β) : Nat := g.vertices.foldr (λ vertex count => vertex.adjacencyList.size + count) 0
+
 /-- -/
 def vertexCount (g : Graph α β) : Nat := g.vertices.size
 
-/-- Total edge count in the graph. -/
-def edgeCount (g : Graph α β) : Nat := g.vertices.foldr (λ vertex count => vertex.adjacencyList.size + count) 0
+/-- Returns the order of the graph. -/
+def order (g : Graph α β) := g.vertexCount
+
+/-- Returns true if the graph has no vertices. -/
+def hasNoVertices (g : Graph α β) : Bool := g.vertices.isEmpty
+
+/-- Returns true if the graph has no edges. -/
+def hasNoEdges (g : Graph α β) : Bool := g.edgeCount == 0
 
 /-- Add a vertex to the graph.
     Returns new graph and unique vertex ID. -/
@@ -59,10 +68,30 @@ def addEdgeByID (g : Graph α β) (source : Nat) (target : Nat) (weight : β) : 
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
 
-/-- Creates a graph by mapping the array to vertices, indices in the array will be the respective node ids, the elements will be the payload. -/
+/-- Creates a graph by mapping the array to vertices, indices in the array will be the respective node IDs, the elements will be the payload. -/
 def makeGraphFromArray (a : Array α) : Graph α β := ⟨
   a.map (λ element => { payload := element } )
 ⟩
+
+/-- Returns an array of vertex payloads in increasing order of IDs. -/
+def toArray (g : Graph α β) : Array α := g.vertices.map (λ vertex => vertex.payload)
+
+/-- -/
+def outDegree (g : Graph α β) (id : Nat) : Nat := g.vertices[id].adjacencyList.size
+
+/-- -/
+def inDegree (g : Graph α β) (id : Nat) : Nat := g.vertices.foldr (λ vertex count => count + (vertex.adjacencyList.filter (λ edge => edge.target == id)).size) 0
+
+/-- -/
+def outDegrees (g : Graph α β) : Array Nat := g.vertices.map (λ vertex => vertex.adjacencyList.size)
+
+/-- -/
+def inDegrees (g : Graph α β) : Array Nat := do
+  let mut res : Array Nat := mkArray g.vertexCount 0
+  for vertex in g.vertices do
+    for edge in vertex.adjacencyList do
+      res := res.modify edge.target (.+1)
+  res
 
 /-- -/
 def getAllVertexIDs (g : Graph α β) : Array Nat := do
@@ -93,6 +122,9 @@ def updateVertexPayload (g : Graph α β) (id : Nat) (payload : α) : Graph α �
   g with vertices := g.vertices.modify id (fun vertex => { vertex with payload := payload })
 }
 
+/-- Returns an array of vertex IDs whose payload equals the payload parameter. -/
+def findVertexIDs [BEq α] (g : Graph α β) (payload : α) : Array Nat := g.getAllVertexIDs.filter (λ id => g.vertices[id].payload == payload)
+
 /-- Warning! This function is deprecated, vertex IDs will change if used.
     Returns graph without vertex and a mapping from old vertex IDs to new vertex IDs. -/
 def removeVertex (g : Graph α β) (id : Nat) : (Graph α β) × (Nat -> Nat) :=
@@ -116,14 +148,11 @@ def mapVertices [Inhabited γ] (g : Graph α β) (f : α -> γ) : Graph γ β :=
 ⟩
 
 /-- Map edge weights. -/
-def mapEdges [Inhabited γ] (g : Graph α β) (f : β -> γ) : Graph α γ := ⟨
+def mapEdges (g : Graph α β) (f : β -> γ) : Graph α γ := ⟨
   g.vertices.map (λ vertex => { vertex with adjacencyList := vertex.adjacencyList.map (λ edge =>
     { edge with weight := f edge.weight }
   )})
 ⟩
-
-/-- Returns an array of vertex payloads in increasing order of IDs. -/
-def toArray (g : Graph α β) : Array α := g.vertices.map (λ vertex => vertex.payload)
 
 namespace Vertex
 
@@ -139,8 +168,3 @@ instance [ToString α] [ToString β] : ToString (Graph α β) where toString g :
   return toString (g.getAllVertexIDs.zip g.vertices)
 
 end Graph
-
-
-
-
--- def findVertexId (g : Graph α β) (payload : α) : Option Nat := g.vertices.findIdx? (fun v => v.payload == payload) -- TODO
