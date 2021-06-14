@@ -1,4 +1,4 @@
-import Graph.TraverseDeprecated
+import Graph.Traverse
 
 namespace Graph
 
@@ -9,10 +9,10 @@ private def searchVisit (target : Nat) (id : Nat) (state : Bool) :=
   else (false, false)
 
 /-- Depth-first search of graph. Returns true if target node is reachable from source node. -/
-def depthFirstSearch (g : Graph α β) (source : Nat) (target : Nat) : Bool := g.depthFirstTraverseDeprecated source false (searchVisit target)
+def depthFirstSearch (g : Graph α β) (source : Nat) (target : Nat) : Bool := g.depthFirstTraverse #[source] false (searchVisit target)
 
 /-- Breadt-first search of graph. Returns true if target node is reachable from source node. -/
-def breadthFirstSearch (g : Graph α β) (source : Nat) (target : Nat) : Bool := g.breadthFirstTraverseDeprecated source false (searchVisit target)
+def breadthFirstSearch (g : Graph α β) (source : Nat) (target : Nat) : Bool := g.breadthFirstTraverse #[source] false (searchVisit target)
 
 private def pathVisit (target : Nat) (id : Nat) (state : Array Nat) :=
   if id == target then (state.push id, true)
@@ -42,7 +42,7 @@ private def constructPath (g : Graph α β) (vertexStack : Array Nat) (pathSoFar
 
 /-- Returns a Path from source to target if reachable, none otherwise. Use Dijkstra for BFS (shortest) path. -/
 def depthFirstPathSearch (g : Graph α β) (source : Nat) (target : Nat) : Option (Path β true) :=
-  let vertexStack := g.depthFirstTraverseDeprecated source Array.empty (pathVisit target) (some pathLeave)
+  let vertexStack := g.depthFirstTraverse #[source] Array.empty (pathVisit target) pathLeave
   if !vertexStack.isEmpty then
     some (constructPath g vertexStack Path.empty vertexStack.size)
   else
