@@ -97,7 +97,7 @@ private def dijkstraAux (g : Graph α Nat) (current : Nat) (target : Option Nat)
         | some x => dijkstraAux g nextCurrent target (unvisited.erase nextCurrent) dijkstraVertices n
 
 private def dijkstraAuxBase (g : Graph α Nat) (source : Nat) (target : Option Nat) : Array (DijkstraVertex) :=
-  let dijkstraVerticesInitial : Array (DijkstraVertex) := mkArray g.vertices.size {predecessor := source} -- predecessor is only a placeholder here, it has no significance and will be replaced or not used
+  let dijkstraVerticesInitial : Array (DijkstraVertex) := mkArray g.vertexCount {predecessor := source} -- predecessor is only a placeholder here, it has no significance and will be replaced or not used
   if h : source < dijkstraVerticesInitial.size then
     let dijkstraVertices := dijkstraVerticesInitial.set ⟨source, h⟩ {predecessor := source, distance := some 0}
     let isTargetFound : Bool := match target with

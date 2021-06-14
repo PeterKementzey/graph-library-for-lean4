@@ -41,36 +41,33 @@ variable {α : Type} [Inhabited α] {β : Type}
 /-- Empty graph, α is the vertex payload type, β is edge weight type. -/
 def empty : Graph α β := ⟨#[]⟩
 
-/-- Creates a graph by mapping the array to vertices, indices in the array will be the respective node ids, the elements will be the payload. -/
-def makeGraphFromArray (a : Array α) : Graph α β := ⟨
-  a.map (λ element => { payload := element } )
-⟩
+/-- -/
+def vertexCount (g : Graph α β) : Nat := g.vertices.size
+
+/-- Total edge count in the graph. -/
+def edgeCount (g : Graph α β) : Nat := g.vertices.foldr (λ vertex count => vertex.adjacencyList.size + count) 0
 
 /-- Add a vertex to the graph.
     Returns new graph and unique vertex ID. -/
 def addVertex (g : Graph α β) (payload : α) : (Graph α β) × Nat :=
   let res := { g with vertices := g.vertices.push { payload := payload } }
-  let id : Nat := res.vertices.size - 1
+  let id : Nat := res.vertexCount - 1
   (res, id)
 
-/-- -/ -- FIXME ID
-def addEdgeById (g : Graph α β) (source : Nat) (target : Nat) (weight : β) : Graph α β := {
+/-- -/
+def addEdgeByID (g : Graph α β) (source : Nat) (target : Nat) (weight : β) : Graph α β := {
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
 
-/-- -/
-def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].payload
-
-/-- Total edge count in the graph. -/
-def edgeCount (g : Graph α β) : Nat := g.vertices.foldr (λ vertex count => vertex.adjacencyList.size + count) 0
-
-/-- -/
-def vertexCount (g : Graph α β) : Nat := g.vertices.size
+/-- Creates a graph by mapping the array to vertices, indices in the array will be the respective node ids, the elements will be the payload. -/
+def makeGraphFromArray (a : Array α) : Graph α β := ⟨
+  a.map (λ element => { payload := element } )
+⟩
 
 /-- -/
 def getAllVertexIDs (g : Graph α β) : Array Nat := do
-  let mut arr := mkArray g.vertices.size 0
-  for i in [0:g.vertices.size] do arr := arr.set! i i
+  let mut arr := mkArray g.vertexCount 0
+  for i in [0:g.vertexCount] do arr := arr.set! i i
   arr
 
 /-- Removes all edges from source to target with specific weight.
@@ -87,6 +84,9 @@ def removeAllEdgesFromTo [BEq β] (g : Graph α β) (source : Nat) (target : Nat
 def removeAllEdges (g : Graph α β) : Graph α β := {
   g with vertices := g.vertices.map (λ vertex => { vertex with adjacencyList := Array.empty })
 }
+
+/-- -/
+def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].payload
 
 /-- -/
 def updateVertexPayload (g : Graph α β) (id : Nat) (payload : α) : Graph α β := {
@@ -121,6 +121,9 @@ def mapEdges [Inhabited γ] (g : Graph α β) (f : β -> γ) : Graph α γ := �
     { edge with weight := f edge.weight }
   )})
 ⟩
+
+/-- Returns an array of vertex payloads in increasing order of IDs. -/
+def toArray (g : Graph α β) : Array α := g.vertices.map (λ vertex => vertex.payload)
 
 namespace Vertex
 

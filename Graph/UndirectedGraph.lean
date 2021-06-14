@@ -20,9 +20,9 @@ def addVertex (ug : UndirectedGraph α β) (x : α): (UndirectedGraph α β) × 
   ( ⟨ newGraph ⟩, id)
 
 /-- -/
-def addEdgeById (ug : UndirectedGraph α β) (source : Nat) (target : Nat) (weight : β) : UndirectedGraph α β :=
-  let graphWithNewEdge := ug.graph.addEdgeById source target weight
-  let graphWithOppositeEdge := if source != target then graphWithNewEdge.addEdgeById target source weight else graphWithNewEdge
+def addEdgeByID (ug : UndirectedGraph α β) (source : Nat) (target : Nat) (weight : β) : UndirectedGraph α β :=
+  let graphWithNewEdge := ug.graph.addEdgeByID source target weight
+  let graphWithOppositeEdge := if source != target then graphWithNewEdge.addEdgeByID target source weight else graphWithNewEdge
   ⟨ graphWithOppositeEdge ⟩
 
 /-- -/

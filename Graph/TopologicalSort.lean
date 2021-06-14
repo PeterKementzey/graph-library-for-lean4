@@ -19,7 +19,7 @@ def topSort (g : Graph α β) : Option (Array Nat) :=
     | none => none
   where
     initialState := some ⟨ falseArray, Array.empty ⟩
-    falseArray := (mkArray g.vertices.size false)
+    falseArray := (mkArray g.vertexCount false)
 
     visit (g : Graph α β) (id : Nat) (s : Option State) : Option State × Bool :=
       let state := s.get!

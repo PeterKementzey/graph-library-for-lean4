@@ -26,7 +26,7 @@ private def depthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × 
     return (state, false, visited)
 
 def depthFirstTraverse (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
-  (g.depthFirstTraverseAux visit leave startingState sources (mkArray g.vertices.size false) (g.vertices.size)).1
+  (g.depthFirstTraverseAux visit leave startingState sources (mkArray g.vertexCount false) (g.vertexCount)).1
 
 def depthFirstCompleteTraverse (g : Graph α β) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
   g.depthFirstTraverse g.getAllVertexIDs startingState visit leave
@@ -50,10 +50,10 @@ private def breadthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ �
 
 
 -- TODO mention that there should be no duplicates here
-def breadthFirstTraverse (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (maxDepth : Nat := g.vertices.size) : γ :=
-  g.breadthFirstTraverseAux visit startingState sources (mkArray g.vertices.size false) maxDepth
+def breadthFirstTraverse (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (maxDepth : Nat := g.vertexCount) : γ :=
+  g.breadthFirstTraverseAux visit startingState sources (mkArray g.vertexCount false) maxDepth
 
-def breadthFirstCompleteTraverse (g : Graph α β) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (maxDepth : Nat := g.vertices.size) : γ :=
+def breadthFirstCompleteTraverse (g : Graph α β) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (maxDepth : Nat := g.vertexCount) : γ :=
   g.breadthFirstTraverse g.getAllVertexIDs startingState visit maxDepth
 
 

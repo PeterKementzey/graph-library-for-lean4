@@ -51,7 +51,7 @@ private def createAdjacencyListAndNeighborSets (vertex : Vertex α Nat) (id : Na
 
 private def nullFlowNetwork (g : Graph α Nat) : Option FlowNetwork := do
   let mut adjacencyLists : Array (Array (Edge MaxFlowEdge)) := Array.empty
-  let mut neighborSets : Array (Std.HashSet Nat) := mkArray g.vertices.size Std.HashSet.empty
+  let mut neighborSets : Array (Std.HashSet Nat) := mkArray g.vertexCount Std.HashSet.empty
   let mut nextVertexPointers : Array Nat := Array.empty
   for i in g.getAllVertexIDs do
     match createAdjacencyListAndNeighborSets g.vertices[i] i neighborSets with
@@ -74,7 +74,7 @@ namespace FlowNetwork
 
 private def initializePreflow (flowNetwork : FlowNetwork) (source : Nat) : FlowNetwork :=
   let verticesWithSourceAtHeightAndPreflowMaximized : Array FlowVertex := flowNetwork.vertices.modify source (λ vertex => {
-    payload := { vertex.payload with height := flowNetwork.vertices.size } 
+    payload := { vertex.payload with height := flowNetwork.vertexCount } 
     adjacencyList := vertex.adjacencyList.map (λ edge =>
       { edge with weight := { edge.weight with flow := edge.weight.capacity } }
     )
@@ -161,10 +161,10 @@ private def discharge (flowNetwork : FlowNetwork) (u : Nat) : Nat -> FlowNetwork
     newFlowNetwork.discharge u n
 
 private def removeFromList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat) : FlowNetwork × Nat :=
-  let wrapAround n := n % flowNetwork.vertices.size
+  let wrapAround n := n % flowNetwork.vertexCount
   if id == head then
     let newList := flowNetwork.vertices.modify id (λ vertex =>
-      { vertex with payload := { vertex.payload with nextVertex := flowNetwork.vertices.size } }
+      { vertex with payload := { vertex.payload with nextVertex := flowNetwork.vertexCount } }
     )
     (⟨ newList ⟩, flowNetwork.vertices[head].payload.nextVertex) else
   let parentId : Nat := (flowNetwork.vertices.findIdx? (λ vertex => vertex.payload.nextVertex == id)).get!
@@ -181,7 +181,7 @@ private def addToFrontOfList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat)
   (⟨ newList ⟩, id)
 
 private def initializeVertexList (flowNetwork : FlowNetwork) (source : Nat) (sink : Nat) : FlowNetwork × Nat :=
-  let wrapAround n := n % (flowNetwork.vertices.size)
+  let wrapAround n := n % (flowNetwork.vertexCount)
   let (sourceSkipped, sourceSkippedHead) := flowNetwork.removeFromList source 0
   let (sinkSkipped, sinkSkippedHead) := sourceSkipped.removeFromList sink sourceSkippedHead
   (sinkSkipped, sinkSkippedHead)
@@ -190,7 +190,7 @@ private def initializeVertexList (flowNetwork : FlowNetwork) (source : Nat) (sin
 private def relabelToFront (flowNetwork : FlowNetwork) (current : Nat) (head : Nat) : Nat -> FlowNetwork
   | 0 => panic! "Iteration count was too low"
   | n + 1 =>
-    if current >= flowNetwork.vertices.size then flowNetwork else
+    if current >= flowNetwork.vertexCount then flowNetwork else
     let oldHeight := flowNetwork.vertices[current].payload.height
     let newFlowNetwork : FlowNetwork := flowNetwork.discharge current (flowNetwork.upperBoundOfDischargeIterations current)
     let (newList, newHead) : FlowNetwork × Nat := if newFlowNetwork.vertices[current].payload.height > oldHeight then

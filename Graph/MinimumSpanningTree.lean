@@ -42,15 +42,15 @@ private def kruskalAux (ug : UndirectedGraph α β) (sortedEdges : Array (Kruska
 /-- Kruskal's algorithm to find a minimum spanning forest in an undirected graph. If the graph is connected, it finds a minimum spanning tree. -/
 def kruskal (ug : UndirectedGraph α β) (lt : β -> β -> Bool) : UndirectedGraph α β := do
   let mut kruskalEdges : Std.HashSet (KruskalEdge β) := Std.HashSet.empty
-  for source in [0:ug.graph.vertices.size] do
+  for source in [0:ug.graph.vertexCount] do
     for edge in ug.graph.vertices[source].adjacencyList do
       kruskalEdges := kruskalEdges.insert { source := source, target := edge.target, weight := edge.weight }
   let sortedEdges := kruskalEdges.toArray.insertionSort (λ l r => lt r.weight l.weight) -- (λ l r => l.weight < r.weight)
 
   let mut forest : Array (Std.HashSet Nat) := Array.empty
-  for i in [0:ug.graph.vertices.size] do forest := forest.push (Std.HashSet.empty.insert i)
+  for i in [0:ug.graph.vertexCount] do forest := forest.push (Std.HashSet.empty.insert i)
 
   let spanningEdges := kruskalAux ug sortedEdges forest Std.HashSet.empty sortedEdges.size
-  spanningEdges.fold (λ spanningForest kruskalEdge => spanningForest.addEdgeById kruskalEdge.source kruskalEdge.target kruskalEdge.weight) ug.removeAllEdges
+  spanningEdges.fold (λ spanningForest kruskalEdge => spanningForest.addEdgeByID kruskalEdge.source kruskalEdge.target kruskalEdge.weight) ug.removeAllEdges
 
 end UndirectedGraph end Graph

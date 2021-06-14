@@ -17,7 +17,7 @@ private def parse (nodeCount : Nat) (input : Array String) : Graph Bool Nat := d
   let mut gx : Graph Bool Nat := Graph.makeGraphFromArray (mkArray nodeCount false)
   -- let mut i := 1
   for edge in edges do
-    gx := gx.addEdgeById edge.1 edge.2 0 -- i
+    gx := gx.addEdgeByID edge.1 edge.2 0 -- i
     -- i := i+1
   gx
 

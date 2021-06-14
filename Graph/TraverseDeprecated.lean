@@ -43,8 +43,8 @@ private def traverseAux {γ : Type _} {containerType : Type _} (g : Graph α β)
 private def traverseAuxBase {containerType : Type _} (g : Graph α β) (container : Container (Nat × Bool) containerType) (source : Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Option (Nat -> γ -> γ )) (alreadyVisited : Option (Array Bool)) : γ :=
   let visited : Array Bool := match alreadyVisited with
     | some v => v
-    | none => mkArray g.vertices.size false
-  traverseAux g visited (container.add (source, true)) startingState visit leave (g.edgeCount + g.vertices.size)
+    | none => mkArray g.vertexCount false
+  traverseAux g visited (container.add (source, true)) startingState visit leave (g.edgeCount + g.vertexCount)
 
 /-- A breadth-first traversal of the graph starting at source. Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
     it returns a new state and a boolean which terminates the traversal if true. Please provide a starting state. You may optionally provide an array of booleans of length
@@ -62,13 +62,13 @@ def depthFirstTraverseDeprecated (g : Graph α β) (source : Nat) (startingState
 
 
 private def traverseAux2 {containerType : Type _} (g : Graph α β) (startingContainer : Container (Nat × Bool) containerType) (startingSources : Array Nat) (startingState : γ) (visit : Nat -> γ -> γ × Bool) (leave : Option (Nat -> γ -> γ)) : γ := do
-  let mut visited : Array Bool := mkArray g.vertices.size false
+  let mut visited : Array Bool := mkArray g.vertexCount false
   let mut visitedCount : Nat := 0
   let mut state := startingState
   let mut container := startingContainer
   let mut sources := startingSources
-  for i in [0:g.vertices.size+g.edgeCount] do
-    if visitedCount == g.vertices.size then break else
+  for i in [0:g.vertexCount+g.edgeCount] do
+    if visitedCount == g.vertexCount then break else
     match container.remove? with
       | none =>
         if sources.isEmpty then break else
