@@ -1,6 +1,13 @@
 import Graph.Traverse
+import Graph.Path
 
 namespace Graph
+
+/-!
+## Search
+
+This module contains depth- and breadth-first search functions. See `Graph.Traversal` for traversing graphs.
+-/
 
 variable {α : Type} [Inhabited α] {β : Type}
 

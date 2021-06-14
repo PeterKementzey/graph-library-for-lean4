@@ -17,24 +17,11 @@ structure Graph (α : Type) (β : Type) where
 
 namespace Graph
 
-inductive Path (β : Type) : Bool → Type where
-  | vertex : Nat -> Path β false -> Path β true
-  | edge : β -> Path β true -> Path β false
-  | empty : ∀ {b}, Path β b
+/-!
+## Graph
 
-namespace Path
-
-private def toString [ToString β] : ∀ {b}, (Path β b) → String
-  | true, vertex id p =>
-    "vertex id: " ++ ToString.toString id ++ ", " ++ toString p
-  | false, edge weight p =>
-    "edge weight: " ++ ToString.toString weight ++ ", " ++ toString p
-  | _, empty => "∎"
-
-instance [ToString β] : ToString (Path β b) where toString p := toString p
-instance : Inhabited (Path β b) where default := empty
-
-end Path
+This module defines graphs and provides some basic construction functionality and properties. A `Graph (α : Type) (β : Type)` is a graph with vertex payloads of type `α` and edge weights of type `β`. If you don't want any of the algorithms to be imported to your code then import this module with `import Graph.Graph`.
+-/
 
 variable {α : Type} [Inhabited α] {β : Type}
 

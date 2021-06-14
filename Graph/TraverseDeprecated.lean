@@ -4,6 +4,15 @@ import Std.Data.Queue
 import Std.Data.Stack
 import Std.Data.HashSet
 
+/-!
+## Traverse (old)
+
+*Note that this module in not imported by default through `import Graph`, import it explicitly using `import Graph.TraverseDeprecated`.*
+
+This is a nice implementation of depth- and breadth-first search using shared code and a stack and queue respectively. However, due to the limitations of such an implementation these functions are fairly inefficient.
+
+-/
+
 import Graph.Container
 
 namespace Graph

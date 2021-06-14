@@ -1,6 +1,10 @@
 import Graph.Graph
 import Graph.Traverse
 
+/-!
+## Topological Sorting
+-/
+
 namespace Graph
 
 variable {α : Type} [Inhabited α] {β : Type}

@@ -1,5 +1,12 @@
 import Graph.Traverse
 
+/-! 
+## Traverse example
+
+*Note that this module in not imported by default through `import Graph`, import it explicitly using `import Graph.TraverseExample`.*
+    
+You can inspect the code in this file to see how the traversal works. -/
+
 namespace Graph
 
 variable {α : Type} [Inhabited α] {β : Type}

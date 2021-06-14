@@ -1,6 +1,13 @@
 import Graph.Graph
+import Graph.Path
 import Graph.UndirectedGraph
 import Std.Data.HashSet
+
+/-!
+## Dijkstra's algorithm
+
+Use `def dijkstra` to get a shortest path tree from the source, or `def dijkstraWithTarget` to stop the traversal once a specific target has been found.
+-/
 
 namespace Graph
 
@@ -14,6 +21,11 @@ structure DijkstraVertex where
 instance : ToString DijkstraVertex where toString dv := "Predecessor: " ++ (toString dv.predecessor) ++ ", current distance: " ++ (toString dv.distance) ++ "\n"
 instance : Inhabited DijkstraVertex := ⟨ { predecessor := arbitrary } ⟩
 
+/-!
+### ShortestPathTree
+`def dijkstra` returns a shortest path tree with the specified root. You can use the following algorithms to extract information from it:
+-/
+
 structure ShortestPathTree where
   dijkstraVertices : Array DijkstraVertex
 
@@ -21,6 +33,7 @@ namespace ShortestPathTree
 
 instance : ToString ShortestPathTree where toString t := toString t.dijkstraVertices
 
+/-- Returns the distance from the root of the tree to a specific node. -/
 def distanceToVertex (t : ShortestPathTree) (id : Nat) : Option Nat := t.dijkstraVertices[id].distance
 
 /-- Returns the eccentricity of the root of the shortest path tree. If the graph is disconnected, the eccentricity of all vertices is infinite by definition, then the return value is none. -/
@@ -30,8 +43,10 @@ def eccentricity (t : ShortestPathTree) : Option Nat := t.dijkstraVertices.foldr
   | (some distance, some eccentricity) => if distance > eccentricity then some distance else some eccentricity
 ) (some 0)
 
--- Note: make note in documentation that this is not efficient
-def successorsOfVertex (t : ShortestPathTree) (id : Nat) : Array Nat := do
+/-- Returns all node IDs that follow the specified node in any shortest path from the root.
+    Note that this function is not efficient (linear in the order of the graph).
+    If you would like to know the shortest path to a specific vertex you should rather use `pathToVertex` (linear time in number of vertices on path) or `predecessorOfVertex` (constant time). -/
+def successorsOfVertexDeprecated (t : ShortestPathTree) (id : Nat) : Array Nat := do
   let mut ret : Array Nat := Array.empty
   for i in [0:t.dijkstraVertices.size] do
     let vertex := t.dijkstraVertices[i]
@@ -40,6 +55,7 @@ def successorsOfVertex (t : ShortestPathTree) (id : Nat) : Array Nat := do
      | none => ret
   ret
 
+/-- Returns the previous node on the shortest path to the specified vertex from root. -/
 def predecessorOfVertex (t : ShortestPathTree) (id : Nat) : Option Nat :=
   match t.dijkstraVertices[id].distance with
     | some distance => some t.dijkstraVertices[id].predecessor
@@ -57,6 +73,7 @@ private def pathToVertexAux (t : ShortestPathTree) (id : Nat) (pathSoFar : Path 
         let pathWithCurrentEdgeAdded : Path Nat false := Path.edge currentVertex.edgeWeightToPredecessor pathWithCurrentVertexAdded
         pathToVertexAux t currentVertex.predecessor pathWithCurrentEdgeAdded n
 
+/-- Returns the shortest path from the tree root to the specified vertex. -/
 def pathToVertex (t : ShortestPathTree) (id : Nat) : Option (Path Nat true) := match t.dijkstraVertices[id].distance with
   | none => none
   | some distance => some (pathToVertexAux t id Path.empty t.dijkstraVertices.size)
@@ -120,10 +137,13 @@ private def dijkstraAuxBase (g : Graph α Nat) (source : Nat) (target : Option N
   else
       panic! "source out of bounds"
 
+/-!
+### Dijkstra
+-/
+
 /-- Find shortest path tree from source. Please see ShortestPathTree documentation for more info.
-    Note: To ensure non-negative weights this function currently only works on graphs with natural number edge weights. You may use the
-    ``` def mapEdges [Inhabited γ] (g : Graph α β) (f : β -> γ) ```
-    function to map your edge weights to Nat.-/
+    Note: To ensure non-negative weights this function currently only works on graphs with natural number edge weights.
+    You may use the `def mapEdges (g : Graph α β) (f : β -> γ)` function to map your edge weights to `Nat`.-/
 def dijkstra (g : Graph α Nat) (source : Nat) : ShortestPathTree := ⟨ (dijkstraAuxBase g source none) ⟩
 
 /-- This function will terminate the shortest path search once it has found the specified target. -/

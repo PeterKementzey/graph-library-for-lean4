@@ -1,6 +1,14 @@
 import Graph.Graph
 import Graph.UndirectedGraph
 
+/-!
+## Example graphs
+
+*Note that this module in not imported by default through `import Graph`, import it explicitly using `import Graph.ExampleGraphs`.*
+
+These are just a few simple graphs you can use to play around with the library and see a few ways of constructing a graph. Some of them are `UndirectedGraph`s.
+-/
+
 def emptyNatGraph : Graph Nat Nat := Graph.empty
 
 open Graph

@@ -21,6 +21,12 @@ private def parse (nodeCount : Nat) (input : Array String) : Graph Bool Nat := d
     -- i := i+1
   gx
 
+/-!
+## Parser
+
+*Note that this module in not imported by default through `import Graph`, import it explicitly using `import Graph.Parser`.*
+-/
+
 /-- Parses a graph from an edge list, first element should contain node count, rest of the lines should be an edge list of vertex IDs where "0 1\n" means edge from ID 0 to 1. -/
 def parseGraphFromEdgeList (input : Array String) : Graph Bool Nat :=
   let nodeCount : Nat := match input[0].toNat? with

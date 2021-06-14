@@ -1,5 +1,11 @@
 import Graph.Graph
 
+/-!
+## Undirected graph
+
+This module defines graphs and provides some basic construction functionality and properties. A `Graph (α : Type) (β : Type)` is a graph with vertex payloads of type `α` and edge weights of type `β`. If you don't want any of the algorithms to be imported to your code then import this module with `import Graph.UndirectedGraph`.
+-/
+
 namespace Graph
 
 -- TODO maybe make this something similar to the flow network declaration type

@@ -1,12 +1,17 @@
 import Graph.UndirectedGraph
 import Std.Data.HashSet
 
+/-!
+## Kruskal's algorithm
+
+Finds a minimum spanning forest in an undirected graph.
+-/
+
 namespace Std namespace HashSet
 
 private def merge {α : Type u} [BEq α] [Hashable α] (l : Std.HashSet α) (r : Std.HashSet α) : Std.HashSet α := r.fold Std.HashSet.insert l
 
 end HashSet end Std
-
 
 namespace Graph namespace UndirectedGraph
 
