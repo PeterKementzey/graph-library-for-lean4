@@ -8,7 +8,6 @@ This module defines graphs and provides some basic construction functionality an
 
 namespace Graph
 
--- TODO maybe make this something similar to the flow network declaration type
 structure UndirectedGraph (α : Type) (β : Type) where
   graph : Graph α β
 
@@ -33,7 +32,7 @@ def addEdgeByID (ug : UndirectedGraph α β) (source : Nat) (target : Nat) (weig
 def getVertexPayload (ug : UndirectedGraph α β) := ug.graph.getVertexPayload
 
 /-- Total edge count in the graph. Note that while the undirected graph representation contains all edges in both directions, this function returns only half of that, so the expected edge count. -/
-def edgeCount (ug : UndirectedGraph α β) : Nat := ug.graph.edgeCount / 2 -- TODO test this
+def edgeCount (ug : UndirectedGraph α β) : Nat := ug.graph.edgeCount / 2
 
 def vertexCount (ug : UndirectedGraph α β) : Nat := ug.graph.vertexCount
 

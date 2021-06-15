@@ -74,6 +74,7 @@ def inDegrees (g : Graph α β) : Array Nat := do
       res := res.modify edge.target (.+1)
   res
 
+/-- Returns an array of vertex IDs in increasing order. -/
 def getAllVertexIDs (g : Graph α β) : Array Nat := do
   let mut arr := mkArray g.vertexCount 0
   for i in [0:g.vertexCount] do arr := arr.set! i i
