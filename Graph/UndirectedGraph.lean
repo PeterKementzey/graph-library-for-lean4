@@ -25,22 +25,18 @@ def addVertex (ug : UndirectedGraph α β) (x : α): (UndirectedGraph α β) × 
   let (newGraph, id) := ug.graph.addVertex x
   ( ⟨ newGraph ⟩, id)
 
-/-- -/
 def addEdgeByID (ug : UndirectedGraph α β) (source : Nat) (target : Nat) (weight : β) : UndirectedGraph α β :=
   let graphWithNewEdge := ug.graph.addEdgeByID source target weight
   let graphWithOppositeEdge := if source != target then graphWithNewEdge.addEdgeByID target source weight else graphWithNewEdge
   ⟨ graphWithOppositeEdge ⟩
 
-/-- -/
 def getVertexPayload (ug : UndirectedGraph α β) := ug.graph.getVertexPayload
 
 /-- Total edge count in the graph. Note that while the undirected graph representation contains all edges in both directions, this function returns only half of that, so the expected edge count. -/
 def edgeCount (ug : UndirectedGraph α β) : Nat := ug.graph.edgeCount / 2 -- TODO test this
 
-/-- -/
 def vertexCount (ug : UndirectedGraph α β) : Nat := ug.graph.vertexCount
 
-/-- -/
 def getAllVertexIDs (ug : UndirectedGraph α β) : Array Nat := ug.graph.getAllVertexIDs
 
 /-- Removes all edges between x and y with specific weight, order of vertex IDs does not matter.
@@ -55,7 +51,6 @@ def removeAllEdges (ug : UndirectedGraph α β) : UndirectedGraph α β :=
   let newGraph := ug.graph.removeAllEdges
   { graph := newGraph }
 
-/-- -/
 def updateVertexPayload (ug : UndirectedGraph α β) (id : Nat) (payload : α) : UndirectedGraph α β := ⟨
   ug.graph.updateVertexPayload id payload
 ⟩

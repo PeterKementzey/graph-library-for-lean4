@@ -31,7 +31,6 @@ def empty : Graph α β := ⟨#[]⟩
 /-- Total edge count in the graph. -/
 def edgeCount (g : Graph α β) : Nat := g.vertices.foldr (λ vertex count => vertex.adjacencyList.size + count) 0
 
-/-- -/
 def vertexCount (g : Graph α β) : Nat := g.vertices.size
 
 /-- Returns the order of the graph. -/
@@ -50,7 +49,6 @@ def addVertex (g : Graph α β) (payload : α) : (Graph α β) × Nat :=
   let id : Nat := res.vertexCount - 1
   (res, id)
 
-/-- -/
 def addEdgeByID (g : Graph α β) (source : Nat) (target : Nat) (weight : β) : Graph α β := {
   g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
@@ -63,16 +61,12 @@ def makeGraphFromArray (a : Array α) : Graph α β := ⟨
 /-- Returns an array of vertex payloads in increasing order of IDs. -/
 def toArray (g : Graph α β) : Array α := g.vertices.map (λ vertex => vertex.payload)
 
-/-- -/
 def outDegree (g : Graph α β) (id : Nat) : Nat := g.vertices[id].adjacencyList.size
 
-/-- -/
 def inDegree (g : Graph α β) (id : Nat) : Nat := g.vertices.foldr (λ vertex count => count + (vertex.adjacencyList.filter (λ edge => edge.target == id)).size) 0
 
-/-- -/
 def outDegrees (g : Graph α β) : Array Nat := g.vertices.map (λ vertex => vertex.adjacencyList.size)
 
-/-- -/
 def inDegrees (g : Graph α β) : Array Nat := do
   let mut res : Array Nat := mkArray g.vertexCount 0
   for vertex in g.vertices do
@@ -80,7 +74,6 @@ def inDegrees (g : Graph α β) : Array Nat := do
       res := res.modify edge.target (.+1)
   res
 
-/-- -/
 def getAllVertexIDs (g : Graph α β) : Array Nat := do
   let mut arr := mkArray g.vertexCount 0
   for i in [0:g.vertexCount] do arr := arr.set! i i
@@ -101,10 +94,8 @@ def removeAllEdges (g : Graph α β) : Graph α β := {
   g with vertices := g.vertices.map (λ vertex => { vertex with adjacencyList := Array.empty })
 }
 
-/-- -/
 def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].payload
 
-/-- -/
 def updateVertexPayload (g : Graph α β) (id : Nat) (payload : α) : Graph α β := {
   g with vertices := g.vertices.modify id (fun vertex => { vertex with payload := payload })
 }
