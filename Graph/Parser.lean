@@ -22,24 +22,12 @@ def parseEdgeList (input : Array String) : Nat × Array (Nat × Nat) :=
 
 -- These functions should be private in general, they are made available for benchmarking purposes
 def parse (nodeCount : Nat) (edges : Array (Nat × Nat)) : Graph Bool Nat := do
-  let mut graph : Graph Bool Nat := Graph.empty
-  let edges := edges.insertionSort (λ l r => l.1 < r.1)
-  let mut vertex : Graph.Vertex Bool Nat := ⟨ false, #[] ⟩
-  let mut id : Nat := 0
-  for edge in edges do
-    if edge.1 == id then
-      vertex := { vertex with adjacencyList := vertex.adjacencyList.push ⟨ edge.2, 0 ⟩ }
-    else
-      graph := { graph with vertices := graph.vertices.push vertex }
-      vertex := ⟨ false, #[] ⟩
-      id := id + 1
-  graph
-
+  let mut gx : Graph Bool Nat := Graph.makeGraphFromArray (mkArray nodeCount false)
   -- let mut i := 1
-  -- for edge in edges do
-  --   gx := gx.addEdgeByID edge.1 edge.2 0 -- i
-  --   -- i := i+1
-  -- gx
+  for edge in edges do
+    gx := gx.addEdgeByID edge.1 edge.2 0 -- i
+    -- i := i+1
+  gx
 
 /-!
 ## Parser
