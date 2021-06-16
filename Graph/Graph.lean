@@ -1,3 +1,9 @@
+/-!
+## Graph
+
+This module defines graphs and provides some basic construction functionality and properties. A `Graph (α : Type) (β : Type)` is a graph with vertex payloads of type `α` and edge weights of type `β`. If you don't want any of the algorithms to be imported to your code then import this module with `import Graph.Graph`.
+-/
+
 namespace Graph
 
 structure Edge (β : Type) where
@@ -16,12 +22,6 @@ structure Graph (α : Type) (β : Type) where
   vertices : Array (Graph.Vertex α β) := #[]
 
 namespace Graph
-
-/-!
-## Graph
-
-This module defines graphs and provides some basic construction functionality and properties. A `Graph (α : Type) (β : Type)` is a graph with vertex payloads of type `α` and edge weights of type `β`. If you don't want any of the algorithms to be imported to your code then import this module with `import Graph.Graph`.
--/
 
 variable {α : Type} [Inhabited α] {β : Type}
 
