@@ -50,7 +50,7 @@ def kruskal (ug : UndirectedGraph α β) (lt : β -> β -> Bool) : UndirectedGra
   for source in [0:ug.graph.vertexCount] do
     for edge in ug.graph.vertices[source].adjacencyList do
       kruskalEdges := kruskalEdges.insert { source := source, target := edge.target, weight := edge.weight }
-  let sortedEdges := kruskalEdges.toArray.insertionSort (λ l r => lt r.weight l.weight) -- (λ l r => l.weight < r.weight)
+  let sortedEdges := kruskalEdges.toArray.qsort (λ l r => lt r.weight l.weight) -- (λ l r => l.weight < r.weight)
 
   let mut forest : Array (Std.HashSet Nat) := Array.empty
   for i in [0:ug.graph.vertexCount] do forest := forest.push (Std.HashSet.empty.insert i)
