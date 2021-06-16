@@ -1,44 +1,58 @@
 import Std.Data.Queue
 import Std.Data.Stack
 
-namespace Std namespace Stack
+/-!
+## Container
 
-private def pop? {α : Type} [Inhabited α] (s : Std.Stack α) : Option (α × (Std.Stack α)) := match s.peek? with
-  | some element => (element, s.pop)
-  | none => none
-
-end Stack end Std
-
+This is an internal file that as user you do not need to be concerned with, it implement the `Container` used in `Graph.TraversalDeprecated`.
+-/
 
 namespace Graph namespace Internal
 
 universes u v
 
-structure Container (β : Type u) (χ : Type v) where
-  container : χ
-  addFun : β -> χ -> χ
-  removeFun : χ -> Option (β × χ)
+structure Container (β : Type u) (γ : Type v) where
+  container : γ
+  addFun : β -> γ -> γ
+  addAllFun : [Inhabited β] -> γ -> Array β -> γ
+  removeFun : γ -> Option (β × γ)
 
 namespace Container
 
-def add (cont : Container b c) (x : b) : Container b c := {
+def add (cont : Container β γ) (x : β) : Container β γ := {
   cont with container := cont.addFun x cont.container
 }
 
-def addAll (cont : Container b c) (arr : Array b) : Container b c := do
-  let mut res := cont
-  for e in arr do res := res.add e
-  res
+def addAll [Inhabited β] (cont : Container β γ) (arr : Array β) : Container β γ := {
+  cont with container := cont.addAllFun cont.container arr
+}
 
-def remove? (cont : Container b c) : Option (b × (Container b c)) := match cont.removeFun cont.container with
+def remove? (cont : Container β γ) : Option (β × (Container β γ)) := match cont.removeFun cont.container with
   | some (element, containerWithoutElement) =>
     let newCont := { cont with container := containerWithoutElement }
     some (element, newCont)
   | none => none
 
-def emptyStack [Inhabited α] : Container α (Std.Stack α) := { container := Std.Stack.empty, addFun := Std.Stack.push, removeFun := Std.Stack.pop? }
+private def addAllQueue (cont : Std.Queue β) (arr : Array β) : Std.Queue β := do
+  let mut res := cont
+  for e in arr do res := res.enqueue e
+  res
 
-def emptyQueue {α : Type} : Container α (Std.Queue α) := { container := Std.Queue.empty, addFun := Std.Queue.enqueue, removeFun := Std.Queue.dequeue? }
+private def addAllStack [Inhabited β] (cont : Std.Stack β) (arr : Array β) : Std.Stack β:= do
+  let mut res := cont
+  for i in [0:arr.size] do res := res.push arr[arr.size-1-i] -- Add in reverse order to make sure that successors of a vertex are chosen in order of edges added
+  res
+
+private def pop? {α : Type} [Inhabited α] (s : Std.Stack α) : Option (α × (Std.Stack α)) := match s.peek? with
+  | some element => (element, s.pop)
+  | none => none
+
+def emptyStack [Inhabited α] : Container α (Std.Stack α) := { container := Std.Stack.empty, addFun := Std.Stack.push, addAllFun := addAllStack, removeFun := pop? }
+
+def emptyQueue : Container α (Std.Queue α) := { container := Std.Queue.empty, addFun := Std.Queue.enqueue, addAllFun := addAllQueue, removeFun := Std.Queue.dequeue? }
+
+instance [ToString α] : ToString (Std.Stack α) where toString s := toString s.vals
+instance [ToString γ] : ToString (Container β γ) where toString c := toString c.container
 
 end Container
 
