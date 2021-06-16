@@ -2,15 +2,16 @@ import Graph.Dijkstra
 import Graph.Graph
 import Graph.MaximumFlow
 import Graph.MinimumSpanningTree
+import Graph.Path
 import Graph.Search
 import Graph.TopologicalSort
 import Graph.Traverse
 import Graph.UndirectedGraph
 
-
 -- import Graph.Parser
 -- import Graph.ExampleGraphs
 -- import Graph.TraverseExample
+-- import Graph.TraverseDeprecated
 
 -- def bitcoinSize := "../benchmarking/generated-graphs/stanford-bitcoin-sized-topsort-gen.txt"
 -- def maximumSize := "../benchmarking/generated-graphs/maximum-working-size-topsort-gen.txt"
@@ -22,9 +23,6 @@ import Graph.UndirectedGraph
 -- def smallSparse := "../benchmarking/generated-graphs/small-sparse-topsort-gen.txt"
 -- def huge := "../benchmarking/generated-graphs/huge-topsort-gen.txt"
 -- def testGraph := "../benchmarking/generated-graphs/test-topsort-gen.txt"
-
-
--- FIXME depthFirstTraversalOrder original does not add first node removal in case of exampleGraph4
 
 -- def main (argv : List String) : IO Unit := do
 --   IO.println exampleGraph5.edgeCount
