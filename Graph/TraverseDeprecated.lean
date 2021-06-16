@@ -20,7 +20,7 @@ open Internal
 
 variable {α : Type} [Inhabited α] {β : Type}
 
-private partial def traverseAuxRec {containerType : Type _} [ToString containerType] (g : Graph α β) (terminate? : Bool) (visited : Array Bool)
+private def traverseAuxRec {containerType : Type _} [ToString containerType] (g : Graph α β) (terminate? : Bool) (visited : Array Bool)
   (container : Container (Nat × Bool) containerType) (sources : Array Nat) (state : γ) (visit : Nat -> γ -> γ × Bool) (leave : Option (Nat -> γ -> γ)) : Nat -> γ
   | 0 => have : Inhabited γ := ⟨ state ⟩; panic! "Error: Not enough iterations."
   | n + 1 => 
