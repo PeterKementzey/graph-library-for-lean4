@@ -14,7 +14,7 @@ universes u v
 structure Container (β : Type u) (γ : Type v) where
   container : γ
   addFun : β -> γ -> γ
-  addAllFun : [Inhabited β] -> γ -> Array β -> γ
+  addAllFun : [Inhabited β] -> Array β -> γ -> γ
   removeFun : γ -> Option (β × γ)
 
 namespace Container
@@ -24,7 +24,7 @@ def add (cont : Container β γ) (x : β) : Container β γ := {
 }
 
 def addAll [Inhabited β] (cont : Container β γ) (arr : Array β) : Container β γ := {
-  cont with container := cont.addAllFun cont.container arr
+  cont with container := cont.addAllFun arr cont.container
 }
 
 def remove? (cont : Container β γ) : Option (β × (Container β γ)) := match cont.removeFun cont.container with
@@ -33,12 +33,12 @@ def remove? (cont : Container β γ) : Option (β × (Container β γ)) := match
     some (element, newCont)
   | none => none
 
-private def addAllQueue (cont : Std.Queue β) (arr : Array β) : Std.Queue β := do
+private def addAllQueue (arr : Array β) (cont : Std.Queue β) : Std.Queue β := do
   let mut res := cont
   for e in arr do res := res.enqueue e
   res
 
-private def addAllStack [Inhabited β] (cont : Std.Stack β) (arr : Array β) : Std.Stack β:= do
+private def addAllStack [Inhabited β] (arr : Array β) (cont : Std.Stack β) : Std.Stack β:= do
   let mut res := cont
   for i in [0:arr.size] do res := res.push arr[arr.size-1-i] -- Add in reverse order to make sure that successors of a vertex are chosen in order of edges added
   res
