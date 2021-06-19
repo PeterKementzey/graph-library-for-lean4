@@ -43,7 +43,7 @@ def topSort (g : Graph α β) : Option (Array Nat) :=
         | none => none
 
 /-- Retruns a topological ordering of any DAG (directed acyclic graph). This function is faster than topSort but if the graph contains cycles then returns wrong results. -/
-def topSortUnsafe (g : Graph α β) : Option (Array Nat) :=
+def topSortUnsafe (g : Graph α β) : Array Nat :=
   let res := g.depthFirstTraverse g.getAllVertexIDs initialState (visit g) leave
   res.reverse
   where
