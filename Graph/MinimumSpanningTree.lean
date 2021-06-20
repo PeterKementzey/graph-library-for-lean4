@@ -7,12 +7,6 @@ import Std.Data.HashSet
 Finds a minimum spanning forest in an undirected graph.
 -/
 
-namespace Std namespace HashSet
-
-private def merge {α : Type u} [BEq α] [Hashable α] (l : Std.HashSet α) (r : Std.HashSet α) : Std.HashSet α := r.fold Std.HashSet.insert l
-
-end HashSet end Std
-
 namespace Graph namespace UndirectedGraph
 
 variable {α : Type} [Inhabited α] {β : Type} [BEq β] [Hashable β] [Inhabited β]
@@ -25,6 +19,8 @@ private structure KruskalEdge (β : Type) where
 private instance : BEq (KruskalEdge β) := ⟨ (fun l r => l.weight == r.weight && ((l.source == r.source && l.target == r.target) || (l.source == r.target && l.target == r.source))) ⟩
 private instance : Hashable (KruskalEdge β) where hash e := mixHash (hash e.source) (mixHash (hash e.target) (hash e.weight))
 private instance : Inhabited (KruskalEdge β) := ⟨ { source := arbitrary, target := arbitrary, weight := arbitrary } ⟩
+
+private def mergeSets {α : Type u} [BEq α] [Hashable α] (l : Std.HashSet α) (r : Std.HashSet α) : Std.HashSet α := r.fold Std.HashSet.insert l
 
 --                                                 edges to add to spanning tree         connected vertex id's              resulting edges                                size of sortedEdges
 private def kruskalAux (ug : UndirectedGraph α β) (sortedEdges : Array (KruskalEdge β)) (forest : Array (Std.HashSet Nat)) (spanningEdges : Std.HashSet (KruskalEdge β)) : Nat -> Std.HashSet (KruskalEdge β)
@@ -39,7 +35,7 @@ private def kruskalAux (ug : UndirectedGraph α β) (sortedEdges : Array (Kruska
       let sourceTree := forest[sourceTreeId]
       let forestWithoutSource := forest.eraseIdx sourceTreeId
       let targetTreeId : Nat := (forestWithoutSource.findIdx? (fun tree => tree.contains currentEdge.target)).get!
-      let mergedTrees : Std.HashSet Nat := sourceTree.merge forestWithoutSource[targetTreeId]
+      let mergedTrees : Std.HashSet Nat := mergeSets sourceTree forestWithoutSource[targetTreeId]
       let newForest := (forestWithoutSource.eraseIdx targetTreeId).push mergedTrees
       let newSpanningEdges := spanningEdges.insert currentEdge
       kruskalAux ug sortedEdges newForest newSpanningEdges n
