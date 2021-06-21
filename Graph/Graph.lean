@@ -101,6 +101,12 @@ def updateVertexPayload (g : Graph α β) (id : Nat) (payload : α) : Graph α �
   g with vertices := g.vertices.modify id (λ vertex => { vertex with payload := payload })
 }
 
+/-- Replaces all vertex payloads to the new payloads. The payloads array should have the same length as the number of vertices. -/
+def updateAllVertexPayloads (g : Graph α β) (payloads : Array γ) : Option (Graph γ β) :=
+  if payloads.size != g.vertexCount then none else some ⟨
+    (g.vertices.zip payloads).map (λ (vertex, newPayload) => { vertex with payload := newPayload })
+  ⟩
+
 /-- Returns an array of vertex IDs whose payload equals the payload parameter. -/
 def findVertexIDs [BEq α] (g : Graph α β) (payload : α) : Array Nat := g.getAllVertexIDs.filter (λ id => g.vertices[id].payload == payload)
 

@@ -5,17 +5,16 @@ namespace Graph
 
 variable {α : Type} [Inhabited α] {β : Type}
 
-
-structure VertexState where
+private structure VertexState where
   excess : Nat := 0
   height : Nat := 0
   nextVertex : Nat
   currentNeighbor : Nat := 0
   neighborList : Array Nat
 
-instance : Inhabited VertexState := ⟨ { nextVertex := arbitrary, neighborList := Array.empty } ⟩ 
-instance : ToString VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height) ++ ", next vertex: " ++ (toString s.nextVertex)
-  ++ "\ncurrent neighbor: " ++ (toString s.currentNeighbor) ++ ", neighbor list: " ++ (toString s.neighborList)
+private instance : Inhabited VertexState := ⟨ { nextVertex := arbitrary, neighborList := Array.empty } ⟩ 
+-- instance : ToString VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height) ++ ", next vertex: " ++ (toString s.nextVertex)
+--   ++ "\ncurrent neighbor: " ++ (toString s.currentNeighbor) ++ ", neighbor list: " ++ (toString s.neighborList)
 
 structure MaxFlowEdge where
   capacity : Nat
@@ -23,15 +22,12 @@ structure MaxFlowEdge where
 
 instance : ToString MaxFlowEdge where toString mfe := "flow: " ++ (toString mfe.flow) ++ ", capacity: " ++ (toString mfe.capacity)
 instance : Inhabited MaxFlowEdge := ⟨ { capacity := arbitrary } ⟩ 
-instance [Inhabited γ] : Inhabited (Edge γ) := ⟨ 0, arbitrary ⟩
+private instance [Inhabited γ] : Inhabited (Edge γ) := ⟨ 0, arbitrary ⟩
 
-def FlowNetwork := Graph VertexState MaxFlowEdge -- TODO make private again
-
-instance : ToString FlowNetwork where toString fn := let g : Graph VertexState MaxFlowEdge := fn; toString g -- FIXME there must be a better way to do this
-instance : Inhabited FlowNetwork := ⟨ { } ⟩ -- what the hell
+private def FlowNetwork := Graph VertexState MaxFlowEdge
 
 private def FlowVertex := Vertex VertexState MaxFlowEdge
-instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { payload := arbitrary } ⟩ -- FIXME Why  does this not work automatically? already implemented in Graph.lean
+private instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { payload := arbitrary } ⟩
 
 
 private def createAdjacencyListAndNeighborSets (vertex : Vertex α Nat) (id : Nat) (neighborSets : Array (Std.HashSet Nat)) : Option ((Array (Edge MaxFlowEdge)) × (Array (Std.HashSet Nat))) := do
@@ -116,7 +112,7 @@ private def push (flowNetwork : FlowNetwork) (u : Nat) (v : Nat) : FlowNetwork :
       | some edgeId => flowNetwork.updateFlow u edgeId (flowNetwork.vertices[u].adjacencyList[edgeId].weight.flow + quantity)
       | none => match flowNetwork.vertices[v].adjacencyList.findIdx? (λ edge => edge.target == u) with
         | some edgeId => flowNetwork.updateFlow v edgeId (flowNetwork.vertices[v].adjacencyList[edgeId].weight.flow - quantity)
-        | none => panic! "Pushing on non existent edge"
+        | none => have : Inhabited FlowNetwork := ⟨ { } ⟩ ; panic! "Pushing on non existent edge"
     let excessOfv := flowNetwork.vertices[v].payload.excess
     (updatedFlow.updateExcess u (excessOfu - quantity)).updateExcess v (excessOfv + quantity)
 
@@ -124,9 +120,9 @@ private def findLowestNeighborAux (flowNetwork : FlowNetwork) (u : Nat) (neighbo
   | 0 => panic! "This should be impossible"
   | n + 1 =>
     if current >= neighborList.size then min else
-    if (flowNetwork.residualCapacity u neighborList[current]).get! == 0 then flowNetwork.findLowestNeighborAux u neighborList (current + 1) min n else
+    if (flowNetwork.residualCapacity u neighborList[current]).get! == 0 then findLowestNeighborAux flowNetwork u neighborList (current + 1) min n else
     let nextMin := if flowNetwork.vertices[neighborList[min]].payload.height > flowNetwork.vertices[neighborList[current]].payload.height then current else min
-    flowNetwork.findLowestNeighborAux u neighborList (current + 1) nextMin n
+    findLowestNeighborAux flowNetwork u neighborList (current + 1) nextMin n
 
 private def findLowestNeighbor (flowNetwork : FlowNetwork) (u : Nat) : Nat :=
   let neighborList := flowNetwork.vertices[u].payload.neighborList
@@ -158,7 +154,7 @@ private def discharge (flowNetwork : FlowNetwork) (u : Nat) : Nat -> FlowNetwork
         flowNetwork.push u currentNeighborId
       else
         ⟨ flowNetwork.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with currentNeighbor := vertex.payload.currentNeighbor + 1 } } ) ⟩
-    newFlowNetwork.discharge u n
+    discharge newFlowNetwork u n
 
 private def removeFromList (flowNetwork : FlowNetwork) (id : Nat) (head : Nat) : FlowNetwork × Nat :=
   let wrapAround n := n % flowNetwork.vertexCount
@@ -186,34 +182,37 @@ private def initializeVertexList (flowNetwork : FlowNetwork) (source : Nat) (sin
   let (sinkSkipped, sinkSkippedHead) := sourceSkipped.removeFromList sink sourceSkippedHead
   (sinkSkipped, sinkSkippedHead)
 
--- TODO figure out iteration count
-private def relabelToFront (flowNetwork : FlowNetwork) (current : Nat) (head : Nat) : Nat -> FlowNetwork
-  | 0 => panic! "Iteration count was too low"
-  | n + 1 =>
-    if current >= flowNetwork.vertexCount then flowNetwork else
-    let oldHeight := flowNetwork.vertices[current].payload.height
-    let newFlowNetwork : FlowNetwork := flowNetwork.discharge current (flowNetwork.upperBoundOfDischargeIterations current)
-    let (newList, newHead) : FlowNetwork × Nat := if newFlowNetwork.vertices[current].payload.height > oldHeight then
-      let (listWithoutCurrent, headWithoutCurrent) := newFlowNetwork.removeFromList current head
-      listWithoutCurrent.addToFrontOfList current headWithoutCurrent
-    else
-      (newFlowNetwork, head)
-    newList.relabelToFront (newList.vertices[current].payload.nextVertex) newHead n
+-- Future work: implmenet upper bound on iteration count
+private partial def relabelToFront (flowNetwork : FlowNetwork) (current : Nat) (head : Nat) : FlowNetwork :=
+  if current >= flowNetwork.vertexCount then flowNetwork else
+  let oldHeight := flowNetwork.vertices[current].payload.height
+  let newFlowNetwork : FlowNetwork := flowNetwork.discharge current (flowNetwork.upperBoundOfDischargeIterations current)
+  let (newList, newHead) : FlowNetwork × Nat := if newFlowNetwork.vertices[current].payload.height > oldHeight then
+    let (listWithoutCurrent, headWithoutCurrent) := newFlowNetwork.removeFromList current head
+    listWithoutCurrent.addToFrontOfList current headWithoutCurrent
+  else
+    (newFlowNetwork, head)
+  relabelToFront newList (newList.vertices[current].payload.nextVertex) newHead
 
 end FlowNetwork
 
-open FlowNetwork
-
--- Push-relabel algorithm using relabel-to-fron selection, TODO provide mapping to Nat and mention here
--- no parallel or anti-parallel edges, no self loops
--- TODO provide conversion to graph with no anti-parallel edges or deal with them in algorithm
-def findMaxFlow (g : Graph α Nat) (source : Nat) (sink : Nat) : Option FlowNetwork := -- TODO change to this: Option (Graph α Nat) :=
+/-- Calculates a maximum flow in the graph from source to sink using the push-relabel algorithm with the relabel-to-front selection rule.
+    Please make sure that the graph does not contain parallel edges or anti-parallel (opposite direction between same nodes) edges,
+    as these are not yet supported. Currently this only works for graphs with `Nat` edge weights, you may use the `mapEdges` function to map your edges to `Nat` type.
+    The edge weights should represent the capacities on the edges. The resulting graph will have edges of type `MaxFlowEdge` defined like this:
+    `structure MaxFlowEdge where`
+    `  capacity : Nat`
+    `  flow : Nat := 0` -/
+def findMaxFlow (g : Graph α Nat) (source : Nat) (sink : Nat) : Option (Graph α MaxFlowEdge) :=
   match nullFlowNetwork g with
     | none => none
     | some initialGraph =>
       let preflowGraph : FlowNetwork := initialGraph.initializePreflow source
 
       let (flowNetwork, head) := preflowGraph.initializeVertexList source sink
-      flowNetwork.relabelToFront head head 100
+      let maxFlowNetwork : FlowNetwork := flowNetwork.relabelToFront head head
+      match maxFlowNetwork.updateAllVertexPayloads g.toArray with
+        | none => panic! "The array sizes did not match!"
+        | some res => some res
       
 end Graph
