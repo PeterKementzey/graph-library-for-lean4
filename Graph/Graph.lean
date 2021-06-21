@@ -50,7 +50,7 @@ def addVertex (g : Graph α β) (payload : α) : (Graph α β) × Nat :=
   (res, id)
 
 def addEdgeByID (g : Graph α β) (source : Nat) (target : Nat) (weight : β) : Graph α β := {
-  g with vertices := g.vertices.modify source (fun vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
+  g with vertices := g.vertices.modify source (λ vertex => { vertex with adjacencyList := vertex.adjacencyList.push {target := target, weight := weight} })
 }
 
 /-- Creates a graph by mapping the array to vertices, indices in the array will be the respective node IDs, the elements will be the payload. -/
@@ -98,7 +98,7 @@ def removeAllEdges (g : Graph α β) : Graph α β := {
 def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].payload
 
 def updateVertexPayload (g : Graph α β) (id : Nat) (payload : α) : Graph α β := {
-  g with vertices := g.vertices.modify id (fun vertex => { vertex with payload := payload })
+  g with vertices := g.vertices.modify id (λ vertex => { vertex with payload := payload })
 }
 
 /-- Returns an array of vertex IDs whose payload equals the payload parameter. -/

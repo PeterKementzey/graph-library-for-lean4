@@ -82,7 +82,7 @@ end ShortestPathTree
 
 
 private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array DijkstraVertex) : Nat :=
-  let min : Option Nat -> Nat -> Option Nat := fun leftIdOption rightId => match leftIdOption with
+  let min : Option Nat -> Nat -> Option Nat := λ leftIdOption rightId => match leftIdOption with
     | none => some rightId
     | some leftId =>
       let leftDistance := dijkstraVertices[leftId].distance
@@ -97,7 +97,6 @@ private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array Dijkst
     | none => panic! "this should not be possible"
     | some temp => temp
 
--- Note for thesis: Fuel pattern - give enough fuel to always treminate
 private def dijkstraAux (g : Graph α Nat) (current : Nat) (target : Option Nat) (unvisited : Std.HashSet Nat) (dijkstraVerticesTemp : Array DijkstraVertex) : Nat -> Array DijkstraVertex
   | 0 => return dijkstraVerticesTemp
   | n + 1 => do
