@@ -39,6 +39,8 @@ def depthFirstTraverse (g : Graph α β) (sources : Array Nat) (startingState : 
 def depthFirstCompleteTraverse (g : Graph α β) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
   g.depthFirstTraverse g.getAllVertexIDs startingState visit leave
 
+-- This is needed to solve https://github.com/leanprover/lean4/issues/534, once should be removed once that is fixed
+set_option compiler.extract_closed false in
 private def breadthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × Bool) (state : γ) (startingSources : Array Nat) (sources : Array Nat) (visited : Array Bool) : Nat -> γ
   | 0 => state
   | n + 1 => do
