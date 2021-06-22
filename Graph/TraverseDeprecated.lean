@@ -61,7 +61,7 @@ private def traverseAux {containerType : Type _} (g : Graph α β) (startingCont
     it returns a new state and a boolean which terminates the traversal if true. Please provide a starting state.
     See example uses in Graph/TraverseExample.lean -/
 def breadthFirstTraverseDeprecated (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) : γ :=
-  traverseAux g Container.emptyQueue sources startingState visit none -- TODO source might need to be reversed
+  traverseAux g Container.emptyQueue sources.reverse startingState visit none
 
 /-- A depth-first traversal of the graph starting at the sources in order. Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
     it returns a new state and a boolean which terminates the traversal if true (but will still leave the already visited nodes).

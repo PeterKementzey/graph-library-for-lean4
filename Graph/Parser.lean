@@ -40,7 +40,7 @@ def parseGraphFromEdgeList (input : Array String) : Graph Bool Nat :=
   let (nodeCount, edgeList) := parseEdgeList input
   parse nodeCount edgeList
 
-/-- See parseGraphFromEdgeList for description of format. -/ -- TODO add example file to library
+/-- See parseGraphFromEdgeList for description of format. -/
 def parseGraphFromEdgeListFile (filePath : System.FilePath) : IO (Graph Bool Nat) := do
   let input <- IO.FS.lines filePath
   parseGraphFromEdgeList input
