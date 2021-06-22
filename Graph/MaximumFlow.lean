@@ -198,8 +198,9 @@ end FlowNetwork
 
 /-- Calculates a maximum flow in the graph from source to sink using the push-relabel algorithm with the relabel-to-front selection rule.
     Please make sure that the graph does not contain parallel edges or anti-parallel (opposite direction between same nodes) edges,
-    as these are not yet supported. Currently this only works for graphs with `Nat` edge weights, you may use the `mapEdges` function to map your edges to `Nat` type.
-    The edge weights should represent the capacities on the edges. The resulting graph will have edges of type `MaxFlowEdge` defined like this:
+    as these are not yet supported. Additionally, the graph should not contain self-loops. Currently this algorithm only works for
+    graphs with `Nat` edge weights, you may use the `mapEdges` function to map your edges to `Nat` type.The edge weights should represent
+    the capacities on the edges. The resulting graph will have edges of type `MaxFlowEdge` defined like this:
     `structure MaxFlowEdge where`
     `  capacity : Nat`
     `  flow : Nat := 0` -/
