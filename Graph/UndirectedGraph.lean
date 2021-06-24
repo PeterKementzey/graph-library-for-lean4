@@ -18,6 +18,20 @@ variable {α : Type} [Inhabited α] {β : Type}
 /-- Empty undirected graph, α is vertex payload type, β is edge weight type. -/
 def empty {α : Type} : UndirectedGraph α β := ⟨ Graph.empty ⟩
 
+/-- Total edge count in the graph. Note that while the undirected graph representation contains all edges in both directions, this function returns only half of that, so the expected edge count. -/
+def edgeCount (ug : UndirectedGraph α β) : Nat := ug.graph.edgeCount / 2
+
+def vertexCount (ug : UndirectedGraph α β) : Nat := ug.graph.vertexCount
+
+/-- Returns the order of the graph. -/
+def order (ug : UndirectedGraph α β) := ug.vertexCount
+
+/-- Returns true if the graph has no vertices. -/
+def hasNoVertices (ug : UndirectedGraph α β) : Bool := ug.graph.hasNoVertices
+
+/-- Returns true if the graph has no edges. -/
+def hasNoEdges (ug : UndirectedGraph α β) : Bool := ug.graph.hasNoEdges
+
 /-- Add a vertex to the graph.
     Returns new graph and unique vertex ID. -/
 def addVertex (ug : UndirectedGraph α β) (x : α): (UndirectedGraph α β) × Nat :=
@@ -29,12 +43,17 @@ def addEdgeByID (ug : UndirectedGraph α β) (source : Nat) (target : Nat) (weig
   let graphWithOppositeEdge := if source != target then graphWithNewEdge.addEdgeByID target source weight else graphWithNewEdge
   ⟨ graphWithOppositeEdge ⟩
 
+/-- Creates a graph by mapping the array to vertices, indices in the array will be the respective node IDs, the elements will be the payload. -/
+def makeUndirectedGraphFromArray (a : Array α) : UndirectedGraph α β := ⟨
+    makeGraphFromArray a
+⟩
+
+/-- Returns an array of vertex payloads in increasing order of IDs. -/
+def toArray (ug : UndirectedGraph α β) : Array α := ug.graph.toArray
+
+def degree (ug : UndirectedGraph α β) (id : Nat) : Nat := ug.graph.vertices[id].adjacencyList.size
+
 def getVertexPayload (ug : UndirectedGraph α β) := ug.graph.getVertexPayload
-
-/-- Total edge count in the graph. Note that while the undirected graph representation contains all edges in both directions, this function returns only half of that, so the expected edge count. -/
-def edgeCount (ug : UndirectedGraph α β) : Nat := ug.graph.edgeCount / 2
-
-def vertexCount (ug : UndirectedGraph α β) : Nat := ug.graph.vertexCount
 
 def getAllVertexIDs (ug : UndirectedGraph α β) : Array Nat := ug.graph.getAllVertexIDs
 
