@@ -29,8 +29,10 @@ private def depthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × 
 
     return (state, false, visited)
 
-/-- A depth-first traversal of the graph starting at `sources`. `visit` is a function executed at each vertex, its parameters are the vertex ID and the current state,
-    it should return a new state and a boolean which terminates the traversal if true (but it will still leave the node). The optional parameter `leave` is executed when the node is left, when all its successors have been visited, uses the same state.
+/-- A depth-first traversal of the graph starting at `sources`. Nodes on the same "level" of the traversal are visited in order of the edges added.
+    `visit` is a function executed at each vertex, its parameters are the vertex ID and the current state, it should return a new state and
+    a boolean which terminates the traversal if true (but it will still leave the node). The optional parameter `leave` is executed when the node is left,
+    when all its successors have been visited, uses the same state.
     Please provide a starting state. See example uses in `Graph.TraverseExample`. -/
 def depthFirstTraverse (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
   (g.depthFirstTraverseAux visit leave startingState sources (mkArray g.vertexCount false) (g.vertexCount)).1
@@ -39,7 +41,7 @@ def depthFirstTraverse (g : Graph α β) (sources : Array Nat) (startingState : 
 def depthFirstCompleteTraverse (g : Graph α β) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Nat -> γ -> γ  := (λ _ x => x)) : γ :=
   g.depthFirstTraverse g.getAllVertexIDs startingState visit leave
 
--- This is needed to solve https://github.com/leanprover/lean4/issues/534, should be removed once that is fixed, also remove the warning from the documentation
+-- This is needed to solve https://github.com/leanprover/lean4/issues/534, should be removed once that is fixed, also remove the warning from the documentation and the README.
 set_option compiler.extract_closed false in
 private def breadthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × Bool) (state : γ) (startingSources : Array Nat) (sources : Array Nat) (visited : Array Bool) : Nat -> γ
   | 0 => state
@@ -62,8 +64,10 @@ private def breadthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ �
       | (_, false) => g.breadthFirstTraverseAux visit state startingSources.pop #[startingSources.back] visited n
       | (true, true) => state
 
-/-- A breadth-first traversals of the graph starting at the `sources` in order, sources should not contain duplicates. Each vertex is only visited at most once. `visit` is a function executed at each vertex, its parameters are the vertex ID and the current state,
-    it should return a new state and a boolean which terminates the traversal if true. Please provide a starting state. `maxDepth` is an optional parameter you can use to limit the depth of the traversal.
+/-- A breadth-first traversals of the graph starting at the `sources` in order, sources should not contain duplicates. Each vertex is only visited at most once.
+    Nodes on the same "level" of the traversal will be visited in random order. If you need the order to be fixed then have a look at `breadthFirstTraverseDeprecated`.
+    `visit` is a function executed at each vertex, its parameters are the vertex ID and the current state, it should return a new state and a boolean which terminates
+    the traversal if true. Please provide a starting state. `maxDepth` is an optional parameter you can use to limit the depth of the traversal.
     See example uses in `Graph.TraverseExample`.
     WARNING: due to an error in Lean 4 if you use this function an index out of bounds error will appear when you run you code, to fix that, you have to paste
     this line of code above your main function: 

@@ -57,16 +57,20 @@ private def traverseAux {containerType : Type _} (g : Graph α β) (startingCont
     visitingSameVertexMultipleTimes := g.edgeCount
     goodMeasure := 1
 
-/-- A breadth-first traversal of the graph starting at the sources in order. Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
+/-- A breadth-first traversal of the graph starting at the sources in order. Nodes on the same "level" of the traversal are visited in order of the edges added.
+    Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
     it returns a new state and a boolean which terminates the traversal if true. Please provide a starting state.
+    *Note that this function scales significantly worse than `breadthFirstTraverse`.*
     See example uses in Graph/TraverseExample.lean -/
 def breadthFirstTraverseDeprecated (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) : γ :=
   traverseAux g Container.emptyQueue sources.reverse startingState visit none
 
-/-- A depth-first traversal of the graph starting at the sources in order. Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
+/-- A depth-first traversal of the graph starting at the sources in order. Nodes on the same "level" of the traversal are visited in order of the edges added.
+    Visit is a function executed at each vertex, its parameters are the vertex ID and the current state,
     it returns a new state and a boolean which terminates the traversal if true (but will still leave the already visited nodes).
-    Leave is executed when the node is left, when all its successors have been visited, uses the same state.
-    Please provide a starting state. See example uses in Graph/TraverseExample.lean -/
+    Leave is executed when the node is left, when all its successors have been visited, uses the same state. Please provide a starting state.
+    *Note that this function scales significantly worse than `dephtFirstTraverse`.*
+    See example uses in Graph/TraverseExample.lean -/
 def depthFirstTraverseDeprecated (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (leave : Option (Nat -> γ -> γ ) := none) : γ :=
   traverseAux g Container.emptyStack sources.reverse startingState visit leave
 
