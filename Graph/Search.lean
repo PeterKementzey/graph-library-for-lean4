@@ -55,6 +55,12 @@ def depthFirstPathSearch (g : Graph α β) (source : Nat) (target : Nat) : Optio
   else
     none
 
+private def reachableVisit (id : Nat) (state : Array Nat) := (state.push id, false)
+
+/-- Returns an array of all reachable nodes in depth- or breadth-first order. -/
+def reachableBreadthFirst (g : Graph α β) (source : Nat) : Array Nat := g.breadthFirstTraverse #[source] #[] reachableVisit
+def reachableDepthFirst (g : Graph α β) (source : Nat) : Array Nat := g.depthFirstTraverse #[source] #[] reachableVisit
+
 namespace UndirectedGraph
 
 /-- See directed graph. -/
