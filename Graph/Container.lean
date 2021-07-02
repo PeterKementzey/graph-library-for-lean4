@@ -9,7 +9,7 @@ This is an internal file that as user you do not need to be concerned with, it i
 
 namespace Graph namespace Internal
 
-universes u v
+universe u v
 
 structure Container (β : Type u) (γ : Type v) where
   container : γ
