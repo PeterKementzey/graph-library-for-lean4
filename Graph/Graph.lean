@@ -14,7 +14,7 @@ structure Vertex (α : Type) (β : Type) where
   payload : α
   adjacencyList : Array (Edge β) := #[]
 
-instance [Inhabited α] : Inhabited (Vertex α β) := ⟨ { payload := arbitrary } ⟩
+instance [Inhabited α] : Inhabited (Vertex α β) := ⟨ { payload := default } ⟩
 
 end Graph
 
@@ -67,7 +67,7 @@ def inDegree (g : Graph α β) (id : Nat) : Nat := g.vertices.foldr (λ vertex c
 
 def outDegrees (g : Graph α β) : Array Nat := g.vertices.map (λ vertex => vertex.adjacencyList.size)
 
-def inDegrees (g : Graph α β) : Array Nat := do
+def inDegrees (g : Graph α β) : Array Nat := Id.run do
   let mut res : Array Nat := mkArray g.vertexCount 0
   for vertex in g.vertices do
     for edge in vertex.adjacencyList do
@@ -75,7 +75,7 @@ def inDegrees (g : Graph α β) : Array Nat := do
   res
 
 /-- Returns an array of vertex IDs in increasing order. -/
-def getAllVertexIDs (g : Graph α β) : Array Nat := do
+def getAllVertexIDs (g : Graph α β) : Array Nat := Id.run do
   let mut arr := mkArray g.vertexCount 0
   for i in [0:g.vertexCount] do arr := arr.set! i i
   arr
@@ -149,7 +149,7 @@ instance [ToString α] [ToString β] : ToString (Vertex α β) where toString :=
 
 end Vertex
 
-instance [ToString α] [ToString β] : ToString (Graph α β) where toString g :=
-  return toString (g.getAllVertexIDs.zip g.vertices)
+instance [ToString α] [ToString β] : ToString (Graph α β) where toString :=
+  (λ g => toString (g.getAllVertexIDs.zip g.vertices))
 
 end Graph

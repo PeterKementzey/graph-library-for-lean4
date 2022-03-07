@@ -12,7 +12,7 @@ private structure VertexState where
   currentNeighbor : Nat := 0
   neighborList : Array Nat
 
-private instance : Inhabited VertexState := ⟨ { nextVertex := arbitrary, neighborList := Array.empty } ⟩ 
+private instance : Inhabited VertexState := ⟨ { nextVertex := default, neighborList := Array.empty } ⟩ 
 -- instance : ToString VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height) ++ ", next vertex: " ++ (toString s.nextVertex)
 --   ++ "\ncurrent neighbor: " ++ (toString s.currentNeighbor) ++ ", neighbor list: " ++ (toString s.neighborList)
 
@@ -21,16 +21,16 @@ structure MaxFlowEdge where
   flow : Nat := 0
 
 instance : ToString MaxFlowEdge where toString mfe := "flow: " ++ (toString mfe.flow) ++ ", capacity: " ++ (toString mfe.capacity)
-instance : Inhabited MaxFlowEdge := ⟨ { capacity := arbitrary } ⟩ 
-private instance [Inhabited γ] : Inhabited (Edge γ) := ⟨ 0, arbitrary ⟩
+instance : Inhabited MaxFlowEdge := ⟨ { capacity := default } ⟩ 
+private instance [Inhabited γ] : Inhabited (Edge γ) := ⟨ 0, default ⟩
 
 private def FlowNetwork := Graph VertexState MaxFlowEdge
 
 private def FlowVertex := Vertex VertexState MaxFlowEdge
-private instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { payload := arbitrary } ⟩
+private instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { payload := default } ⟩
 
 
-private def createAdjacencyListAndNeighborSets (vertex : Vertex α Nat) (id : Nat) (neighborSets : Array (Std.HashSet Nat)) : Option ((Array (Edge MaxFlowEdge)) × (Array (Std.HashSet Nat))) := do
+private def createAdjacencyListAndNeighborSets (vertex : Vertex α Nat) (id : Nat) (neighborSets : Array (Std.HashSet Nat)) : Option ((Array (Edge MaxFlowEdge)) × (Array (Std.HashSet Nat))) := Id.run do
   let mut neighborSets := neighborSets
   let mut currentNeighborSet := neighborSets[id]
   let mut adjacencyList : Array (Edge MaxFlowEdge) := Array.empty
@@ -45,7 +45,7 @@ private def createAdjacencyListAndNeighborSets (vertex : Vertex α Nat) (id : Na
   some (adjacencyList, resultNeighborSets)
   
 
-private def nullFlowNetwork (g : Graph α Nat) : Option FlowNetwork := do
+private def nullFlowNetwork (g : Graph α Nat) : Option FlowNetwork := Id.run do
   let mut adjacencyLists : Array (Array (Edge MaxFlowEdge)) := Array.empty
   let mut neighborSets : Array (Std.HashSet Nat) := mkArray g.vertexCount Std.HashSet.empty
   let mut nextVertexPointers : Array Nat := Array.empty
@@ -76,7 +76,7 @@ private def initializePreflow (flowNetwork : FlowNetwork) (source : Nat) : FlowN
     )
   })
 
-  do
+  Id.run do
     let mut vertices := verticesWithSourceAtHeightAndPreflowMaximized
     for edge in verticesWithSourceAtHeightAndPreflowMaximized[source].adjacencyList do
       vertices := vertices.modify edge.target (λ vertex =>
@@ -86,7 +86,7 @@ private def initializePreflow (flowNetwork : FlowNetwork) (source : Nat) : FlowN
 
 
 private def residualCapacity (flowNetwork : FlowNetwork) (u : Nat) (v : Nat) : Option Nat := match flowNetwork.vertices[u].adjacencyList.find? (λ edge => edge.target == v) with
-  | some edge => edge.weight.capacity - edge.weight.flow
+  | some edge => some (edge.weight.capacity - edge.weight.flow)
   | none => match flowNetwork.vertices[v].adjacencyList.find? (λ edge => edge.target == u) with
     | some edge => edge.weight.flow
     | none => none

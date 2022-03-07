@@ -18,7 +18,7 @@ private structure KruskalEdge (β : Type) where
 
 private instance : BEq (KruskalEdge β) := ⟨ (λ l r => l.weight == r.weight && ((l.source == r.source && l.target == r.target) || (l.source == r.target && l.target == r.source))) ⟩
 private instance : Hashable (KruskalEdge β) where hash e := mixHash (hash e.source) (mixHash (hash e.target) (hash e.weight))
-private instance : Inhabited (KruskalEdge β) := ⟨ { source := arbitrary, target := arbitrary, weight := arbitrary } ⟩
+private instance : Inhabited (KruskalEdge β) := ⟨ { source := default, target := default, weight := default } ⟩
 
 private def mergeSets {α : Type u} [BEq α] [Hashable α] (l : Std.HashSet α) (r : Std.HashSet α) : Std.HashSet α := r.fold Std.HashSet.insert l
 
@@ -41,7 +41,7 @@ private def kruskalAux (ug : UndirectedGraph α β) (sortedEdges : Array (Kruska
       kruskalAux ug sortedEdges newForest newSpanningEdges n
 
 /-- Kruskal's algorithm to find a minimum spanning forest in an undirected graph. If the graph is connected, it finds a minimum spanning tree. -/
-def kruskal (ug : UndirectedGraph α β) (lt : β -> β -> Bool) : UndirectedGraph α β := do
+def kruskal (ug : UndirectedGraph α β) (lt : β -> β -> Bool) : UndirectedGraph α β := Id.run do
   let mut kruskalEdges : Std.HashSet (KruskalEdge β) := Std.HashSet.empty
   for source in ug.getAllVertexIDs do
     for edge in ug.graph.vertices[source].adjacencyList do

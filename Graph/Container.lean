@@ -70,7 +70,7 @@ end Container
 --   container := container.add 8
 
 --   let mut arr : Array Nat := #[]
---   let mut e : Nat := arbitrary
+--   let mut e : Nat := default
 
 --   (e, container) := match container.remove? with
 --     | some x => x
@@ -120,7 +120,7 @@ end Container
 --   container := container.add 8
 
 --   let mut arr : Array Nat := #[]
---   let mut e : Nat := arbitrary
+--   let mut e : Nat := default
 
 --   (e, container) := match container.remove? with
 --     | some x => x
