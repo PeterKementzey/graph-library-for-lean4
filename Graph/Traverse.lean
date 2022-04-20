@@ -12,7 +12,7 @@ variable {α : Type} [Inhabited α] {β : Type}
 
 private def depthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × Bool) (leave : (Nat -> γ -> γ )) (state : γ) (sources : Array Nat) (visited : Array Bool) : Nat -> γ × Bool × Array Bool
   | 0 => (state, true, #[])
-  | n + 1 => do
+  | n + 1 => Id.run do
     let mut visited := visited
     let mut state := state
     for id in sources do
@@ -43,7 +43,7 @@ def depthFirstCompleteTraverse (g : Graph α β) (startingState : γ ) (visit : 
 
 private def breadthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × Bool) (state : γ) (startingSources : Array Nat) (sources : Array Nat) (visited : Array Bool) : Nat -> γ
   | 0 => state
-  | n + 1 => do
+  | n + 1 => Id.run do
     let mut visited := visited
     let mut state := state
     let mut nextSources : Std.HashSet Nat := Std.HashSet.empty
@@ -67,7 +67,7 @@ private def breadthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ �
     `visit` is a function executed at each vertex, its parameters are the vertex ID and the current state, it should return a new state and a boolean which terminates
     the traversal if true. Please provide a starting state. `maxDepth` is an optional parameter you can use to limit the depth of the traversal.
     See example uses in `Graph.TraverseExample`. -/
-def breadthFirstTraverse (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (maxDepth : Nat := g.vertexCount + sources.size) : γ := do
+def breadthFirstTraverse (g : Graph α β) (sources : Array Nat) (startingState : γ ) (visit : Nat -> γ -> γ × Bool) (maxDepth : Nat := g.vertexCount + sources.size) : γ := Id.run do
   g.breadthFirstTraverseAux visit startingState sources.reverse #[] (mkArray g.vertexCount false) maxDepth
 
 /-- A breadth-first traversal started from all vertices in order. Each vertex is visited exactly once. See `breadthFirstTraverse` for more info. -/

@@ -13,7 +13,7 @@ private structure State where
   temporaryMark : Array Bool
   res : Array Nat
 
-private instance : Inhabited State := ⟨ arbitrary, arbitrary ⟩
+private instance : Inhabited State := ⟨ default, default ⟩
 
 /-- Retruns a topological ordering of any DAG (directed acyclic graph). If the graph contains cycles then returns none. If you know your graph is a DAG you can use topSortUnsafe for better performance. -/
 def topSort (g : Graph α β) : Option (Array Nat) :=
@@ -27,7 +27,7 @@ def topSort (g : Graph α β) : Option (Array Nat) :=
 
     visit (g : Graph α β) (id : Nat) (s : Option State) : Option State × Bool :=
       let state := s.get!
-      if g.vertices[id].adjacencyList.any (λ edge => state.temporaryMark[edge.target]) then return (none, true) else
+      if g.vertices[id].adjacencyList.any (λ edge => state.temporaryMark[edge.target]) then (none, true) else
       let updatedState := { state with
         temporaryMark := state.temporaryMark.set! id true
       }

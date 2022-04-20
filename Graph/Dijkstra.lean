@@ -19,7 +19,7 @@ structure DijkstraVertex where
   edgeWeightToPredecessor : Nat := 0
 
 instance : ToString DijkstraVertex where toString dv := "Predecessor: " ++ (toString dv.predecessor) ++ ", current distance: " ++ (toString dv.distance) ++ "\n"
-instance : Inhabited DijkstraVertex := ⟨ { predecessor := arbitrary } ⟩
+instance : Inhabited DijkstraVertex := ⟨ { predecessor := default } ⟩
 
 /-!
 ### ShortestPathTree
@@ -46,7 +46,7 @@ def eccentricity (t : ShortestPathTree) : Option Nat := t.dijkstraVertices.foldr
 /-- Returns all node IDs that follow the specified node in any shortest path from the root.
     Note that this function is not efficient (linear in the order of the graph).
     If you would like to know the shortest path to a specific vertex you should rather use `pathToVertex` (linear time in number of vertices on path) or `predecessorOfVertex` (constant time). -/
-def successorsOfVertexDeprecated (t : ShortestPathTree) (id : Nat) : Array Nat := do
+def successorsOfVertexDeprecated (t : ShortestPathTree) (id : Nat) : Array Nat := Id.run do
   let mut ret : Array Nat := Array.empty
   for i in [0:t.dijkstraVertices.size] do
     let vertex := t.dijkstraVertices[i]
@@ -69,7 +69,7 @@ private def pathToVertexAux (t : ShortestPathTree) (id : Nat) (pathSoFar : Path 
       | none => panic! "Current vertex in shortest path tree is not reachable, this should not be possible"
       | some distance =>
         let pathWithCurrentVertexAdded : Path Nat true := Path.vertex id pathSoFar
-        if currentVertex.predecessor == id then return pathWithCurrentVertexAdded else
+        if currentVertex.predecessor == id then pathWithCurrentVertexAdded else
         let pathWithCurrentEdgeAdded : Path Nat false := Path.edge currentVertex.edgeWeightToPredecessor pathWithCurrentVertexAdded
         pathToVertexAux t currentVertex.predecessor pathWithCurrentEdgeAdded n
 
@@ -98,8 +98,8 @@ private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array Dijkst
     | some temp => temp
 
 private def dijkstraAux (g : Graph α Nat) (current : Nat) (target : Option Nat) (unvisited : Std.HashSet Nat) (dijkstraVerticesTemp : Array DijkstraVertex) : Nat -> Array DijkstraVertex
-  | 0 => return dijkstraVerticesTemp
-  | n + 1 => do
+  | 0 => dijkstraVerticesTemp
+  | n + 1 => Id.run do
     let mut dijkstraVertices : Array DijkstraVertex := dijkstraVerticesTemp
     for edge in g.vertices[current].adjacencyList do
       if unvisited.contains edge.target then
@@ -128,7 +128,7 @@ private def dijkstraAuxBase (g : Graph α Nat) (source : Nat) (target : Option N
       | none => false
     if isTargetFound then dijkstraVertices
     else
-      let unvisitedSet : Std.HashSet Nat := do
+      let unvisitedSet : Std.HashSet Nat := Id.run do
         let mut temp : Std.HashSet Nat := Std.HashSet.empty
         for i in g.getAllVertexIDs do temp := temp.insert i
         temp
