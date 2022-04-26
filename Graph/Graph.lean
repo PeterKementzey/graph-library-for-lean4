@@ -65,6 +65,20 @@ def outDegree (g : Graph α β) (id : Nat) : Nat := g.vertices[id].adjacencyList
 
 def inDegree (g : Graph α β) (id : Nat) : Nat := g.vertices.foldr (λ vertex count => count + (vertex.adjacencyList.filter (λ edge => edge.target == id)).size) 0
 
+def successors (g : Graph α β) (id : Nat) : Array Nat := g.vertices[id].adjacencyList.map (λ e => e.target)
+
+def predecessors (g : Graph α β) (id : Nat) : Array Nat :=
+  let filterFun : Edge β → Bool := (λ edge => edge.target == id)
+  Id.run do
+  let mut res : Array Nat := #[]
+  for i in [0:g.vertexCount] do
+    res := if ((g.vertices[i].adjacencyList.filter filterFun).size > 0)
+      then res.push i
+      else res
+   return res
+  -- this would need a foldr or ForIn implementation that lets us also use the id (e.g. as in Python's enumerate)
+  -- g.vertices.foldr (λ vertex preds => if ((vertex.adjacencyList.filter filterFun).size > 0) then (preds.push vertex.payload) else preds) #[]
+
 def outDegrees (g : Graph α β) : Array Nat := g.vertices.map (λ vertex => vertex.adjacencyList.size)
 
 def inDegrees (g : Graph α β) : Array Nat := Id.run do
