@@ -61,18 +61,18 @@ def makeGraphFromArray (a : Array α) : Graph α β := ⟨
 /-- Returns an array of vertex payloads in increasing order of IDs. -/
 def toArray (g : Graph α β) : Array α := g.vertices.map (λ vertex => vertex.payload)
 
-def outDegree (g : Graph α β) (id : Nat) : Nat := g.vertices[id].adjacencyList.size
+def outDegree (g : Graph α β) (id : Nat) : Nat := g.vertices[id]!.adjacencyList.size
 
 def inDegree (g : Graph α β) (id : Nat) : Nat := g.vertices.foldr (λ vertex count => count + (vertex.adjacencyList.filter (λ edge => edge.target == id)).size) 0
 
-def successors (g : Graph α β) (id : Nat) : Array Nat := g.vertices[id].adjacencyList.map (λ e => e.target)
+def successors (g : Graph α β) (id : Nat) : Array Nat := g.vertices[id]!.adjacencyList.map (λ e => e.target)
 
 def predecessors (g : Graph α β) (id : Nat) : Array Nat :=
   let filterFun : Edge β → Bool := (λ edge => edge.target == id)
   Id.run do
   let mut res : Array Nat := #[]
   for i in [0:g.vertexCount] do
-    res := if ((g.vertices[i].adjacencyList.filter filterFun).size > 0)
+    res := if ((g.vertices[i]!.adjacencyList.filter filterFun).size > 0)
       then res.push i
       else res
    return res
@@ -109,7 +109,7 @@ def removeAllEdges (g : Graph α β) : Graph α β := {
   g with vertices := g.vertices.map (λ vertex => { vertex with adjacencyList := Array.empty })
 }
 
-def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id].payload
+def getVertexPayload (g : Graph α β) (id : Nat) : α := g.vertices[id]!.payload
 
 def updateVertexPayload (g : Graph α β) (id : Nat) (payload : α) : Graph α β := {
   g with vertices := g.vertices.modify id (λ vertex => { vertex with payload := payload })
@@ -122,7 +122,7 @@ def updateAllVertexPayloads (g : Graph α β) (payloads : Array γ) : Option (Gr
   ⟩
 
 /-- Returns an array of vertex IDs whose payload equals the payload parameter. -/
-def findVertexIDs [BEq α] (g : Graph α β) (payload : α) : Array Nat := g.getAllVertexIDs.filter (λ id => g.vertices[id].payload == payload)
+def findVertexIDs [BEq α] (g : Graph α β) (payload : α) : Array Nat := g.getAllVertexIDs.filter (λ id => g.vertices[id]!.payload == payload)
 
 /-- Warning! This function is deprecated, vertex IDs will change if used.
     Returns graph without vertex and a mapping from old vertex IDs to new vertex IDs. -/

@@ -1,5 +1,6 @@
 import Graph.UndirectedGraph
-import Std.Data.HashSet
+import Lean.Data.HashSet
+import Std
 
 /-!
 ## Kruskal's algorithm
@@ -20,38 +21,38 @@ private instance : BEq (KruskalEdge β) := ⟨ (λ l r => l.weight == r.weight &
 private instance : Hashable (KruskalEdge β) where hash e := mixHash (hash e.source) (mixHash (hash e.target) (hash e.weight))
 private instance : Inhabited (KruskalEdge β) := ⟨ { source := default, target := default, weight := default } ⟩
 
-private def mergeSets {α : Type u} [BEq α] [Hashable α] (l : Std.HashSet α) (r : Std.HashSet α) : Std.HashSet α := r.fold Std.HashSet.insert l
+private def mergeSets {α : Type u} [BEq α] [Hashable α] (l : Lean.HashSet α) (r : Lean.HashSet α) : Lean.HashSet α := r.fold Lean.HashSet.insert l
 
 --                                                 edges to add to spanning tree         connected vertex id's              resulting edges                                size of sortedEdges
-private def kruskalAux (ug : UndirectedGraph α β) (sortedEdges : Array (KruskalEdge β)) (forest : Array (Std.HashSet Nat)) (spanningEdges : Std.HashSet (KruskalEdge β)) : Nat -> Std.HashSet (KruskalEdge β)
+private def kruskalAux (ug : UndirectedGraph α β) (sortedEdges : Array (KruskalEdge β)) (forest : Array (Lean.HashSet Nat)) (spanningEdges : Lean.HashSet (KruskalEdge β)) : Nat -> Lean.HashSet (KruskalEdge β)
   | 0 => spanningEdges
   | n + 1 =>
-    let currentEdge := sortedEdges[n-1]
+    let currentEdge := sortedEdges[n-1]!
     let sourceTreeId : Nat := (forest.findIdx? (λ tree => tree.contains currentEdge.source)).get!
 
-    if forest[sourceTreeId].contains currentEdge.target then
+    if forest[sourceTreeId]!.contains currentEdge.target then
       kruskalAux ug sortedEdges forest spanningEdges n
     else
-      let sourceTree := forest[sourceTreeId]
+      let sourceTree := forest[sourceTreeId]!
       let forestWithoutSource := forest.eraseIdx sourceTreeId
       let targetTreeId : Nat := (forestWithoutSource.findIdx? (λ tree => tree.contains currentEdge.target)).get!
-      let mergedTrees : Std.HashSet Nat := mergeSets sourceTree forestWithoutSource[targetTreeId]
+      let mergedTrees : Lean.HashSet Nat := mergeSets sourceTree forestWithoutSource[targetTreeId]!
       let newForest := (forestWithoutSource.eraseIdx targetTreeId).push mergedTrees
       let newSpanningEdges := spanningEdges.insert currentEdge
       kruskalAux ug sortedEdges newForest newSpanningEdges n
 
 /-- Kruskal's algorithm to find a minimum spanning forest in an undirected graph. If the graph is connected, it finds a minimum spanning tree. -/
 def kruskal (ug : UndirectedGraph α β) (lt : β -> β -> Bool) : UndirectedGraph α β := Id.run do
-  let mut kruskalEdges : Std.HashSet (KruskalEdge β) := Std.HashSet.empty
+  let mut kruskalEdges : Lean.HashSet (KruskalEdge β) := Lean.HashSet.empty
   for source in ug.getAllVertexIDs do
-    for edge in ug.graph.vertices[source].adjacencyList do
+    for edge in ug.graph.vertices[source]!.adjacencyList do
       kruskalEdges := kruskalEdges.insert { source := source, target := edge.target, weight := edge.weight }
   let sortedEdges := kruskalEdges.toArray.qsort (λ l r => lt r.weight l.weight) -- (λ l r => l.weight < r.weight)
 
-  let mut forest : Array (Std.HashSet Nat) := Array.empty
-  for i in ug.getAllVertexIDs do forest := forest.push (Std.HashSet.empty.insert i)
+  let mut forest : Array (Lean.HashSet Nat) := Array.empty
+  for i in ug.getAllVertexIDs do forest := forest.push (Lean.HashSet.empty.insert i)
 
-  let spanningEdges := kruskalAux ug sortedEdges forest Std.HashSet.empty sortedEdges.size
+  let spanningEdges := kruskalAux ug sortedEdges forest Lean.HashSet.empty sortedEdges.size
   spanningEdges.fold (λ spanningForest kruskalEdge => spanningForest.addEdgeByID kruskalEdge.source kruskalEdge.target kruskalEdge.weight) ug.removeAllEdges
 
 end UndirectedGraph end Graph

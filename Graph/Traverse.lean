@@ -1,6 +1,6 @@
 import Graph.Graph
 import Graph.UndirectedGraph
-import Std.Data.HashSet
+import Std
 
 /-!
 ## Traverse
@@ -16,12 +16,12 @@ private def depthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ × 
     let mut visited := visited
     let mut state := state
     for id in sources do
-      if visited[id] then continue else
+      if visited[id]! then continue else
       visited := visited.set! id true
       let (newState, terminate?) := visit id state;
       state := newState
       if terminate? then return (leave id state, true, #[]) else
-      let adjacencyList := (g.vertices[id].adjacencyList.map (λ edge => edge.target)).filter (!visited[.])
+      let adjacencyList := (g.vertices[id]!.adjacencyList.map (λ edge => edge.target)).filter (!visited[.]!)
       let (newState, terminate?, newVisited) := g.depthFirstTraverseAux visit leave state adjacencyList visited n
       visited := newVisited
       state := leave id newState
@@ -46,17 +46,17 @@ private def breadthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ �
   | n + 1 => Id.run do
     let mut visited := visited
     let mut state := state
-    let mut nextSources : Std.HashSet Nat := Std.HashSet.empty
+    let mut nextSources : Lean.HashSet Nat := Lean.HashSet.empty
     for id in sources do
       visited := visited.set! id true
       let (newState, terminate?) := visit id state;
       state := newState
       if terminate? then return state else
-      let adjacencyList := (g.vertices[id].adjacencyList.map (λ edge => edge.target))
+      let adjacencyList := (g.vertices[id]!.adjacencyList.map (λ edge => edge.target))
       for targetId in adjacencyList do nextSources := nextSources.insert targetId
 
-    let sourcesArray : Array Nat := nextSources.fold (λ arr id => if visited[id] then arr else arr.push id) #[]
-    let startingSources := startingSources.filter (!visited[.])
+    let sourcesArray : Array Nat := nextSources.fold (λ arr id => if visited[id]! then arr else arr.push id) #[]
+    let startingSources := startingSources.filter (!visited[.]!)
     match (sourcesArray.isEmpty, startingSources.isEmpty) with
       | (false, _) => g.breadthFirstTraverseAux visit state startingSources sourcesArray visited n
       | (_, false) => g.breadthFirstTraverseAux visit state startingSources.pop #[startingSources.back] visited n
