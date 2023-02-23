@@ -51,7 +51,7 @@ def makeUndirectedGraphFromArray (a : Array α) : UndirectedGraph α β := ⟨
 /-- Returns an array of vertex payloads in increasing order of IDs. -/
 def toArray (ug : UndirectedGraph α β) : Array α := ug.graph.toArray
 
-def degree (ug : UndirectedGraph α β) (id : Nat) : Nat := ug.graph.vertices[id].adjacencyList.size
+def degree (ug : UndirectedGraph α β) (id : Nat) : Nat := ug.graph.vertices[id]!.adjacencyList.size
 
 def getVertexPayload (ug : UndirectedGraph α β) := ug.graph.getVertexPayload
 

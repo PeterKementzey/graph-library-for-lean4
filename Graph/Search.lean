@@ -33,7 +33,7 @@ private def constructPath (g : Graph α β) (vertexStack : Array Nat) (pathSoFar
     let currentId := vertexStack.back
     let edgeWeight := match pathSoFar with
       | Path.empty => none
-      | Path.vertex id p => match g.vertices[currentId].adjacencyList.find? (λ edge => edge.target == id) with
+      | Path.vertex id p => match g.vertices[currentId]!.adjacencyList.find? (λ edge => edge.target == id) with
         | some edge => some edge.weight
         | none => none
     let pathWithCurrentEdgeAdded : Path β false := match edgeWeight with

@@ -27,7 +27,7 @@ def topSort (g : Graph α β) : Option (Array Nat) :=
 
     visit (g : Graph α β) (id : Nat) (s : Option State) : Option State × Bool :=
       let state := s.get!
-      if g.vertices[id].adjacencyList.any (λ edge => state.temporaryMark[edge.target]) then (none, true) else
+      if g.vertices[id]!.adjacencyList.any (λ edge => state.temporaryMark[edge.target]!) then (none, true) else
       let updatedState := { state with
         temporaryMark := state.temporaryMark.set! id true
       }

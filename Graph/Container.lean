@@ -1,5 +1,4 @@
-import Std.Data.Queue
-import Std.Data.Stack
+import Std
 
 /-!
 ## Container
