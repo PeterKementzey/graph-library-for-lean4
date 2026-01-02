@@ -2,7 +2,6 @@ import Graph.Graph
 import Graph.Path
 import Graph.UndirectedGraph
 import Lean.Data.HashSet
-import Std
 
 /-!
 ## Dijkstra's algorithm
@@ -82,7 +81,7 @@ def pathToVertex (t : ShortestPathTree) (id : Nat) : Option (Path Nat true) := m
 end ShortestPathTree
 
 
-private def findMinimum (set : Lean.HashSet Nat) (dijkstraVertices : Array DijkstraVertex) : Nat :=
+private def findMinimum (set : Std.HashSet Nat) (dijkstraVertices : Array DijkstraVertex) : Nat :=
   let min : Option Nat -> Nat -> Option Nat := λ leftIdOption rightId => match leftIdOption with
     | none => some rightId
     | some leftId =>
@@ -98,7 +97,7 @@ private def findMinimum (set : Lean.HashSet Nat) (dijkstraVertices : Array Dijks
     | none => panic! "this should not be possible"
     | some temp => temp
 
-private def dijkstraAux (g : Graph α Nat) (current : Nat) (target : Option Nat) (unvisited : Lean.HashSet Nat) (dijkstraVerticesTemp : Array DijkstraVertex) : Nat -> Array DijkstraVertex
+private def dijkstraAux (g : Graph α Nat) (current : Nat) (target : Option Nat) (unvisited : Std.HashSet Nat) (dijkstraVerticesTemp : Array DijkstraVertex) : Nat -> Array DijkstraVertex
   | 0 => dijkstraVerticesTemp
   | n + 1 => Id.run do
     let mut dijkstraVertices : Array DijkstraVertex := dijkstraVerticesTemp
@@ -129,8 +128,8 @@ private def dijkstraAuxBase (g : Graph α Nat) (source : Nat) (target : Option N
       | none => false
     if isTargetFound then dijkstraVertices
     else
-      let unvisitedSet : Lean.HashSet Nat := Id.run do
-        let mut temp : Lean.HashSet Nat := Lean.HashSet.empty
+      let unvisitedSet : Std.HashSet Nat := Id.run do
+        let mut temp : Std.HashSet Nat := Std.HashSet.empty
         for i in g.getAllVertexIDs do temp := temp.insert i
         temp
       dijkstraAux g source target (unvisitedSet.erase source) dijkstraVertices (unvisitedSet.size-1)

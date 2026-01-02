@@ -46,7 +46,7 @@ private def breadthFirstTraverseAux (g : Graph α β) (visit : Nat -> γ -> γ �
   | n + 1 => Id.run do
     let mut visited := visited
     let mut state := state
-    let mut nextSources : Lean.HashSet Nat := Lean.HashSet.empty
+    let mut nextSources : Std.HashSet Nat := Std.HashSet.empty
     for id in sources do
       visited := visited.set! id true
       let (newState, terminate?) := visit id state;

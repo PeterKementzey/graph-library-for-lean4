@@ -12,7 +12,7 @@ private structure VertexState where
   currentNeighbor : Nat := 0
   neighborList : Array Nat
 
-private instance : Inhabited VertexState := ⟨ { nextVertex := default, neighborList := Array.empty } ⟩ 
+private instance : Inhabited VertexState := ⟨ { nextVertex := default, neighborList := Array.empty } ⟩
 -- instance : ToString VertexState where toString s := "Excess: " ++ (toString s.excess) ++ ", height: " ++ (toString s.height) ++ ", next vertex: " ++ (toString s.nextVertex)
 --   ++ "\ncurrent neighbor: " ++ (toString s.currentNeighbor) ++ ", neighbor list: " ++ (toString s.neighborList)
 
@@ -21,7 +21,7 @@ structure MaxFlowEdge where
   flow : Nat := 0
 
 instance : ToString MaxFlowEdge where toString mfe := "flow: " ++ (toString mfe.flow) ++ ", capacity: " ++ (toString mfe.capacity)
-instance : Inhabited MaxFlowEdge := ⟨ { capacity := default } ⟩ 
+instance : Inhabited MaxFlowEdge := ⟨ { capacity := default } ⟩
 private instance [Inhabited γ] : Inhabited (Edge γ) := ⟨ 0, default ⟩
 
 private def FlowNetwork := Graph VertexState MaxFlowEdge
@@ -30,7 +30,7 @@ private def FlowVertex := Vertex VertexState MaxFlowEdge
 private instance [Inhabited VertexState] : Inhabited FlowVertex := ⟨ { payload := default } ⟩
 
 
-private def createAdjacencyListAndNeighborSets (vertex : Vertex α Nat) (id : Nat) (neighborSets : Array (Lean.HashSet Nat)) : Option ((Array (Edge MaxFlowEdge)) × (Array (Lean.HashSet Nat))) := Id.run do
+private def createAdjacencyListAndNeighborSets (vertex : Vertex α Nat) (id : Nat) (neighborSets : Array (Std.HashSet Nat)) : Option ((Array (Edge MaxFlowEdge)) × (Array (Std.HashSet Nat))) := Id.run do
   let mut neighborSets := neighborSets
   let mut currentNeighborSet := neighborSets[id]!
   let mut adjacencyList : Array (Edge MaxFlowEdge) := Array.empty
@@ -43,11 +43,11 @@ private def createAdjacencyListAndNeighborSets (vertex : Vertex α Nat) (id : Na
 
   let resultNeighborSets := neighborSets.set! id currentNeighborSet
   some (adjacencyList, resultNeighborSets)
-  
+
 
 private def nullFlowNetwork (g : Graph α Nat) : Option FlowNetwork := Id.run do
   let mut adjacencyLists : Array (Array (Edge MaxFlowEdge)) := Array.empty
-  let mut neighborSets : Array (Lean.HashSet Nat) := mkArray g.vertexCount Lean.HashSet.empty
+  let mut neighborSets : Array (Std.HashSet Nat) := mkArray g.vertexCount Std.HashSet.empty
   let mut nextVertexPointers : Array Nat := Array.empty
   for i in g.getAllVertexIDs do
     match createAdjacencyListAndNeighborSets g.vertices[i]! i neighborSets with
@@ -142,12 +142,12 @@ private def upperBoundOfDischargeIterations (flowNetwork : FlowNetwork) (u : Nat
 
 private def discharge (flowNetwork : FlowNetwork) (u : Nat) : Nat -> FlowNetwork
   | 0 => flowNetwork
-  | n + 1 => 
+  | n + 1 =>
     let vertexState := flowNetwork.vertices[u]!.payload
     if vertexState.excess == 0 then flowNetwork else
     let newFlowNetwork := if vertexState.currentNeighbor >= vertexState.neighborList.size then
       let flowNetworkWithRelabeling := flowNetwork.relabel u
-    ⟨ flowNetworkWithRelabeling.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with currentNeighbor := 0 } } ) ⟩ 
+    ⟨ flowNetworkWithRelabeling.vertices.modify u (λ vertex => { vertex with payload := { vertex.payload with currentNeighbor := 0 } } ) ⟩
     else
       let currentNeighborId := vertexState.neighborList[vertexState.currentNeighbor]!
       if (vertexState.height == flowNetwork.vertices[currentNeighborId]!.payload.height + 1) && ((flowNetwork.residualCapacity u currentNeighborId).get! > 0) then
